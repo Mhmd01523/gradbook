@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Grad Book · دفتر التخرج · Книга выпускника</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- ⚙️ إعدادات ⚙️ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const ADMIN_BOT_TOKEN = '8971222565:AAGyI9K6Ive2hI_V9F3Qy1GaL4_dlaM4t4Y';
+  const ADMIN_CHAT_ID   = '1343835667';
+  const SUPABASE_URL    = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY    = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+</script>
+
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --gold-dark: #7a5c10;
+  --bg: #08060a;
+  --bg2: #100e14;
+  --bg3: #1a1720;
+  --border: rgba(201,168,76,0.2);
+  --text: #f5f0e8;
+  --text2: rgba(245,240,232,0.6);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* ═══ HERO ═══ */
+#hero {
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  padding:40px 20px;
+  text-align:center;
+}
+
+/* Animated background */
+.hero-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(100,50,200,0.05) 0%, transparent 50%);
+  animation:bgPulse 8s ease-in-out infinite alternate;
+}
+@keyframes bgPulse {
+  0%   { opacity:0.6; }
+  100% { opacity:1; }
+}
+
+/* Grid lines */
+.hero-grid {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+/* Particles */
+#hero-particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.hp { position:absolute; border-radius:50%; background:var(--gold); animation:hpFloat linear infinite; }
+@keyframes hpFloat {
+  0%   { opacity:0; transform:translateY(100vh) scale(0); }
+  10%  { opacity:0.6; transform:scale(1); }
+  90%  { opacity:0.2; }
+  100% { opacity:0; transform:translateY(-20px) scale(0.5); }
+}
+
+/* Logo */
+.hero-logo {
+  width:180px; height:180px;
+  margin:0 auto 20px;
+  position:relative;
+  z-index:10;
+  cursor:pointer;
+  animation:logoFloat 4s ease-in-out infinite;
+}
+@keyframes logoFloat {
+  0%,100% { transform:translateY(0); filter:drop-shadow(0 0 24px rgba(201,168,76,0.5)); }
+  50%      { transform:translateY(-8px); filter:drop-shadow(0 0 42px rgba(201,168,76,0.75)); }
+}
+.hero-logo img {
+  width:100%; height:100%;
+  object-fit:contain;
+  /* الخلفية الشطرنجية شفافة — نخلي الأبيض يختفي */
+  mix-blend-mode:multiply;
+  filter:invert(1) brightness(1.8) sepia(0.4) hue-rotate(5deg) saturate(1.4);
+}
+
+/* Badge */
+.hero-badge {
+  display:inline-block;
+  background:rgba(201,168,76,0.1);
+  border:1px solid rgba(201,168,76,0.3);
+  color:var(--gold-light);
+  padding:6px 18px;
+  border-radius:30px;
+  font-size:12px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s ease both;
+}
+
+/* Main title */
+.hero-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(36px, 9vw, 72px);
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:16px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.1s ease both;
+}
+.hero-title .gold { color:var(--gold); }
+.hero-title .white { color:#fff; }
+
+/* Subtitle */
+.hero-sub {
+  font-size:clamp(14px, 3.5vw, 18px);
+  color:var(--text2);
+  max-width:560px;
+  line-height:1.8;
+  margin:0 auto 36px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.2s ease both;
+}
+
+/* CTA Button */
+.cta-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg, var(--gold), #a07830);
+  color:#000;
+  border:none;
+  padding:16px 36px;
+  border-radius:50px;
+  font-family:'Tajawal',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.3s ease both;
+  text-decoration:none;
+  box-shadow:0 4px 30px rgba(201,168,76,0.3);
+}
+.cta-btn:hover { transform:translateY(-3px); box-shadow:0 8px 40px rgba(201,168,76,0.5); filter:brightness(1.1); }
+
+/* Scroll hint */
+.scroll-hint {
+  position:absolute; bottom:28px; left:50%;
+  transform:translateX(-50%);
+  color:var(--text2); font-size:22px;
+  animation:bounce2 2s ease-in-out infinite;
+  z-index:10;
+}
+@keyframes bounce2 { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ═══ FEATURES ═══ */
+#features {
+  padding:80px 20px;
+  background:var(--bg2);
+  position:relative;
+}
+#features::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.section-label-wrap { text-align:center; margin-bottom:50px; }
+.section-lbl { font-size:12px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:10px; }
+.section-ttl { font-family:'Playfair Display',serif; font-size:clamp(24px,5vw,36px); color:#fff; }
+.section-div { width:60px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:14px auto 0; }
+
+.features-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:20px;
+  max-width:1000px;
+  margin:0 auto;
+}
+.feature-card {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 24px;
+  text-align:center;
+  transition:all 0.3s;
+}
+.feature-card:hover { border-color:rgba(201,168,76,0.5); transform:translateY(-4px); box-shadow:0 8px 30px rgba(201,168,76,0.1); }
+.feature-icon { font-size:36px; margin-bottom:14px; }
+.feature-title { font-size:16px; font-weight:700; color:var(--gold); margin-bottom:8px; }
+.feature-text { font-size:13px; color:var(--text2); line-height:1.8; }
+
+/* ═══ ORDER FORM ═══ */
+#order {
+  padding:80px 20px;
+  background:var(--bg);
+  position:relative;
+}
+#order::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.order-wrap {
+  max-width:580px;
+  margin:0 auto;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.order-header {
+  background:linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  border-bottom:1px solid var(--border);
+  padding:28px 32px;
+  text-align:center;
+}
+.order-header h2 { font-size:22px; font-weight:700; color:var(--gold); margin-bottom:6px; }
+.order-header p { font-size:13px; color:var(--text2); }
+.order-body { padding:32px; }
+
+.o-field { margin-bottom:18px; }
+.o-label { font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500; letter-spacing:0.5px; }
+.o-input {
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  padding:12px 16px;
+  color:var(--text);
+  font-family:'Tajawal',sans-serif;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+.o-input:focus { border-color:var(--gold); background:rgba(201,168,76,0.05); }
+textarea.o-input { resize:vertical; min-height:90px; }
+select.o-input option { background:#1a1720; }
+
+.order-btn {
+  width:100%;
+  background:linear-gradient(135deg, var(--gold), #a07830);
+  color:#000;
+  border:none;
+  border-radius:14px;
+  padding:15px;
+  font-family:'Tajawal',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s;
+  margin-top:8px;
+  box-shadow:0 4px 20px rgba(201,168,76,0.3);
+}
+.order-btn:hover { filter:brightness(1.1); transform:translateY(-2px); }
+.order-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* Success message */
+.order-success {
+  display:none;
+  text-align:center;
+  padding:40px 20px;
+}
+.order-success .icon { font-size:56px; margin-bottom:16px; }
+.order-success h3 { font-size:20px; color:var(--gold); margin-bottom:8px; }
+.order-success p { font-size:14px; color:var(--text2); line-height:1.8; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  padding:30px 20px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  color:var(--text2);
+  font-size:13px;
+  background:var(--bg2);
+}
+
+/* Animations */
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* Toast */
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg3); border:1px solid var(--gold); color:var(--gold); padding:11px 24px; border-radius:30px; font-size:14px; z-index:9999; transition:transform 0.3s; pointer-events:none; white-space:nowrap; }
+#toast.show { transform:translateX(-50%) translateY(0); }
+
+/* Mobile */
+@media(max-width:480px) {
+  .order-body { padding:20px; }
+  .order-header { padding:20px; }
+  .features-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div id="hero-particles"></div>
+
+  <!-- Logo — Grad Book SVG -->
+  <div class="hero-logo" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+    <img src="gradbook-logo.png" alt="Grad Book Logo">
+  </div>
+
+  <div class="hero-badge" id="badge-text">ВолгГМУ · GRADUATION · تخرج</div>
+
+  <h1 class="hero-title">
+    <span class="gold" id="title-line1">Grad Book</span><br>
+    <span class="white" id="title-line2">دفتر تخرجك الرقمي</span>
+  </h1>
+
+  <p class="hero-sub" id="hero-sub-text">
+    دفتر تخرج رقمي فاخر — أصحابك يكتبون تهانيهم ويصلك إشعار فوري على تيليغرام
+  </p>
+
+  <a class="cta-btn" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+    <span id="cta-text">🎓 اطلب دفترك الآن</span>
+  </a>
+
+  <div class="scroll-hint">↓</div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features">
+  <div class="section-label-wrap">
+    <div class="section-lbl" id="features-lbl">المميزات</div>
+    <div class="section-ttl" id="features-ttl">كل شي جاهز لك</div>
+    <div class="section-div"></div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title" id="f1-title">دفتر خاص بك</div>
+      <div class="feature-text" id="f1-text">رابط مخصص باسمك، تشاركه مع أصحابك في ثانية</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📲</div>
+      <div class="feature-title" id="f2-title">إشعار فوري</div>
+      <div class="feature-text" id="f2-text">كل ما كتب لك أحد تهنئة يصلك إشعار على تيليغرام فوراً</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-title" id="f3-title">3 لغات</div>
+      <div class="feature-text" id="f3-text">الدفتر يدعم العربية والإنجليزية والروسية في نفس الوقت</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <div class="feature-title" id="f4-title">تصميم فاخر</div>
+      <div class="feature-text" id="f4-text">6 ثيمات ألوان وصور خلفية تختارها أنت</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📸</div>
+      <div class="feature-title" id="f5-title">صور وذكريات</div>
+      <div class="feature-text" id="f5-text">كل شخص يقدر يرفع صورة مع تهنئته</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title" id="f6-title">جاهز خلال ساعة</div>
+      <div class="feature-text" id="f6-text">بعد الطلب دفترك يكون جاهز خلال ساعة واحدة</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ORDER FORM ═══ -->
+<section id="order">
+  <div class="section-label-wrap" style="margin-bottom:40px;">
+    <div class="section-lbl" id="order-lbl">الطلب</div>
+    <div class="section-ttl" id="order-ttl">اطلب دفترك الآن</div>
+    <div class="section-div"></div>
+  </div>
+
+  <div class="order-wrap">
+    <div class="order-header">
+      <h2 id="order-h2">📋 بيانات الطلب</h2>
+      <p id="order-h2-sub">أرسل طلبك وسنتواصل معك على تيليغرام</p>
+    </div>
+    <div class="order-body" id="order-form-body">
+      <div class="o-field">
+        <div class="o-label" id="lbl-name">اسمك الكامل *</div>
+        <input class="o-input" id="o-name" type="text" placeholder="محمد أحمد / Mohammad / Мохаммад">
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-tg">يوزرنيم تيليغرام أو رقمك *</div>
+        <input class="o-input" id="o-tg" type="text" placeholder="@username أو +7...">
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-faculty">الكلية *</div>
+        <select class="o-input" id="o-faculty">
+          <option value="">— اختر / Choose / Выбери —</option>
+          <option value="general">كلية الطب العام · General Medicine · Лечебный факультет</option>
+          <option value="dental">كلية طب الأسنان · Dentistry · Стоматологический факультет</option>
+          <option value="pharmacy">كلية الصيدلة · Pharmacy · Фармацевтический факультет</option>
+        </select>
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-year">سنة التخرج</div>
+        <input class="o-input" id="o-year" type="text" placeholder="2025">
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-lang">لغة الدفتر الرئيسية</div>
+        <select class="o-input" id="o-lang" onchange="applyLang(this.value)">
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="ru">🇷🇺 Русский</option>
+        </select>
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-notes">ملاحظات إضافية</div>
+        <textarea class="o-input" id="o-notes" placeholder="أي طلبات خاصة..."></textarea>
+      </div>
+      <button class="order-btn" id="order-btn" onclick="submitOrder()">
+        <span id="order-btn-text">إرسال الطلب ✈️</span>
+      </button>
+    </div>
+
+    <!-- Success -->
+    <div class="order-success" id="order-success">
+      <div class="icon">🎉</div>
+      <h3 id="success-title">تم استلام طلبك!</h3>
+      <!-- Order code badge -->
+      <div id="order-code-box" style="margin:14px auto;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);border-radius:12px;padding:12px 20px;display:inline-block;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;" id="order-code-label">رقم طلبك</div>
+        <div id="order-code-val" style="font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;font-family:monospace;">GB-......</div>
+      </div>
+      <p id="success-text" style="margin-top:10px;">الخطوة الأخيرة — افتح البوت واضغط Start 👇</p>
+      <a id="tg-open-btn" href="https://t.me/gradbook_notifications_bot" target="_blank"
+        style="display:inline-flex;align-items:center;gap:10px;margin-top:20px;background:linear-gradient(135deg,#0088cc,#005f8e);color:#fff;padding:14px 28px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;box-shadow:0 4px 20px rgba(0,136,204,0.4);transition:all 0.3s;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.607c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.48 14.697l-2.95-.924c-.64-.203-.654-.64.136-.948l11.532-4.448c.537-.194 1.006.131.364.871z"/></svg>
+        <span id="tg-btn-text">افتح البوت واضغط Start</span>
+      </a>
+      <p id="success-sub" style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.7;">
+        اضغط Start — سيوصلنا رقم طلبك تلقائياً وسنتواصل معك خلال ساعة 🎓
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p id="footer-text">Grad Book · ВолгГМУ · دفاتر التخرج الرقمية</p>
+</footer>
+
+<script>
+// ═══ TRANSLATIONS ═══
+const T = {
+  ar: {
+    badge:       'ВолгГМУ · GRADUATION · تخرج',
+    title1:      'Grad Book',
+    title2:      'دفتر تخرجك الرقمي',
+    sub:         'دفتر تخرج رقمي فاخر — أصحابك يكتبون تهانيهم ويصلك إشعار فوري على تيليغرام',
+    cta:         '🎓 اطلب دفترك الآن',
+    featLbl:     'المميزات',
+    featTtl:     'كل شي جاهز لك',
+    f1t:'دفتر خاص بك',       f1d:'رابط مخصص باسمك، تشاركه مع أصحابك في ثانية',
+    f2t:'إشعار فوري',         f2d:'كل ما كتب لك أحد تهنئة يصلك إشعار على تيليغرام فوراً',
+    f3t:'3 لغات',             f3d:'الدفتر يدعم العربية والإنجليزية والروسية',
+    f4t:'تصميم فاخر',         f4d:'6 ثيمات ألوان وصور خلفية تختارها أنت',
+    f5t:'صور وذكريات',        f5d:'كل شخص يقدر يرفع صورة مع تهنئته',
+    f6t:'جاهز خلال ساعة',    f6d:'بعد الطلب دفترك يكون جاهز خلال ساعة واحدة',
+    orderLbl:    'الطلب',
+    orderTtl:    'اطلب دفترك الآن',
+    orderH2:     '📋 بيانات الطلب',
+    orderSub:    'أرسل طلبك وسنتواصل معك على تيليغرام',
+    lblName:     'اسمك الكامل *',
+    lblTg:       'يوزرنيم تيليغرام أو رقمك *',
+    lblFaculty:  'الكلية *',
+    lblYear:     'سنة التخرج',
+    lblLang:     'لغة الدفتر الرئيسية',
+    lblNotes:    'ملاحظات إضافية',
+    btnSend:     'إرسال الطلب ✈️',
+    btnSending:  '⏳ جارٍ الإرسال...',
+    successT:    'تم استلام طلبك! 🎉',
+    successD:    'افتح البوت وأرسل صورك',
+    tgBtn:       'افتح البوت وأرسل الصور',
+    successSub:  'اضغط Start — سيوصلنا رقم طلبك تلقائياً وسنتواصل معك خلال ساعة 🎓',
+    footer:      'Grad Book · ВолгГМУ · دفاتر التخرج الرقمية',
+    dir:         'rtl',
+  },
+  en: {
+    badge:       'ВолгГМУ · GRADUATION · Digital Guestbook',
+    title1:      'Grad Book',
+    title2:      'Your Digital Graduation Guestbook',
+    sub:         'A beautiful digital guestbook — friends write their congratulations and you get instant Telegram notifications',
+    cta:         '🎓 Order Your Book Now',
+    featLbl:     'FEATURES',
+    featTtl:     'Everything Ready For You',
+    f1t:'Your Own Book',       f1d:'A custom link with your name, share it with friends in seconds',
+    f2t:'Instant Notifications',f2d:'Every time someone writes, you get an instant Telegram notification',
+    f3t:'3 Languages',          f3d:'The book supports Arabic, English, and Russian simultaneously',
+    f4t:'Luxury Design',        f4d:'6 color themes and background photos you choose',
+    f5t:'Photos & Memories',    f5d:'Everyone can upload a photo with their message',
+    f6t:'Ready in 1 Hour',      f6d:'After ordering, your book will be ready within one hour',
+    orderLbl:    'ORDER',
+    orderTtl:    'Order Your Book Now',
+    orderH2:     '📋 Order Details',
+    orderSub:    'Send your request and we\'ll contact you on Telegram',
+    lblName:     'Your Full Name *',
+    lblTg:       'Telegram Username or Phone *',
+    lblFaculty:  'Faculty *',
+    lblYear:     'Graduation Year',
+    lblLang:     'Main Book Language',
+    lblNotes:    'Additional Notes',
+    btnSend:     'Send Request ✈️',
+    btnSending:  '⏳ Sending...',
+    successT:    'Request Received! 🎉',
+    successD:    'Open the bot and send your photos',
+    tgBtn:       'Open Bot & Send Photos',
+    successSub:  'Press Start — your order code will be sent automatically. We\'ll contact you within 1 hour 🎓',
+    footer:      'Grad Book · ВолгГМУ · Digital Graduation Guestbooks',
+    dir:         'ltr',
+  },
+  ru: {
+    badge:       'ВолгГМУ · ВЫПУСК · Книга выпускника',
+    title1:      'Grad Book',
+    title2:      'Цифровая книга выпускника',
+    sub:         'Красивая цифровая книга поздравлений — друзья пишут поздравления, а ты получаешь мгновенные уведомления в Telegram',
+    cta:         '🎓 Заказать книгу',
+    featLbl:     'ВОЗМОЖНОСТИ',
+    featTtl:     'Всё готово для тебя',
+    f1t:'Твоя личная книга',    f1d:'Персональная ссылка с твоим именем, поделись с друзьями за секунду',
+    f2t:'Мгновенные уведомления',f2d:'Каждый раз, когда кто-то пишет, ты получаешь уведомление в Telegram',
+    f3t:'3 языка',              f3d:'Книга поддерживает арабский, английский и русский языки одновременно',
+    f4t:'Роскошный дизайн',     f4d:'6 цветовых тем и фоновые фотографии на твой выбор',
+    f5t:'Фото и воспоминания',  f5d:'Каждый может загрузить фото вместе с поздравлением',
+    f6t:'Готово за 1 час',      f6d:'После заказа твоя книга будет готова в течение одного часа',
+    orderLbl:    'ЗАКАЗ',
+    orderTtl:    'Заказать книгу сейчас',
+    orderH2:     '📋 Детали заказа',
+    orderSub:    'Отправь заявку и мы свяжемся с тобой в Telegram',
+    lblName:     'Твоё полное имя *',
+    lblTg:       'Юзернейм Telegram или номер телефона *',
+    lblFaculty:  'Факультет *',
+    lblYear:     'Год выпуска',
+    lblLang:     'Основной язык книги',
+    lblNotes:    'Дополнительные пожелания',
+    btnSend:     'Отправить заявку ✈️',
+    btnSending:  '⏳ Отправка...',
+    successT:    'Заявка получена! 🎉',
+    successD:    'Открой бота и отправь фото',
+    tgBtn:       'Открыть бота и отправить фото',
+    successSub:  'Нажми Start — твой номер заказа отправится автоматически. Свяжемся в течение часа 🎓',
+    footer:      'Grad Book · ВолгГМУ · Цифровые книги выпускников',
+    dir:         'ltr',
+  }
+};
+
+// ═══ DETECT LANGUAGE ═══
+function detectLang() {
+  const lang = navigator.language || navigator.userLanguage || 'en';
+  if (lang.startsWith('ar')) return 'ar';
+  if (lang.startsWith('ru')) return 'ru';
+  return 'en';
+}
+
+function applyLang(l) {
+  const t = T[l];
+  document.documentElement.lang = l === 'ar' ? 'ar' : (l === 'ru' ? 'ru' : 'en');
+  document.documentElement.dir  = t.dir;
+  document.body.style.direction  = t.dir;
+
+  // Sync the language selector to the chosen language
+  document.getElementById('o-lang').value = l;
+
+  document.getElementById('badge-text').textContent    = t.badge;
+  document.getElementById('title-line1').textContent   = t.title1;
+  document.getElementById('title-line2').textContent   = t.title2;
+  document.getElementById('hero-sub-text').textContent = t.sub;
+  document.getElementById('cta-text').textContent      = t.cta;
+  document.getElementById('features-lbl').textContent  = t.featLbl;
+  document.getElementById('features-ttl').textContent  = t.featTtl;
+  document.getElementById('f1-title').textContent = t.f1t; document.getElementById('f1-text').textContent = t.f1d;
+  document.getElementById('f2-title').textContent = t.f2t; document.getElementById('f2-text').textContent = t.f2d;
+  document.getElementById('f3-title').textContent = t.f3t; document.getElementById('f3-text').textContent = t.f3d;
+  document.getElementById('f4-title').textContent = t.f4t; document.getElementById('f4-text').textContent = t.f4d;
+  document.getElementById('f5-title').textContent = t.f5t; document.getElementById('f5-text').textContent = t.f5d;
+  document.getElementById('f6-title').textContent = t.f6t; document.getElementById('f6-text').textContent = t.f6d;
+  document.getElementById('order-lbl').textContent     = t.orderLbl;
+  document.getElementById('order-ttl').textContent     = t.orderTtl;
+  document.getElementById('order-h2').textContent      = t.orderH2;
+  document.getElementById('order-h2-sub').textContent  = t.orderSub;
+  document.getElementById('lbl-name').textContent  = t.lblName;
+  document.getElementById('lbl-tg').textContent    = t.lblTg;
+  document.getElementById('lbl-year').textContent  = t.lblYear;
+  document.getElementById('lbl-lang').textContent  = t.lblLang;
+  document.getElementById('lbl-notes').textContent = t.lblNotes;
+  document.getElementById('order-btn-text').textContent = t.btnSend;
+  document.getElementById('footer-text').textContent = t.footer;
+}
+
+// ═══ PARTICLES ═══
+function buildParticles() {
+  const c = document.getElementById('hero-particles');
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'hp';
+    p.style.left   = Math.random() * 100 + '%';
+    p.style.bottom = '-5px';
+    p.style.width  = p.style.height = (Math.random() * 3 + 1) + 'px';
+    p.style.animationDuration = (Math.random() * 12 + 8) + 's';
+    p.style.animationDelay   = (Math.random() * 12) + 's';
+    p.style.opacity = '0';
+    c.appendChild(p);
+  }
+}
+
+// ═══ SUBMIT ORDER ═══
+function generateOrderCode() {
+  const num = Math.floor(100000 + Math.random() * 900000);
+  return 'GB-' + num;
+}
+
+async function submitOrder() {
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const selectedLang = document.getElementById('o-lang').value;
+  const t       = T[selectedLang];
+  const name    = document.getElementById('o-name').value.trim();
+  const tg      = document.getElementById('o-tg').value.trim();
+  const faculty = document.getElementById('o-faculty').value;
+  const year    = document.getElementById('o-year').value.trim();
+  const notes   = document.getElementById('o-notes').value.trim();
+
+  if (!name)    return toast('⚠️ ' + (selectedLang==='ru'?'Введи имя':selectedLang==='en'?'Enter your name':'أدخل اسمك'));
+  if (!tg)      return toast('⚠️ ' + (selectedLang==='ru'?'Введи Telegram':selectedLang==='en'?'Enter Telegram':'أدخل تيليغرام'));
+  if (!faculty) return toast('⚠️ ' + (selectedLang==='ru'?'Выбери факультет':selectedLang==='en'?'Choose faculty':'اختر الكلية'));
+
+  const facultyNames = {
+    general:  'كلية الطب العام / General Medicine / Лечебный факультет',
+    dental:   'كلية طب الأسنان / Dentistry / Стоматологический факультет',
+    pharmacy: 'كلية الصيدلة / Pharmacy / Фармацевтический факультет',
+  };
+  const langNames = { ar: '🇸🇦 العربية', en: '🇬🇧 English', ru: '🇷🇺 Русский' };
+
+  const btn = document.getElementById('order-btn');
+  btn.disabled = true;
+  document.getElementById('order-btn-text').textContent = t.btnSending;
+
+  // Generate unique order code
+  const orderCode = generateOrderCode();
+
+  try {
+    // 1. Save to Supabase
+    await sb.from('orders').insert({
+      order_code:        orderCode,
+      guestbook_id:      null,
+      customer_name:     name,
+      customer_telegram: tg,
+      faculty:           faculty,
+      grad_year:         year,
+      lang:              selectedLang,
+      notes:             notes,
+      status:            'pending'
+    });
+
+    // 2. Send Telegram notification to admin
+    const text = `🎓 طلب دفتر تخرج جديد!\n\n🔖 رقم الطلب: ${orderCode}\n👤 الاسم: ${name}\n📱 تيليغرام: ${tg}\n🏫 الكلية: ${facultyNames[faculty]}\n📅 سنة التخرج: ${year || '-'}\n🌍 لغة الدفتر: ${langNames[selectedLang]}\n💬 ملاحظات: ${notes || '-'}\n\n━━━━━━━━━━━━━━\n📲 بعد ما يضغط الزبون Start على البوت\nافتح هذا الرابط للحصول على Chat ID:\nhttps://api.telegram.org/bot${ADMIN_BOT_TOKEN}/getUpdates\nابحث عن: ${orderCode}`;
+
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text })
+    });
+
+    // 3. Show success with order code
+    document.getElementById('order-form-body').style.display = 'none';
+    document.getElementById('order-success').style.display   = 'block';
+    document.getElementById('order-code-val').textContent    = orderCode;
+    document.getElementById('success-title').textContent     = t.successT;
+    const successSub = document.getElementById('success-sub');
+    if (successSub) successSub.textContent = t.successSub;
+    const tgBtnText = document.getElementById('tg-btn-text');
+    if (tgBtnText) tgBtnText.textContent = t.tgBtn;
+    // Set telegram deep link with order code so we can identify the customer
+    document.getElementById('tg-open-btn').href = 'https://t.me/gradbook_notifications_bot?start=' + orderCode;
+
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false;
+    document.getElementById('order-btn-text').textContent = t.btnSend;
+    toast('❌ Error, try again');
+  }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══ INIT ═══
+window.addEventListener('load', () => {
+  const lang = detectLang();
+  applyLang(lang); // sets the selector + whole page to browser lang
+  buildParticles();
+});
+</script>
+</body>
+</html>
