@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>دفتر التخرج</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ⚙️ إعدادات النظام ⚙️ -->
+<script>
+  const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+</script>
+<style>
+/* ═══ THEMES ═══ */
+:root {
+  --primary: #c9a84c;
+  --primary-light: #f0d080;
+  --primary-dark: #7a5c10;
+  --primary-glow: rgba(201,168,76,0.4);
+  --bg-dark: #08060a;
+  --text-light: #f5f0e8;
+}
+[data-theme="sapphire"] { --primary:#4a9fd4; --primary-light:#7dc8f8; --primary-dark:#1a5480; --primary-glow:rgba(74,159,212,0.4); --bg-dark:#060a12; }
+[data-theme="emerald"]  { --primary:#3ab87a; --primary-light:#6de0a8; --primary-dark:#1a6040; --primary-glow:rgba(58,184,122,0.4);  --bg-dark:#060e0a; }
+[data-theme="crimson"]  { --primary:#d44a6a; --primary-light:#f87a9a; --primary-dark:#801a38; --primary-glow:rgba(212,74,106,0.4);  --bg-dark:#0e0608; }
+[data-theme="violet"]   { --primary:#9b6fd4; --primary-light:#c8a0f8; --primary-dark:#5a1a90; --primary-glow:rgba(155,111,212,0.4); --bg-dark:#08060e; }
+[data-theme="platinum"] { --primary:#b0b8d0; --primary-light:#e0e8f8; --primary-dark:#606878; --primary-glow:rgba(176,184,208,0.4); --bg-dark:#0a0a10; }
+
+/* ═══ RESET ═══ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg-dark); color:var(--text-light); overflow-x:hidden; direction:rtl; }
+
+/* ═══ COVER ═══ */
+#cover {
+  position:relative;
+  height:100svh;
+  min-height:550px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Slides */
+.slide { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transition:opacity 1.5s ease; animation:kenBurns 18s ease-in-out infinite; }
+.slide.active { opacity:1; }
+@keyframes kenBurns {
+  0%   { transform:scale(1) translate(0%,0%); }
+  50%  { transform:scale(1.08) translate(1%,-1%); }
+  100% { transform:scale(1) translate(0%,0%); }
+}
+.cover-overlay {
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.65) 100%),
+              radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%);
+}
+
+/* Dots */
+.slide-dots { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:20; }
+.dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s; }
+.dot.active { background:var(--primary); transform:scale(1.3); }
+
+/* Arrows */
+.slide-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:20; background:rgba(0,0,0,0.4); border:none; color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; backdrop-filter:blur(4px); }
+.slide-arrow:hover { background:rgba(201,168,76,0.4); border-color:var(--primary); }
+.slide-arrow.prev { right:14px; }
+.slide-arrow.next { left:14px; }
+
+/* Particles */
+#particles { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.particle { position:absolute; width:2px; height:2px; background:var(--primary); border-radius:50%; animation:floatParticle linear infinite; opacity:0; }
+@keyframes floatParticle { 0%{opacity:0;transform:translateY(0) scale(0)} 10%{opacity:0.8;transform:scale(1)} 90%{opacity:0.3} 100%{opacity:0;transform:translateY(-100vh) scale(0.5)} }
+
+/* Corners */
+.corner { position:absolute; width:55px; height:55px; z-index:15; opacity:0.7; }
+.corner svg { width:100%; height:100%; }
+.corner.tl { top:16px; right:16px; }
+.corner.tr { top:16px; left:16px; transform:scaleX(-1); }
+.corner.bl { bottom:50px; right:16px; transform:scaleY(-1); }
+.corner.br { bottom:50px; left:16px; transform:scale(-1); }
+
+/* Cover content */
+.cover-content { position:relative; z-index:10; text-align:center; padding:0 20px; animation:fadeUp 1.2s ease both; width:100%; max-width:600px; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+/* Logo */
+.university-logo {
+  width:140px; height:140px;
+  margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+.university-logo img {
+  width:140px; height:140px;
+  object-fit:contain;
+  filter: drop-shadow(0 0 12px var(--primary-glow))
+          drop-shadow(0 2px 16px rgba(0,0,0,0.5));
+  transition:filter 0.4s, transform 0.4s;
+}
+.university-logo:hover img {
+  filter: drop-shadow(0 0 22px var(--primary-glow))
+          brightness(1.1);
+  transform:scale(1.05);
+}
+@keyframes pulse-glow {
+  0%,100% { filter:drop-shadow(0 0 10px var(--primary-glow)); transform:scale(1); }
+  50%      { filter:drop-shadow(0 0 26px var(--primary-glow)); transform:scale(1.04); }
+}
+
+.cover-subtitle { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:4px; color:var(--primary-light); text-transform:uppercase; margin-bottom:14px; opacity:0.85; animation:fadeUp 1.2s 0.2s ease both; }
+
+/* ═══ MAIN NAME — always big ═══ */
+.cover-name-main {
+  font-size:clamp(32px, 8vw, 60px);
+  font-weight:700;
+  color:#fff;
+  text-shadow:0 0 40px rgba(0,0,0,0.8);
+  line-height:1.2;
+  animation:fadeUp 1.2s 0.35s ease both;
+  margin-bottom:6px;
+}
+/* Arabic name uses Amiri */
+.cover-name-main.ar { font-family:'Amiri',serif; }
+/* English/Russian name uses Playfair */
+.cover-name-main.en { font-family:'Playfair Display',serif; font-style:italic; }
+/* Russian uses Tajawal (supports cyrillic well) */
+.cover-name-main.ru { font-family:'Tajawal',sans-serif; font-weight:700; }
+
+/* Secondary names — smaller */
+.cover-name-secondary {
+  font-size:clamp(13px, 3vw, 18px);
+  color:var(--primary-light);
+  opacity:0.85;
+  animation:fadeUp 1.2s 0.5s ease both;
+  margin-bottom:2px;
+  line-height:1.5;
+}
+.cover-name-secondary.ar { font-family:'Amiri',serif; }
+.cover-name-secondary.en { font-family:'Playfair Display',serif; font-style:italic; }
+.cover-name-secondary.ru { font-family:'Tajawal',sans-serif; }
+
+.cover-divider { width:100px; height:1px; background:linear-gradient(90deg,transparent,var(--primary),transparent); margin:14px auto; animation:fadeUp 1.2s 0.6s ease both; }
+.cover-meta { font-size:13px; color:rgba(255,255,255,0.65); letter-spacing:1.5px; animation:fadeUp 1.2s 0.7s ease both; }
+
+/* ═══ TOP BAR ═══ */
+.cover-top-bar {
+  position:absolute; top:0; left:0; right:0; z-index:30;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.6) 0%,transparent 100%);
+  pointer-events:none;
+}
+.cover-brand {
+  pointer-events:all;
+  display:flex; align-items:center; gap:8px;
+  text-decoration:none;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:50px;
+  padding:6px 14px 6px 7px;
+  backdrop-filter:blur(10px);
+  transition:all 0.25s;
+}
+.cover-brand:hover { border-color:var(--primary); background:rgba(0,0,0,0.6); }
+.cover-brand img {
+  width:26px; height:26px; object-fit:contain;
+  filter:drop-shadow(0 0 4px rgba(201,168,76,0.5));
+}
+.cover-brand span {
+  color:var(--primary-light); font-size:12px;
+  font-weight:700; letter-spacing:0.5px;
+}
+.msg-count-badge {
+  pointer-events:all;
+  display:flex; align-items:center; gap:6px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(10px);
+  border-radius:50px;
+  padding:6px 14px 6px 8px;
+  transition:border-color 0.3s;
+}
+.msg-count-badge:hover { border-color:var(--primary); }
+.badge-dot {
+  width:18px; height:18px;
+  background:var(--primary);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; flex-shrink:0;
+}
+.badge-num {
+  color:var(--primary-light);
+  font-size:15px; font-weight:900; line-height:1;
+}
+.badge-lbl {
+  color:rgba(255,255,255,0.5);
+  font-size:11px; font-weight:400;
+}
+
+.cover-scroll-hint { position:absolute; bottom:50px; left:50%; transform:translateX(-50%); z-index:20; animation:bounce 2s ease-in-out infinite; opacity:0.5; font-size:20px; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ═══ MESSAGES SECTION ═══ */
+#messages-section { background:#faf8f4; min-height:60vh; padding:50px 16px 60px; position:relative; }
+#messages-section::before { content:''; position:absolute; top:0; left:0; right:0; height:60px; background:linear-gradient(180deg,var(--bg-dark),transparent); pointer-events:none; }
+
+.section-header { text-align:center; margin-bottom:40px; }
+.section-label { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:4px; color:var(--primary-dark); text-transform:uppercase; margin-bottom:8px; }
+.section-title-ar { font-family:'Amiri',serif; font-size:clamp(24px,6vw,36px); font-weight:700; color:#2a1a00; margin-bottom:4px; }
+.section-divider { width:70px; height:2px; background:linear-gradient(90deg,transparent,var(--primary-dark),transparent); margin:12px auto; }
+
+/* Write form */
+.write-form-wrap { max-width:600px; margin:0 auto 50px; background:white; border-radius:18px; box-shadow:0 4px 30px rgba(0,0,0,0.1); overflow:hidden; }
+.form-header { background:linear-gradient(135deg,var(--bg-dark),#1a1200); padding:18px 24px; }
+.form-header h3 { color:var(--primary-light); font-size:15px; font-weight:700; }
+.form-header p { color:rgba(255,255,255,0.45); font-size:11px; margin-top:2px; }
+.form-body { padding:22px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-row.single { grid-template-columns:1fr; }
+.field-label { font-size:12px; color:#666; margin-bottom:4px; font-weight:500; }
+.field-input { width:100%; background:#f9f7f4; border:1px solid #e8e0d0; border-radius:10px; padding:10px 13px; font-family:'Tajawal',sans-serif; font-size:14px; color:#333; outline:none; transition:border-color 0.2s; direction:rtl; }
+.field-input:focus { border-color:var(--primary-dark); }
+textarea.field-input { resize:vertical; min-height:90px; }
+
+/* Emojis */
+.emoji-row { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+.emoji-pick { background:#f5f0e8; border:1px solid #e0d8c8; border-radius:7px; padding:5px 9px; font-size:17px; cursor:pointer; transition:transform 0.15s; }
+.emoji-pick:hover { transform:scale(1.2); }
+
+/* Photo upload */
+.photo-upload-area { border:2px dashed #e0d8c8; border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:12px; }
+.photo-upload-area:hover { border-color:var(--primary-dark); background:#fdf9f2; }
+.photo-upload-area p { font-size:12px; color:#999; }
+#msg-photo-input { display:none; }
+#photo-preview { display:none; max-width:100%; border-radius:8px; margin-top:8px; }
+
+.submit-btn { width:100%; background:linear-gradient(135deg,var(--bg-dark),#2a1a00); color:var(--primary-light); border:1px solid rgba(201,168,76,0.4); border-radius:12px; padding:14px; font-family:'Tajawal',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:1px; }
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+.submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* Messages hidden notice */
+.msgs-hidden-notice {
+  max-width:600px;
+  margin:0 auto;
+  text-align:center;
+  padding:40px 20px;
+  color:#888;
+}
+.msgs-hidden-notice .icon { font-size:48px; margin-bottom:12px; }
+.msgs-hidden-notice p { font-size:15px; color:#aaa; line-height:1.7; }
+
+/* Confetti */
+.confetti-piece { position:fixed; top:-10px; z-index:9999; pointer-events:none; animation:confettiFall linear forwards; }
+@keyframes confettiFall { 0%{transform:translateY(0) rotateZ(0);opacity:1} 100%{transform:translateY(110vh) rotateZ(720deg);opacity:0} }
+
+/* Toast */
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#222; color:#fff; padding:11px 24px; border-radius:30px; font-size:14px; z-index:9998; transition:transform 0.3s; pointer-events:none; font-family:'Tajawal',sans-serif; white-space:nowrap; }
+#toast.show { transform:translateX(-50%) translateY(0); }
+
+/* Loading */
+#loading-screen { position:fixed; inset:0; background:var(--bg-dark); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; transition:opacity 0.6s; }
+.loader-ring { width:55px; height:55px; border:3px solid rgba(201,168,76,0.2); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+#loading-screen p { color:var(--primary); font-size:13px; letter-spacing:2px; }
+
+/* Not found */
+#not-found { display:none; position:fixed; inset:0; background:var(--bg-dark); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+#not-found.show { display:flex; }
+#not-found .icon { font-size:60px; }
+#not-found h2 { color:var(--primary); font-size:22px; }
+#not-found p { color:rgba(255,255,255,0.5); font-size:14px; }
+
+/* Mobile */
+@media (max-width:480px) {
+  .form-row { grid-template-columns:1fr; }
+  .slide-arrow { display:none; }
+  .corner { width:42px; height:42px; }
+  .university-logo { width:110px; height:110px; }
+  .university-logo img { width:110px; height:110px; }
+}
+
+/* ═══ REVISION PANEL ═══ */
+#action-panel {
+  position:fixed; bottom:0; left:0; right:0; z-index:500;
+  background:rgba(8,6,10,.97);
+  border-top:1px solid var(--primary);
+  padding:18px 20px;
+  display:none;
+  backdrop-filter:blur(12px);
+  box-shadow:0 -8px 40px rgba(0,0,0,.5);
+  animation:slideUp .4s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.action-panel-title{font-size:14px;color:var(--primary-light);font-weight:700;margin-bottom:12px;text-align:center;}
+.action-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.ap-btn{padding:12px 24px;border:none;border-radius:50px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;}
+.ap-approve{background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;box-shadow:0 4px 20px rgba(39,174,96,.4);}
+.ap-approve:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.ap-revise{background:rgba(201,168,76,.15);border:1px solid var(--primary);color:var(--primary-light);}
+.ap-revise:hover{background:rgba(201,168,76,.25);}
+.ap-close{background:transparent;color:rgba(255,255,255,.4);font-size:12px;padding:8px 16px;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;}
+#revision-form-wrap{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
+#revision-form-wrap.open{display:flex;}
+.revision-form-inner{background:#1a1720;border:1px solid rgba(201,168,76,.3);border-radius:20px 20px 0 0;padding:28px 24px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;}
+.revision-form-title{font-size:17px;font-weight:700;color:var(--primary-light);margin-bottom:6px;}
+.revision-form-sub{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:20px;}
+.rev-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.rev-option{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;color:rgba(255,255,255,.7);transition:all .2s;display:flex;align-items:center;gap:7px;}
+.rev-option.selected{border-color:var(--primary);color:var(--primary-light);background:rgba(201,168,76,.1);}
+.rev-option:hover{border-color:var(--primary);background:rgba(201,168,76,.07);}
+.rev-notes{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;resize:vertical;min-height:80px;outline:none;direction:rtl;transition:border-color .2s;}
+.rev-notes:focus{border-color:var(--primary);}
+.rev-submit{width:100%;background:linear-gradient(135deg,var(--primary),#a07830);color:#000;border:none;border-radius:12px;padding:14px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;transition:all .25s;}
+.rev-submit:hover{filter:brightness(1.1);}
+.rev-cancel{width:100%;background:transparent;border:none;color:rgba(255,255,255,.4);font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;padding:8px;margin-top:6px;}
+#approved-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#27ae60,#1e8449);padding:20px;text-align:center;animation:slideUp .4s ease;}
+.approved-inner{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;}
+
+
+/* ═══ SITE FOOTER ═══ */
+.site-footer{
+  margin-top:60px;
+  padding:30px 20px;
+  border-top:1px solid rgba(255,255,255,.1);
+  text-align:center;
+  background:var(--bg-dark);
+}
+.footer-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  margin-bottom:14px;
+}
+.footer-links a{
+  color:var(--primary-light);
+  text-decoration:none;
+  font-size:14px;
+  cursor:pointer;
+  transition:opacity 0.2s;
+}
+.footer-links a:hover{ opacity:0.7; }
+.footer-ig-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px; height:34px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  transition:transform 0.2s, opacity 0.2s;
+}
+.footer-ig-btn:hover{ transform:scale(1.12); opacity:0.9; }
+.footer-ig-btn svg{ display:block; }
+.footer-copy{
+  font-size:13px;
+  color:#888;
+}
+.footer-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.footer-modal.show{ display:flex; }
+.footer-modal-box{
+  width:90%;
+  max-width:480px;
+  background:#1a1720;
+  border:1px solid rgba(201,168,76,0.3);
+  border-radius:20px;
+  padding:28px 24px 24px;
+  color:white;
+  position:relative;
+}
+.footer-modal-close{
+  position:absolute;
+  top:14px;
+  left:16px;
+  background:none;
+  border:none;
+  color:rgba(255,255,255,0.4);
+  font-size:22px;
+  cursor:pointer;
+  line-height:1;
+  transition:color 0.2s;
+}
+.footer-modal-close:hover{ color:white; }
+.footer-modal-box h3{
+  color:var(--primary-light);
+  margin-bottom:14px;
+  font-size:17px;
+  padding-left:30px;
+}
+.footer-modal-box p{
+  color:rgba(255,255,255,0.7);
+  font-size:14px;
+  line-height:1.9;
+}
+
+
+/* ═══ STUDENTS DRAWER ═══ */
+#drawer-tab {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 400;
+  background: rgba(8,6,10,0.92);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  padding: 10px 7px 10px 5px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: var(--primary-light);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+#drawer-tab:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: rgba(201,168,76,0.6);
+}
+#drawer-tab .tab-icon { font-size: 16px; writing-mode: horizontal-tb; }
+
+#students-drawer {
+  position: fixed;
+  left: -320px;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  z-index: 450;
+  background: rgba(8,6,10,0.97);
+  border-right: 1px solid rgba(201,168,76,0.3);
+  backdrop-filter: blur(16px);
+  transition: left 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#students-drawer.open {
+  left: 0;
+}
+#drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 440;
+  background: rgba(0,0,0,0.5);
+}
+#drawer-overlay.show { display: block; }
+
+.drawer-header {
+  padding: 20px 18px 14px;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.drawer-title {
+  color: var(--primary-light);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.drawer-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.drawer-close:hover { color: white; }
+
+.drawer-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,0.3) transparent;
+}
+.drawer-list::-webkit-scrollbar { width: 4px; }
+.drawer-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+
+.drawer-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+.drawer-card:hover {
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.2);
+}
+.drawer-card.current {
+  background: rgba(201,168,76,0.12);
+  border-color: rgba(201,168,76,0.35);
+}
+.drawer-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+  font-family: 'Tajawal', sans-serif;
+}
+.drawer-info { flex: 1; min-width: 0; }
+.drawer-name {
+  color: var(--primary-light);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drawer-meta {
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drawer-here {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.drawer-loading {
+  text-align: center;
+  color: rgba(255,255,255,0.3);
+  font-size: 13px;
+  padding: 30px 0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ STUDENTS DRAWER ═══ -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<div id="drawer-tab" onclick="openDrawer()" title="دفاتر الطلاب">
+  <span class="tab-icon">🎓</span>
+  دفاتر الطلاب
+</div>
+
+<div id="students-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">🎓 دفاتر الطلاب</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-list" id="drawer-list">
+    <div class="drawer-loading">جارٍ التحميل...</div>
+  </div>
+</div>
+
+
+<div id="loading-screen">
+  <div class="loader-ring"></div>
+  <p>جارٍ التحميل...</p>
+</div>
+
+<div id="not-found">
+  <div class="icon">📔</div>
+  <h2>الدفتر غير موجود</h2>
+  <p>تأكد من صحة الرابط</p>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══ COVER ═══ -->
+<section id="cover">
+
+  <!-- TOP BAR -->
+  <div class="cover-top-bar">
+    <a href="index.html" class="cover-brand">
+      <img src="gradbook-logo.png" alt="Grad Book">
+      <span>Grad Book</span>
+    </a>
+    <div class="msg-count-badge" id="msg-count-badge">
+      <div class="badge-dot">✉</div>
+      <span class="badge-num" id="badge-num">0</span>
+      <span class="badge-lbl" id="badge-lbl">تهنئة</span>
+    </div>
+  </div>
+
+  <div id="slides-container"></div>
+  <div class="cover-overlay"></div>
+  <div id="particles"></div>
+
+  <!-- Cover Content -->
+  <div class="cover-content">
+    <!-- University Logo -->
+    <div class="university-logo" id="university-logo-wrap" onclick="window.open('index.html','_blank')" style="cursor:pointer;" title="Grad Book — اطلب دفترك">
+      <img id="university-logo-img" src="logo-transparent.png" alt="University Logo" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <div class="cover-subtitle" id="cover-subtitle">GRADUATION GUESTBOOK · دفتر التخرج</div>
+    <div id="cover-name-main"></div>
+    <div id="cover-name-secondary"></div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta" id="cover-meta"></div>
+  </div>
+
+  <button class="slide-arrow prev" onclick="slideNav(-1)">›</button>
+  <button class="slide-arrow next" onclick="slideNav(1)">‹</button>
+  <div class="slide-dots" id="slide-dots"></div>
+  <div class="cover-scroll-hint">↓</div>
+</section>
+
+
+<!-- ═══ MESSAGES SECTION ═══ -->
+<section id="messages-section">
+  <div class="section-header">
+    <div class="section-label" id="congrats-label">CONGRATULATIONS · تهاني</div>
+    <div class="section-title-ar" id="section-name-ar">تهاني التخرج</div>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Write form -->
+  <div class="write-form-wrap">
+    <div class="form-header">
+      <h3 id="form-title">✍️ اكتب تهنئتك</h3>
+      <p id="form-sub">رسالتك ستصل فوراً 📲</p>
+    </div>
+    <div class="form-body">
+      <div class="form-row">
+        <div>
+          <div class="field-label" id="lbl-sender">اسمك *</div>
+          <input class="field-input" id="f-sender" type="text" placeholder="أدخل اسمك">
+        </div>
+        <div>
+          <div class="field-label" id="lbl-relation">صفتك</div>
+          <select class="field-input" id="f-relation">
+            <option value="">اختر...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div>
+          <div class="field-label" id="lbl-message">رسالتك *</div>
+          <textarea class="field-input" id="f-message" placeholder="اكتب تهنئتك هنا..."></textarea>
+        </div>
+      </div>
+
+      <div class="field-label" id="lbl-emoji">إيموجي سريعة</div>
+      <div class="emoji-row">
+        <span class="emoji-pick" onclick="addEmoji('🎓')">🎓</span>
+        <span class="emoji-pick" onclick="addEmoji('🌟')">🌟</span>
+        <span class="emoji-pick" onclick="addEmoji('🏆')">🏆</span>
+        <span class="emoji-pick" onclick="addEmoji('💐')">💐</span>
+        <span class="emoji-pick" onclick="addEmoji('❤️')">❤️</span>
+        <span class="emoji-pick" onclick="addEmoji('🎉')">🎉</span>
+        <span class="emoji-pick" onclick="addEmoji('✨')">✨</span>
+        <span class="emoji-pick" onclick="addEmoji('👨‍⚕️')">👨‍⚕️</span>
+        <span class="emoji-pick" onclick="addEmoji('🩺')">🩺</span>
+        <span class="emoji-pick" onclick="addEmoji('🌹')">🌹</span>
+        <span class="emoji-pick" onclick="addEmoji('🤲')">🤲</span>
+        <span class="emoji-pick" onclick="addEmoji('💊')">💊</span>
+      </div>
+
+      <div class="field-label" id="lbl-photo">صورة مع الرسالة (اختياري)</div>
+      <div class="photo-upload-area" onclick="document.getElementById('msg-photo-input').click()">
+        <p id="photo-upload-btn">📷 انقر لرفع صورة</p>
+        <img id="photo-preview">
+      </div>
+      <input type="file" id="msg-photo-input" accept="image/*" onchange="previewPhoto(event)">
+
+      <button class="submit-btn" id="submit-btn" onclick="submitMessage()">
+        إرسال التهنئة ✈️
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages hidden — only owner sees via Telegram -->
+  <div class="msgs-hidden-notice">
+    <div class="icon">📲</div>
+    <p id="hidden-notice">تصل التهاني مباشرة لصاحب الدفتر على تيليغرام</p>
+    <span id="hidden-sub" style="font-size:13px;color:#bbb;display:block;margin-top:6px;">Messages are delivered directly to the graduate via Telegram</span>
+  </div>
+</section>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DEFAULT_BG = [
+  'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80',
+  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80',
+  'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=1600&q=80',
+  'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80',
+];
+
+let bookData = null;
+let currentSlide = 0;
+let slides = [];
+let fakeCount = 0;
+
+// ═══ INIT ═══
+async function init() {
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  if (!slug) { showNotFound(); return; }
+  const {data, error} = await sb.from('guestbooks').select('*').eq('slug', slug).single();
+  if (error || !data) { showNotFound(); return; }
+  bookData = data;
+  applyBook(data);
+  await loadRealCount();
+  startFakeCounter();
+  hideLoading();
+}
+
+function hideLoading() {
+  const el = document.getElementById('loading-screen');
+  el.style.opacity = '0';
+  setTimeout(() => el.style.display = 'none', 600);
+}
+function showNotFound() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('not-found').classList.add('show');
+}
+
+// ═══ LANGUAGE TRANSLATIONS FOR DAFTAR ═══
+const LANG = {
+  ar: {
+    dir: 'rtl',
+    loading:       'جارٍ التحميل...',
+    notFound:      'الدفتر غير موجود',
+    notFoundSub:   'تأكد من صحة الرابط',
+    subtitle:      'دفتر التخرج · GRADUATION GUESTBOOK',
+    congratsLabel: 'CONGRATULATIONS · تهاني',
+    badge:         (n) => `✉ ${n} تهنئة`,
+    sectionTitle:  (name) => `تهاني تخرج ${name}`,
+    formTitle:     '✍️ اكتب تهنئتك',
+    formSub:       'رسالتك ستصل فوراً 📲',
+    lblSender:     'اسمك *',
+    lblRelation:   'صفتك',
+    lblMessage:    'رسالتك *',
+    lblEmoji:      'إيموجي سريعة',
+    lblPhoto:      'صورة مع الرسالة (اختياري)',
+    photoBtn:      '📷 انقر لرفع صورة',
+    submitBtn:     'إرسال التهنئة ✈️',
+    submitting:    '⏳ جارٍ الإرسال...',
+    successMsg:    '🎉 تم إرسال تهنئتك!',
+    namePlaceholder: 'أدخل اسمك',
+    msgPlaceholder:  'اكتب تهنئتك هنا...',
+    hiddenNotice:  'تصل التهاني مباشرة لصاحب الدفتر على تيليغرام',
+    hiddenSub:     'Messages are delivered directly to the graduate via Telegram',
+    relations: [
+      { group: 'عربي', options: ['زميل / زميلة في الدراسة','صديق مقرب','أخ / أخت','أحد الوالدين','أحد الأقارب','أستاذ / دكتور'] },
+    ],
+    chooseRelation: 'اختر...',
+    errName: '⚠️ أدخل اسمك',
+    errMsg:  '⚠️ اكتب رسالتك',
+    errSend: '❌ خطأ في الإرسال',
+  },
+  en: {
+    dir: 'ltr',
+    loading:       'Loading...',
+    notFound:      'Guestbook not found',
+    notFoundSub:   'Check the link and try again',
+    subtitle:      'GRADUATION GUESTBOOK · دفتر التخرج',
+    congratsLabel: 'CONGRATULATIONS · тебя поздравляют',
+    badge:         (n) => `✉ ${n} Messages`,
+    sectionTitle:  (name) => `Congratulations, ${name}!`,
+    formTitle:     '✍️ Write Your Message',
+    formSub:       'Your message will be delivered instantly 📲',
+    lblSender:     'Your Name *',
+    lblRelation:   'Relation',
+    lblMessage:    'Your Message *',
+    lblEmoji:      'Quick Emojis',
+    lblPhoto:      'Add a Photo (optional)',
+    photoBtn:      '📷 Click to upload photo',
+    submitBtn:     'Send Congratulations ✈️',
+    submitting:    '⏳ Sending...',
+    successMsg:    '🎉 Your message was sent!',
+    namePlaceholder: 'Enter your name',
+    msgPlaceholder:  'Write your congratulations...',
+    hiddenNotice:  'Messages are delivered directly to the graduate via Telegram',
+    hiddenSub:     'تصل التهاني مباشرة لصاحب الدفتر على تيليغرام',
+    relations: [
+      { group: 'English', options: ['Classmate','Best Friend','Brother / Sister','Parent','Relative','Professor'] },
+    ],
+    chooseRelation: 'Choose...',
+    errName: '⚠️ Enter your name',
+    errMsg:  '⚠️ Write your message',
+    errSend: '❌ Failed to send, try again',
+  },
+  ru: {
+    dir: 'ltr',
+    loading:       'Загрузка...',
+    notFound:      'Книга не найдена',
+    notFoundSub:   'Проверьте правильность ссылки',
+    subtitle:      'КНИГА ВЫПУСКНИКА · GRADUATION GUESTBOOK',
+    congratsLabel: 'ПОЗДРАВЛЕНИЯ · Congratulations',
+    badge:         (n) => `✉ ${n} поздравлений`,
+    sectionTitle:  (name) => `Поздравляем, ${name}!`,
+    formTitle:     '✍️ Написать поздравление',
+    formSub:       'Сообщение придёт мгновенно 📲',
+    lblSender:     'Твоё имя *',
+    lblRelation:   'Кем приходишься',
+    lblMessage:    'Твоё поздравление *',
+    lblEmoji:      'Быстрые эмодзи',
+    lblPhoto:      'Фото к поздравлению (необязательно)',
+    photoBtn:      '📷 Нажми для загрузки фото',
+    submitBtn:     'Отправить поздравление ✈️',
+    submitting:    '⏳ Отправка...',
+    successMsg:    '🎉 Поздравление отправлено!',
+    namePlaceholder: 'Введи своё имя',
+    msgPlaceholder:  'Напиши поздравление...',
+    hiddenNotice:  'Поздравления доставляются выпускнику напрямую в Telegram',
+    hiddenSub:     'Messages are delivered directly to the graduate via Telegram',
+    relations: [
+      { group: 'Русский', options: ['Одногруппник / Одногруппница','Лучший друг / Подруга','Брат / Сестра','Родитель','Двоюродный брат / сестра','Профессор'] },
+    ],
+    chooseRelation: 'Выбери...',
+    errName: '⚠️ Введи своё имя',
+    errMsg:  '⚠️ Напиши поздравление',
+    errSend: '❌ Ошибка отправки, попробуй снова',
+  },
+};
+
+let currentLang = 'ar';
+
+function applyLanguage(lang, ownerName) {
+  currentLang = lang || 'ar';
+  const L = LANG[currentLang];
+
+  // Direction & html lang
+  document.documentElement.dir  = L.dir;
+  document.documentElement.lang = currentLang;
+  document.body.style.direction  = L.dir;
+
+  // Subtitle
+  document.getElementById('cover-subtitle').textContent = L.subtitle;
+
+  // Badge
+  updateBadge(fakeCount);
+
+  // Section title
+  document.getElementById('section-name-ar').textContent = L.sectionTitle(ownerName || '');
+
+  // Congrats label
+  document.getElementById('congrats-label').textContent = L.congratsLabel;
+
+  // Form texts
+  document.getElementById('form-title').textContent   = L.formTitle;
+  document.getElementById('form-sub').textContent     = L.formSub;
+  document.getElementById('lbl-sender').textContent   = L.lblSender;
+  document.getElementById('lbl-relation').textContent = L.lblRelation;
+  document.getElementById('lbl-message').textContent  = L.lblMessage;
+  document.getElementById('lbl-emoji').textContent    = L.lblEmoji;
+  document.getElementById('lbl-photo').textContent    = L.lblPhoto;
+  document.getElementById('photo-upload-btn').textContent = L.photoBtn;
+  document.getElementById('submit-btn').textContent   = L.submitBtn;
+  document.getElementById('f-sender').placeholder     = L.namePlaceholder;
+  document.getElementById('f-message').placeholder    = L.msgPlaceholder;
+  document.getElementById('hidden-notice').textContent = L.hiddenNotice;
+  document.getElementById('hidden-sub').textContent   = L.hiddenSub;
+
+  // Rebuild relation select
+  const relSel = document.getElementById('f-relation');
+  relSel.innerHTML = `<option value="">${L.chooseRelation}</option>`;
+  L.relations.forEach(grp => {
+    const og = document.createElement('optgroup');
+    og.label = grp.group;
+    grp.options.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = o;
+      og.appendChild(opt);
+    });
+    relSel.appendChild(og);
+  });
+
+  // Loading / not found texts
+  document.querySelector('#loading-screen p').textContent = L.loading;
+  document.querySelector('#not-found h2').textContent     = L.notFound;
+  document.querySelector('#not-found p').textContent      = L.notFoundSub;
+}
+
+// ═══ APPLY ═══
+function applyBook(data) {
+  // Determine language: from DB field OR detect from owner_name script
+  let lang = data.default_lang || null;
+  if (!lang) {
+    const isArabic   = /[\u0600-\u06FF]/.test(data.owner_name || '');
+    const isCyrillic = /[\u0400-\u04FF]/.test(data.owner_name || '');
+    lang = isArabic ? 'ar' : isCyrillic ? 'ru' : 'en';
+  }
+
+  document.title = data.owner_name
+    ? (lang === 'ru' ? `Книга выпускника — ${data.owner_name}` : lang === 'en' ? `Grad Book — ${data.owner_name}` : `دفتر تخرج ${data.owner_name}`)
+    : 'Grad Book';
+
+  setTheme(data.cover_color || 'gold');
+
+  // University logo — from DB field or fallback to logo.png
+  const logoImg = document.getElementById('university-logo-img');
+  if (data.logo_url) {
+    logoImg.src = data.logo_url;
+  }
+  // else stays as logo.png (default)
+
+  // Apply full language UI
+  applyLanguage(lang, data.owner_name);
+
+  // ─── Cover Name ───
+  const mainName = data.owner_name    || '';
+  const nameEn   = data.owner_name_en || '';
+  const nameRu   = data.owner_name_ru || '';
+
+  // Primary name = the one matching chosen lang
+  let primaryName, primaryClass, secondaryHTML = '';
+  if (lang === 'ar') {
+    primaryName  = mainName;
+    primaryClass = 'ar';
+    if (nameEn && nameEn !== mainName) secondaryHTML += `<div class="cover-name-secondary en">${nameEn}</div>`;
+    if (nameRu && nameRu !== mainName) secondaryHTML += `<div class="cover-name-secondary ru">${nameRu}</div>`;
+  } else if (lang === 'en') {
+    primaryName  = nameEn || mainName;
+    primaryClass = 'en';
+    if (mainName && mainName !== primaryName) secondaryHTML += `<div class="cover-name-secondary ar">${mainName}</div>`;
+    if (nameRu && nameRu !== primaryName)     secondaryHTML += `<div class="cover-name-secondary ru">${nameRu}</div>`;
+  } else { // ru
+    primaryName  = nameRu || mainName;
+    primaryClass = 'ru';
+    if (mainName && mainName !== primaryName) secondaryHTML += `<div class="cover-name-secondary ar">${mainName}</div>`;
+    if (nameEn && nameEn !== primaryName)     secondaryHTML += `<div class="cover-name-secondary en">${nameEn}</div>`;
+  }
+
+  const mainEl = document.getElementById('cover-name-main');
+  mainEl.className  = `cover-name-main ${primaryClass}`;
+  mainEl.textContent = primaryName;
+  document.getElementById('cover-name-secondary').innerHTML = secondaryHTML;
+
+  // Meta
+  const parts = [];
+  if (data.faculty)    parts.push(data.faculty);
+  if (data.university) parts.push(data.university);
+  if (data.grad_year)  parts.push(data.grad_year);
+  document.getElementById('cover-meta').textContent = parts.join('  ·  ');
+
+  // Slides
+  const imgs = (data.bg_images && data.bg_images.length) ? data.bg_images : DEFAULT_BG;
+  buildSlides(imgs);
+  buildParticles();
+}
+
+// ═══ THEME ═══
+function setTheme(t) {
+  document.body.setAttribute('data-theme', t);
+}
+
+// ═══ FAKE COUNTER ═══
+async function loadRealCount() {
+  const {count} = await sb.from('messages').select('*', {count:'exact',head:true}).eq('guestbook_id', bookData.id);
+  const real = count || 0;
+  // Start between 10 and 100
+  fakeCount = Math.max(real, Math.floor(Math.random() * 91) + 10);
+  updateBadge(fakeCount);
+}
+
+function startFakeCounter() {
+  // Every 20-45 seconds add 1 to counter
+  function tick() {
+    fakeCount += 1;
+    updateBadge(fakeCount);
+    setTimeout(tick, Math.random() * 25000 + 20000);
+  }
+  setTimeout(tick, Math.random() * 25000 + 20000);
+}
+
+function updateBadge(n) {
+  const L = LANG[currentLang] || LANG['ar'];
+  const numEl = document.getElementById('badge-num');
+  const lblEl = document.getElementById('badge-lbl');
+  if(numEl) numEl.textContent = n;
+  if(lblEl){
+    const full = L.badge(n); // e.g. "✉ 5 تهنئة"
+    lblEl.textContent = full.split(' ').pop();
+  }
+}
+
+// ═══ SLIDES ═══
+function buildSlides(imgs) {
+  slides = imgs;
+  const container = document.getElementById('slides-container');
+  const dotsEl    = document.getElementById('slide-dots');
+  container.innerHTML = '';
+  dotsEl.innerHTML    = '';
+  imgs.forEach((url, i) => {
+    const div = document.createElement('div');
+    div.className = 'slide' + (i === 0 ? ' active' : '');
+    div.style.backgroundImage = `url(${url})`;
+    container.appendChild(div);
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsEl.appendChild(dot);
+  });
+  currentSlide = 0;
+  setInterval(() => slideNav(1), 6000);
+}
+
+function slideNav(dir) { goToSlide((currentSlide + dir + slides.length) % slides.length); }
+function goToSlide(idx) {
+  document.querySelectorAll('.slide')[currentSlide].classList.remove('active');
+  document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+  currentSlide = idx;
+  document.querySelectorAll('.slide')[currentSlide].classList.add('active');
+  document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+}
+
+// ═══ PARTICLES ═══
+function buildParticles() {
+  const c = document.getElementById('particles');
+  c.innerHTML = '';
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.width = p.style.height = (Math.random() * 2.5 + 1) + 'px';
+    p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    c.appendChild(p);
+  }
+}
+
+// ═══ SUBMIT ═══
+async function submitMessage() {
+  const L = LANG[currentLang];
+  const sender  = document.getElementById('f-sender').value.trim();
+  const rel     = document.getElementById('f-relation').value;
+  const message = document.getElementById('f-message').value.trim();
+  const photoFile = document.getElementById('msg-photo-input').files[0];
+  if (!sender)  return toast(L.errName);
+  if (!message) return toast(L.errMsg);
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = L.submitting;
+
+  let photoUrl = null;
+  if (photoFile) photoUrl = await toBase64(photoFile);
+
+  const {error} = await sb.from('messages').insert({
+    guestbook_id: bookData.id,
+    sender_name: sender,
+    sender_relation: rel,
+    message,
+    photo_url: photoUrl,
+    theme_used: document.body.getAttribute('data-theme') || 'gold'
+  });
+
+  if (error) {
+    toast(L.errSend);
+    btn.disabled = false;
+    btn.textContent = L.submitBtn;
+    return;
+  }
+
+  if (bookData.telegram_chat_id && bookData.telegram_bot_token) {
+    sendTelegram(bookData.telegram_bot_token, bookData.telegram_chat_id, sender, rel, message);
+  }
+
+  fakeCount += 1;
+  updateBadge(fakeCount);
+
+  launchConfetti();
+  toast(L.successMsg);
+  clearForm();
+  btn.disabled = false;
+  btn.textContent = L.submitBtn;
+}
+
+async function sendTelegram(token, chatId, sender, rel, message) {
+  const link = window.location.href;
+  const text = `🎓 تهنئة جديدة!\n\n👤 من: ${sender}${rel ? ' (' + rel + ')' : ''}\n\n💬 ${message.substring(0, 200)}\n\n🔗 ${link}`;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ chat_id: chatId, text: text })
+    });
+    const data = await res.json();
+    console.log('Telegram:', JSON.stringify(data));
+  } catch(e) { console.log('TG error:', e); }
+}
+
+function toBase64(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(file);
+  });
+}
+
+function clearForm() {
+  document.getElementById('f-sender').value  = '';
+  document.getElementById('f-relation').value = '';
+  document.getElementById('f-message').value  = '';
+  document.getElementById('msg-photo-input').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+}
+
+function addEmoji(e) {
+  const t = document.getElementById('f-message');
+  const pos = t.selectionStart;
+  t.value = t.value.slice(0, pos) + e + t.value.slice(pos);
+  t.focus();
+}
+
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = document.getElementById('photo-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(file);
+}
+
+function toast(msg, dur=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function launchConfetti() {
+  const colors = ['#c9a84c','#f0d080','#fff','#a07830','#ffd700'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.width  = (Math.random()*8+4) + 'px';
+    c.style.height = (Math.random()*8+4) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDelay = Math.random() * 0.8 + 's';
+    c.style.animationDuration = (Math.random()*2+2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+
+
+// ═══ REVISION & APPROVAL SYSTEM ═══
+let actionOrderId = null;
+const ADMIN_BOT_TOKEN_DAFTAR = '8971222565:AAGyI9K6Ive2hI_V9F3Qy1GaL4_dlaM4t4Y';
+const ADMIN_CHAT_ID_DAFTAR   = '1343835667';
+
+function checkActionParam(){
+  const params = new URLSearchParams(window.location.search);
+  const action  = params.get('action');
+  actionOrderId = params.get('order');
+
+  if(action === 'approve'){
+    showActionPanel(true);
+  } else if(action === 'revise'){
+    showActionPanel(false);
+    // Auto-open revision form
+    setTimeout(()=> openRevisionForm(), 800);
+  }
+}
+
+function showActionPanel(approveFirst){
+  const panel = document.getElementById('action-panel');
+  panel.style.display = 'block';
+  const L = LANG[currentLang] || LANG.ar;
+  const title = document.getElementById('action-panel-title');
+  title.textContent = L.actionTitle || '🎓 شاهد دفترك واختر';
+  // Add bottom padding to page so panel doesn't cover content
+  document.body.style.paddingBottom = '100px';
+}
+
+async function approveBook(){
+  if(!bookData) return;
+
+  // Update order status to "completed" if we have order ID
+  if(actionOrderId){
+    await sb.from('orders').update({
+      status:'completed',
+      updated_at: new Date().toISOString()
+    }).eq('id', actionOrderId);
+  }
+
+  // Notify admin
+  const msg = `✅ *موافقة على الدفتر!*
+
+👤 ${bookData.owner_name}
+📔 ${window.location.href.split('?')[0]}
+${actionOrderId?'🔖 طلب: '+actionOrderId:''}`;
+  await sendTGDaftar(msg);
+
+  // Show approved banner
+  document.getElementById('action-panel').style.display = 'none';
+  document.getElementById('approved-banner').style.display = 'block';
+  const L = LANG[currentLang] || LANG.ar;
+  document.getElementById('approved-title').textContent = L.approvedTitle || 'تمت الموافقة على دفترك! 🎉';
+  toast('🎉 ' + (L.approvedTitle || 'تمت الموافقة!'));
+}
+
+function openRevisionForm(){
+  document.getElementById('revision-form-wrap').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeRevisionForm(){
+  document.getElementById('revision-form-wrap').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+let selectedRevTypes = [];
+function toggleRevOption(el, type){
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')){
+    if(!selectedRevTypes.includes(type)) selectedRevTypes.push(type);
+  } else {
+    selectedRevTypes = selectedRevTypes.filter(t => t !== type);
+  }
+}
+
+async function submitRevision(){
+  const notes = document.getElementById('rev-notes').value.trim();
+  if(!selectedRevTypes.length && !notes){
+    toast('⚠️ اختر نوع التعديل أو اكتب ملاحظة');
+    return;
+  }
+
+  const btn = document.querySelector('.rev-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ الإرسال...';
+
+  // Update order in DB
+  if(actionOrderId){
+    await sb.from('orders').update({
+      status: 'revision_requested',
+      revision_types: selectedRevTypes,
+      revision_notes: notes,
+      updated_at: new Date().toISOString()
+    }).eq('id', actionOrderId);
+  }
+
+  // Notify admin
+  const typesList = selectedRevTypes.length ? selectedRevTypes.join('، ') : '—';
+  const orderCode = actionOrderId ? `
+🔖 رقم الطلب: ${actionOrderId}` : '';
+  const msg = `🔔 *طلب مراجعة جديد!*
+
+👤 الطالب: ${bookData?.owner_name||'—'}${orderCode}
+
+📋 التعديلات المطلوبة:
+${typesList}
+
+💬 الملاحظات:
+${notes||'—'}
+
+🔗 ${window.location.href.split('?')[0]}`;
+  await sendTGDaftar(msg);
+
+  closeRevisionForm();
+  document.getElementById('action-panel').style.display = 'none';
+
+  const L = LANG[currentLang] || LANG.ar;
+  toast('✅ ' + (L.revisionSent || 'تم إرسال طلب التعديل!'));
+
+  // Show thank you message
+  setTimeout(()=>{
+    const banner = document.getElementById('approved-banner');
+    banner.style.background = 'linear-gradient(135deg,#c9a84c,#a07830)';
+    banner.style.display = 'block';
+    document.getElementById('approved-title').textContent = L.revisionConfirm || 'تم استلام طلب التعديل — سنتواصل معك قريباً';
+  }, 500);
+
+  btn.disabled = false;
+  btn.textContent = 'إرسال طلب التعديل 📤';
+}
+
+async function sendTGDaftar(text){
+  if(!ADMIN_BOT_TOKEN_DAFTAR || !ADMIN_CHAT_ID_DAFTAR) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN_DAFTAR}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:ADMIN_CHAT_ID_DAFTAR, text, parse_mode:'Markdown'})
+    });
+  } catch(e){ console.log('TG err',e); }
+}
+
+// Add revision texts to LANG
+LANG.ar.actionTitle     = '🎓 شاهد دفترك — وافق أو اطلب تعديل';
+LANG.ar.approvedTitle   = 'تمت الموافقة على دفترك! 🎉';
+LANG.ar.revisionSent    = 'تم إرسال طلب التعديل!';
+LANG.ar.revisionConfirm = 'تم استلام طلب التعديل — سنتواصل معك قريباً';
+LANG.en.actionTitle     = '🎓 Review your book — Approve or Request Changes';
+LANG.en.approvedTitle   = 'Book Approved! 🎉';
+LANG.en.revisionSent    = 'Revision request sent!';
+LANG.en.revisionConfirm = 'Revision request received — we will contact you soon';
+LANG.ru.actionTitle     = '🎓 Посмотри книгу — одобри или запроси правки';
+LANG.ru.approvedTitle   = 'Книга одобрена! 🎉';
+LANG.ru.revisionSent    = 'Запрос на правки отправлен!';
+LANG.ru.revisionConfirm = 'Запрос получен — свяжемся скоро';
+
+// Hook into init
+const _origInit = init;
+window.init = async function(){
+  await _origInit();
+  checkActionParam();
+};
+
+window.addEventListener('load', init);
+
+// ═══ FOOTER MODAL ═══
+const FOOTER_CONTENT = {
+  privacy: {
+    title: 'Privacy Policy',
+    text: 'Your information is used only for creating your graduation guestbook. We never sell or share your data with third parties. Messages sent through the guestbook are delivered privately to the graduate via Telegram.'
+  },
+  terms: {
+    title: 'Terms of Service',
+    text: 'Users are responsible for the content they submit. Offensive, harmful, or illegal content may be removed without notice. By using Grad Book, you agree to use the service respectfully and within the law.'
+  },
+  contact: {
+    title: 'Contact Us',
+    text: 'Instagram: @alrefaee_m0hammad\n\nFor orders and inquiries, reach us on Instagram or Telegram.'
+  }
+};
+function openFooterModal(type){
+  const c = FOOTER_CONTENT[type];
+  document.getElementById('footer-modal-title').textContent = c.title;
+  document.getElementById('footer-modal-content').textContent = c.text;
+  document.getElementById('footer-modal').classList.add('show');
+}
+function closeFooterModal(){
+  document.getElementById('footer-modal').classList.remove('show');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const modal = document.getElementById('footer-modal');
+  if(modal) modal.addEventListener('click', function(e){
+    if(e.target === this) closeFooterModal();
+  });
+});
+
+
+// ═══ STUDENTS DRAWER ═══
+function openDrawer(){
+  document.getElementById('students-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('show');
+  document.getElementById('drawer-tab').style.display = 'none';
+  loadDrawerBooks();
+}
+function closeDrawer(){
+  document.getElementById('students-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('show');
+  document.getElementById('drawer-tab').style.display = '';
+}
+
+let drawerLoaded = false;
+async function loadDrawerBooks(){
+  if(drawerLoaded) return;
+  try {
+    const {data, error} = await sb.from('guestbooks')
+      .select('slug, owner_name, owner_name_en, faculty, grad_year')
+      .order('created_at', {ascending: false})
+      .limit(50);
+
+    if(error || !data){ 
+      document.getElementById('drawer-list').innerHTML = '<div class="drawer-loading">تعذّر التحميل</div>';
+      return;
+    }
+
+    const currentSlug = new URLSearchParams(window.location.search).get('slug');
+    const list = document.getElementById('drawer-list');
+    list.innerHTML = '';
+
+    data.forEach(book => {
+      const isCurrent = book.slug === currentSlug;
+      const name = book.owner_name || book.owner_name_en || '?';
+      // First letter for avatar — handle Arabic/English/Russian
+      const firstChar = [...name][0] || '?';
+      
+      const facultyMap = {
+        general: 'General Medicine',
+        dental: 'Dentistry',
+        pharmacy: 'Pharmacy',
+      };
+      const faculty = facultyMap[book.faculty] || book.faculty || '';
+      const meta = [faculty, book.grad_year].filter(Boolean).join(' · ');
+
+      const card = document.createElement('a');
+      card.className = 'drawer-card' + (isCurrent ? ' current' : '');
+      card.href = '?slug=' + book.slug;
+      card.innerHTML = \`
+        <div class="drawer-avatar">\${firstChar}</div>
+        <div class="drawer-info">
+          <div class="drawer-name">\${name}</div>
+          <div class="drawer-meta">\${meta}</div>
+        </div>
+        \${isCurrent ? '<span class="drawer-here">← أنت هنا</span>' : ''}
+      \`;
+      list.appendChild(card);
+    });
+
+    drawerLoaded = true;
+  } catch(e) {
+    document.getElementById('drawer-list').innerHTML = '<div class="drawer-loading">تعذّر التحميل</div>';
+  }
+}
+
+</script>
+
+
+
+<!-- ═══ ACTION PANEL (تظهر لما يفتح الرابط بـ ?action=approve أو revise) ═══ -->
+<div id="action-panel">
+  <div class="action-panel-title" id="action-panel-title">🎓 شاهد دفترك واختر</div>
+  <div class="action-btns">
+    <button class="ap-btn ap-approve" onclick="approveBook()">✅ موافقة على الدفتر</button>
+    <button class="ap-btn ap-revise" onclick="openRevisionForm()">✏️ طلب تعديل</button>
+    <button class="ap-close ap-btn" onclick="document.getElementById('action-panel').style.display='none'">✕</button>
+  </div>
+</div>
+
+<!-- ═══ REVISION FORM ═══ -->
+<div id="revision-form-wrap">
+  <div class="revision-form-inner">
+    <div class="revision-form-title">✏️ طلب تعديل على الدفتر</div>
+    <div class="revision-form-sub">اختر نوع التعديل المطلوب (يمكن اختيار أكثر من واحد)</div>
+    <div class="rev-options" id="rev-options">
+      <div class="rev-option" onclick="toggleRevOption(this,'تغيير صورة الغلاف')">📸 تغيير صورة الغلاف</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'إضافة صور')">➕ إضافة صور</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'حذف صور')">🗑️ حذف صور</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل الاسم')">✍️ تعديل الاسم</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل الكلية')">🏥 تعديل الكلية</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل سنة التخرج')">📅 تعديل سنة التخرج</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تغيير الثيم')">🎨 تغيير الثيم</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'أخرى')">💬 أخرى</div>
+    </div>
+    <textarea class="rev-notes" id="rev-notes" placeholder="اكتب تفاصيل التعديل المطلوب..."></textarea>
+    <button class="rev-submit" onclick="submitRevision()">إرسال طلب التعديل 📤</button>
+    <button class="rev-cancel" onclick="closeRevisionForm()">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══ APPROVED BANNER ═══ -->
+<div id="approved-banner">
+  <div class="approved-inner">
+    <span style="font-size:32px;">🎉</span>
+    <div>
+      <div id="approved-title">تمت الموافقة على دفترك!</div>
+      <div style="font-size:12px;opacity:.8;margin-top:2px;">شكراً — تم إرسال تأكيد الموافقة</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SITE FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="footer-links">
+    <a onclick="openFooterModal('privacy')">Privacy Policy</a>
+    <a onclick="openFooterModal('terms')">Terms of Service</a>
+    <a onclick="openFooterModal('contact')">Contact Us</a>
+    <a class="footer-ig-btn" href="https://www.instagram.com/alrefaee_m0hammad" target="_blank" title="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    </a>
+  </div>
+  <div class="footer-copy">© 2026 Grad Book</div>
+</footer>
+
+<div class="footer-modal" id="footer-modal">
+  <div class="footer-modal-box">
+    <button class="footer-modal-close" onclick="closeFooterModal()">✕</button>
+    <h3 id="footer-modal-title"></h3>
+    <p id="footer-modal-content"></p>
+  </div>
+</div>
+
+</body>
+</html>
