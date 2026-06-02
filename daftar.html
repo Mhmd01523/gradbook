@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>دفتر التخرج</title>
+
+<!-- Open Graph (تتحدث ديناميكياً من بيانات الدفتر) -->
+<meta property="og:type"         content="website">
+<meta property="og:site_name"    content="Grad Book">
+<meta property="og:title"        content="Grad Book — دفتر التخرج">
+<meta property="og:description"  content="دفتر التخرج الرقمي الفاخر">
+<meta property="og:image"        content="https://lhixtovnrpkhzntbcmin.supabase.co/storage/v1/object/public/covers/default-og.jpg">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Grad Book — دفتر التخرج">
+<meta name="twitter:description" content="دفتر التخرج الرقمي الفاخر">
+<meta name="twitter:image"       content="https://lhixtovnrpkhzntbcmin.supabase.co/storage/v1/object/public/covers/default-og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ⚙️ إعدادات النظام ⚙️ -->
+<script>
+  const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+</script>
+<style>
+/* ═══ THEMES ═══ */
+:root {
+  --primary: #c9a84c;
+  --primary-light: #f0d080;
+  --primary-dark: #7a5c10;
+  --primary-glow: rgba(201,168,76,0.4);
+  --bg-dark: #08060a;
+  --text-light: #f5f0e8;
+}
+[data-theme="sapphire"] { --primary:#4a9fd4; --primary-light:#7dc8f8; --primary-dark:#1a5480; --primary-glow:rgba(74,159,212,0.4); --bg-dark:#060a12; }
+[data-theme="emerald"]  { --primary:#3ab87a; --primary-light:#6de0a8; --primary-dark:#1a6040; --primary-glow:rgba(58,184,122,0.4);  --bg-dark:#060e0a; }
+[data-theme="crimson"]  { --primary:#d44a6a; --primary-light:#f87a9a; --primary-dark:#801a38; --primary-glow:rgba(212,74,106,0.4);  --bg-dark:#0e0608; }
+[data-theme="violet"]   { --primary:#9b6fd4; --primary-light:#c8a0f8; --primary-dark:#5a1a90; --primary-glow:rgba(155,111,212,0.4); --bg-dark:#08060e; }
+[data-theme="platinum"] { --primary:#b0b8d0; --primary-light:#e0e8f8; --primary-dark:#606878; --primary-glow:rgba(176,184,208,0.4); --bg-dark:#0a0a10; }
+
+/* ═══ RESET ═══ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg-dark); color:var(--text-light); overflow-x:hidden; direction:rtl; }
+
+/* ═══ COVER ═══ */
+#cover {
+  position:relative;
+  height:100svh;
+  min-height:550px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Slides */
+.slide { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transition:opacity 1.5s ease; animation:kenBurns 18s ease-in-out infinite; }
+.slide.active { opacity:1; }
+@keyframes kenBurns {
+  0%   { transform:scale(1) translate(0%,0%); }
+  50%  { transform:scale(1.08) translate(1%,-1%); }
+  100% { transform:scale(1) translate(0%,0%); }
+}
+.cover-overlay {
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.65) 100%),
+              radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%);
+}
+
+/* Dots */
+.slide-dots { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:20; }
+.dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s; }
+.dot.active { background:var(--primary); transform:scale(1.3); }
+
+/* Arrows */
+.slide-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:20; background:rgba(0,0,0,0.4); border:none; color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; backdrop-filter:blur(4px); }
+.slide-arrow:hover { background:rgba(201,168,76,0.4); border-color:var(--primary); }
+.slide-arrow.prev { right:14px; }
+.slide-arrow.next { left:14px; }
+
+/* Particles */
+#particles { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.particle { position:absolute; width:2px; height:2px; background:var(--primary); border-radius:50%; animation:floatParticle linear infinite; opacity:0; }
+@keyframes floatParticle { 0%{opacity:0;transform:translateY(0) scale(0)} 10%{opacity:0.8;transform:scale(1)} 90%{opacity:0.3} 100%{opacity:0;transform:translateY(-100vh) scale(0.5)} }
+
+/* Corners */
+.corner { position:absolute; width:55px; height:55px; z-index:15; opacity:0.7; }
+.corner svg { width:100%; height:100%; }
+.corner.tl { top:16px; right:16px; }
+.corner.tr { top:16px; left:16px; transform:scaleX(-1); }
+.corner.bl { bottom:50px; right:16px; transform:scaleY(-1); }
+.corner.br { bottom:50px; left:16px; transform:scale(-1); }
+
+/* Cover content */
+.cover-content { position:relative; z-index:10; text-align:center; padding:0 20px; animation:fadeUp 1.2s ease both; width:100%; max-width:600px; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+/* Logo */
+.university-logo {
+  width:140px; height:140px;
+  margin:0 auto 16px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  animation:pulse-glow 3s ease-in-out infinite;
+}
+.university-logo img {
+  width:140px; height:140px;
+  object-fit:contain;
+  filter: drop-shadow(0 0 12px var(--primary-glow))
+          drop-shadow(0 2px 16px rgba(0,0,0,0.5));
+  transition:filter 0.4s, transform 0.4s;
+}
+.university-logo:hover img {
+  filter: drop-shadow(0 0 22px var(--primary-glow))
+          brightness(1.1);
+  transform:scale(1.05);
+}
+@keyframes pulse-glow {
+  0%,100% { filter:drop-shadow(0 0 10px var(--primary-glow)); transform:scale(1); }
+  50%      { filter:drop-shadow(0 0 26px var(--primary-glow)); transform:scale(1.04); }
+}
+
+.cover-subtitle { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:4px; color:var(--primary-light); text-transform:uppercase; margin-bottom:14px; opacity:0.85; animation:fadeUp 1.2s 0.2s ease both; }
+
+/* ═══ MAIN NAME — always big ═══ */
+.cover-name-main {
+  font-size:clamp(32px, 8vw, 60px);
+  font-weight:700;
+  color:#fff;
+  text-shadow:0 0 40px rgba(0,0,0,0.8);
+  line-height:1.2;
+  animation:fadeUp 1.2s 0.35s ease both;
+  margin-bottom:6px;
+}
+/* Arabic name uses Amiri */
+.cover-name-main.ar { font-family:'Amiri',serif; }
+/* English/Russian name uses Playfair */
+.cover-name-main.en { font-family:'Playfair Display',serif; font-style:italic; }
+/* Russian uses Tajawal (supports cyrillic well) */
+.cover-name-main.ru { font-family:'Tajawal',sans-serif; font-weight:700; }
+
+/* Secondary names — smaller */
+.cover-name-secondary {
+  font-size:clamp(13px, 3vw, 18px);
+  color:var(--primary-light);
+  opacity:0.85;
+  animation:fadeUp 1.2s 0.5s ease both;
+  margin-bottom:2px;
+  line-height:1.5;
+}
+.cover-name-secondary.ar { font-family:'Amiri',serif; }
+.cover-name-secondary.en { font-family:'Playfair Display',serif; font-style:italic; }
+.cover-name-secondary.ru { font-family:'Tajawal',sans-serif; }
+
+.cover-divider { width:100px; height:1px; background:linear-gradient(90deg,transparent,var(--primary),transparent); margin:14px auto; animation:fadeUp 1.2s 0.6s ease both; }
+.cover-meta { font-size:13px; color:rgba(255,255,255,0.65); letter-spacing:1.5px; animation:fadeUp 1.2s 0.7s ease both; }
+
+/* ═══ TOP BAR ═══ */
+/* ═══ TOP BAR — PREMIUM GLASS ═══ */
+.cover-top-bar {
+  position:absolute; top:0; left:0; right:0; z-index:30;
+  display:flex; align-items:center; justify-content:center;
+  padding:16px 20px;
+  pointer-events:none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+}
+.top-glass-panel {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(8,6,10,0.55);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: 60px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+  overflow: hidden;
+  padding: 0;
+}
+.tgp-brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px 8px 10px;
+  text-decoration: none;
+  border-left: 1px solid rgba(201,168,76,0.15);
+  transition: background 0.2s;
+}
+.tgp-brand:hover { background: rgba(201,168,76,0.07); }
+.tgp-brand img { width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 0 5px rgba(201,168,76,0.6)); }
+.tgp-brand span { color:var(--primary-light); font-size:12px; font-weight:700; letter-spacing:0.5px; }
+.tgp-divider { width:1px; height:28px; background: rgba(201,168,76,0.15); flex-shrink:0; }
+.tgp-stat {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border-left: 1px solid rgba(201,168,76,0.1);
+  transition: background 0.2s;
+  cursor: default;
+}
+.tgp-stat:last-child { border-left: none; }
+.tgp-stat:hover { background: rgba(201,168,76,0.06); }
+.tgp-stat-icon { font-size: 13px; opacity: 0.85; }
+.tgp-stat-val { color: var(--primary-light); font-size: 14px; font-weight: 900; line-height:1; }
+.tgp-stat-lbl { color: rgba(255,255,255,0.4); font-size: 10px; font-weight:400; }
+@media(max-width:480px){
+  .tgp-brand span { display:none; }
+  .tgp-stat-lbl { display:none; }
+  .tgp-stat { padding:8px 10px; gap:4px; }
+  .tgp-brand { padding:8px 10px; }
+}
+
+/* ═══ ACTIVITY STATS SECTION ═══ */
+#activity-section {
+  background: var(--bg-dark);
+  padding: 50px 20px;
+  position: relative;
+  overflow: hidden;
+}
+#activity-section::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.05), transparent);
+}
+.activity-inner { max-width:700px; margin:0 auto; position:relative; z-index:1; }
+.activity-header { text-align:center; margin-bottom:36px; }
+.activity-label { font-size:11px; letter-spacing:4px; color:var(--primary); text-transform:uppercase; margin-bottom:8px; font-family:'Cormorant Garamond',serif; }
+.activity-title { font-size:clamp(20px,5vw,28px); font-weight:700; color:rgba(255,255,255,0.9); }
+.activity-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media(max-width:480px){ .activity-cards { gap:10px; } }
+.act-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 20px;
+  padding: 24px 16px;
+  text-align: center;
+  position:relative;
+  overflow:hidden;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.act-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity:0.5;
+}
+.act-card:hover { transform:translateY(-4px); border-color:rgba(201,168,76,0.35); }
+.act-icon { font-size:28px; margin-bottom:10px; display:block; }
+.act-num {
+  font-size:clamp(28px,7vw,42px);
+  font-weight:900;
+  color:var(--primary-light);
+  line-height:1;
+  font-family:'Cormorant Garamond',serif;
+  margin-bottom:6px;
+}
+.act-lbl { font-size:12px; color:rgba(255,255,255,0.45); font-weight:500; letter-spacing:0.5px; }
+
+/* ═══ QR CARD ═══ */
+#qr-section {
+  background: var(--bg-dark);
+  padding: 30px 20px 60px;
+  display:flex; justify-content:center;
+}
+.qr-glass-card {
+  max-width: 340px;
+  width:100%;
+  background: rgba(15,12,20,0.8);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 28px;
+  padding: 32px 28px;
+  text-align:center;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  position:relative;
+  overflow:hidden;
+}
+.qr-glass-card::before {
+  content:'';
+  position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+  width:200px; height:200px;
+  background: radial-gradient(circle, rgba(201,168,76,0.12), transparent 70%);
+  pointer-events:none;
+}
+.qr-glass-card::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+}
+.qr-card-brand { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px; }
+.qr-card-brand img { width:28px; height:28px; filter:drop-shadow(0 0 6px rgba(201,168,76,0.5)); }
+.qr-card-brand span { color:var(--primary-light); font-size:13px; font-weight:700; letter-spacing:1px; }
+.qr-wrapper {
+  background: rgba(255,255,255,0.97);
+  border-radius: 16px;
+  padding: 14px;
+  display:inline-block;
+  margin-bottom:18px;
+  box-shadow: 0 0 0 1px rgba(201,168,76,0.4), 0 8px 24px rgba(0,0,0,0.3);
+}
+.qr-wrapper canvas, .qr-wrapper img { width:150px!important; height:150px!important; display:block; }
+.qr-grad-name { font-size:18px; font-weight:900; color:#fff; margin-bottom:4px; font-family:'Cormorant Garamond',serif; font-style:italic; }
+.qr-grad-sub { font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:20px; letter-spacing:0.5px; }
+.qr-hint { font-size:11px; color:rgba(255,255,255,0.3); margin-bottom:20px; line-height:1.6; }
+.qr-hint strong { color:var(--primary); }
+.qr-actions { display:flex; gap:10px; }
+.qr-btn {
+  flex:1; padding:11px 8px;
+  border-radius:50px;
+  border:none; cursor:pointer;
+  font-size:12px; font-weight:700;
+  font-family:'Tajawal',sans-serif;
+  transition:all 0.2s;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.qr-btn-copy { background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.3); color:var(--primary-light); }
+.qr-btn-copy:hover { background:rgba(201,168,76,0.2); border-color:var(--primary); }
+.qr-btn-share { background:linear-gradient(135deg,var(--primary),#a07830); color:#000; }
+.qr-btn-share:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(201,168,76,0.3); }
+
+/* ═══ SOCIAL SHARE BUTTONS ═══ */
+.qr-social-divider {
+  display:flex; align-items:center; gap:10px;
+  margin:18px 0 14px;
+}
+.qr-social-divider::before,
+.qr-social-divider::after {
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.25),transparent);
+}
+.qr-social-divider span {
+  font-size:10px; color:rgba(255,255,255,0.3);
+  letter-spacing:2px; text-transform:uppercase; white-space:nowrap;
+}
+.qr-social-btns {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:8px;
+  margin-bottom:4px;
+}
+.qr-social-btn {
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:5px;
+  padding:10px 6px 8px;
+  border-radius:14px;
+  border:1px solid rgba(201,168,76,0.15);
+  background:rgba(255,255,255,0.03);
+  cursor:pointer;
+  font-family:'Tajawal',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  color:rgba(255,255,255,0.55);
+  transition:all 0.22s;
+  text-decoration:none;
+}
+.qr-social-btn:hover {
+  transform:translateY(-2px);
+  border-color:rgba(201,168,76,0.4);
+  color:#fff;
+}
+.qr-social-btn svg { width:20px; height:20px; flex-shrink:0; }
+/* WhatsApp */
+.qr-social-btn.soc-wa:hover  { background:rgba(37,211,102,0.12);  border-color:rgba(37,211,102,0.4);  }
+/* Telegram */
+.qr-social-btn.soc-tg:hover  { background:rgba(40,167,234,0.12);  border-color:rgba(40,167,234,0.4);  }
+/* Instagram */
+.qr-social-btn.soc-ig:hover  { background:rgba(228,64,95,0.12);   border-color:rgba(228,64,95,0.4);   }
+/* Snapchat */
+.qr-social-btn.soc-sc:hover  { background:rgba(255,252,0,0.10);   border-color:rgba(255,252,0,0.4);   }
+/* Copy — full width */
+.qr-social-copy-row {
+  margin-top:0;
+}
+.qr-social-btn.soc-copy {
+  flex-direction:row; gap:7px;
+  padding:10px 14px;
+  border-radius:14px;
+  width:100%;
+  font-size:11px;
+  justify-content:center;
+  color:var(--primary-light);
+  border-color:rgba(201,168,76,0.25);
+  background:rgba(201,168,76,0.06);
+}
+.qr-social-btn.soc-copy:hover {
+  background:rgba(201,168,76,0.15);
+  border-color:var(--primary);
+  transform:translateY(-1px);
+}
+
+.cover-scroll-hint { position:absolute; bottom:50px; left:50%; transform:translateX(-50%); z-index:20; animation:bounce 2s ease-in-out infinite; opacity:0.5; font-size:20px; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ═══ MESSAGES SECTION ═══ */
+#messages-section { background:#faf8f4; min-height:60vh; padding:50px 16px 60px; position:relative; }
+#messages-section::before { content:''; position:absolute; top:0; left:0; right:0; height:60px; background:linear-gradient(180deg,var(--bg-dark),transparent); pointer-events:none; }
+
+.section-header { text-align:center; margin-bottom:40px; }
+.section-label { font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:4px; color:var(--primary-dark); text-transform:uppercase; margin-bottom:8px; }
+.section-title-ar { font-family:'Amiri',serif; font-size:clamp(24px,6vw,36px); font-weight:700; color:#2a1a00; margin-bottom:4px; }
+.section-divider { width:70px; height:2px; background:linear-gradient(90deg,transparent,var(--primary-dark),transparent); margin:12px auto; }
+
+/* Write form */
+.write-form-wrap { max-width:600px; margin:0 auto 50px; background:white; border-radius:18px; box-shadow:0 4px 30px rgba(0,0,0,0.1); overflow:hidden; }
+.form-header { background:linear-gradient(135deg,var(--bg-dark),#1a1200); padding:18px 24px; }
+.form-header h3 { color:var(--primary-light); font-size:15px; font-weight:700; }
+.form-header p { color:rgba(255,255,255,0.45); font-size:11px; margin-top:2px; }
+.form-body { padding:22px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-row.single { grid-template-columns:1fr; }
+.field-label { font-size:12px; color:#666; margin-bottom:4px; font-weight:500; }
+.field-input { width:100%; background:#f9f7f4; border:1px solid #e8e0d0; border-radius:10px; padding:10px 13px; font-family:'Tajawal',sans-serif; font-size:14px; color:#333; outline:none; transition:border-color 0.2s; direction:rtl; }
+.field-input:focus { border-color:var(--primary-dark); }
+textarea.field-input { resize:vertical; min-height:90px; }
+
+/* Emojis */
+.emoji-row { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+.emoji-pick { background:#f5f0e8; border:1px solid #e0d8c8; border-radius:7px; padding:5px 9px; font-size:17px; cursor:pointer; transition:transform 0.15s; }
+.emoji-pick:hover { transform:scale(1.2); }
+
+/* Photo upload */
+.photo-upload-area { border:2px dashed #e0d8c8; border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:12px; }
+.photo-upload-area:hover { border-color:var(--primary-dark); background:#fdf9f2; }
+.photo-upload-area p { font-size:12px; color:#999; }
+#msg-photo-input { display:none; }
+#photo-preview { display:none; max-width:100%; border-radius:8px; margin-top:8px; }
+
+.submit-btn { width:100%; background:linear-gradient(135deg,var(--bg-dark),#2a1a00); color:var(--primary-light); border:1px solid rgba(201,168,76,0.4); border-radius:12px; padding:14px; font-family:'Tajawal',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.25s; letter-spacing:1px; }
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+.submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* Messages hidden notice */
+.msgs-hidden-notice {
+  max-width:600px;
+  margin:0 auto;
+  text-align:center;
+  padding:40px 20px;
+  color:#888;
+}
+.msgs-hidden-notice .icon { font-size:48px; margin-bottom:12px; }
+.msgs-hidden-notice p { font-size:15px; color:#aaa; line-height:1.7; }
+
+/* Confetti */
+.confetti-piece { position:fixed; top:-10px; z-index:9999; pointer-events:none; animation:confettiFall linear forwards; }
+@keyframes confettiFall { 0%{transform:translateY(0) rotateZ(0);opacity:1} 100%{transform:translateY(110vh) rotateZ(720deg);opacity:0} }
+
+/* Toast */
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#222; color:#fff; padding:11px 24px; border-radius:30px; font-size:14px; z-index:9998; transition:transform 0.3s; pointer-events:none; font-family:'Tajawal',sans-serif; white-space:nowrap; }
+#toast.show { transform:translateX(-50%) translateY(0); }
+
+
+/* ═══ FLOATING BOOKS PANEL ═══ */
+#books-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 400;
+  background: linear-gradient(135deg, var(--primary), #a07830);
+  color: #000;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 10px;
+  cursor: pointer;
+  box-shadow: 4px 0 20px rgba(201,168,76,0.3);
+  transition: all 0.3s;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#books-toggle:hover { padding-left: 14px; box-shadow: 6px 0 28px rgba(201,168,76,0.5); }
+#books-toggle .bt-icon { font-size: 20px; }
+#books-toggle .bt-label { writing-mode: vertical-rl; font-size: 10px; }
+#books-toggle .bt-count {
+  background: rgba(0,0,0,0.25);
+  border-radius: 20px;
+  padding: 2px 6px;
+  font-size: 11px;
+  min-width: 20px;
+  text-align: center;
+}
+#books-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 440;
+  backdrop-filter: blur(2px);
+}
+#books-overlay.show { display: block; }
+#books-panel {
+  position: fixed;
+  left: -320px;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  z-index: 450;
+  background: rgba(8,6,10,0.98);
+  border-right: 1px solid rgba(201,168,76,0.2);
+  backdrop-filter: blur(20px);
+  transition: left 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.6);
+}
+#books-panel.open { left: 0; }
+.bp-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  background: linear-gradient(180deg, rgba(201,168,76,0.07), transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.bp-title { font-size: 15px; font-weight: 700; color: var(--primary-light); display: flex; align-items: center; gap: 8px; }
+.bp-close {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.bp-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.bp-subtitle { padding: 10px 20px; font-size: 11px; color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(201,168,76,0.07); flex-shrink: 0; }
+.bp-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.bp-list::-webkit-scrollbar { width: 3px; }
+.bp-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+.bp-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 13px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  transition: all 0.22s;
+  cursor: pointer;
+}
+.bp-card:hover { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.05); transform: translateX(3px); }
+.bp-card.current { border-color: rgba(201,168,76,0.45); background: rgba(201,168,76,0.07); }
+.bp-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #a07830);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 900; color: #000;
+  flex-shrink: 0;
+  position: relative;
+}
+.bp-current-dot {
+  position: absolute; bottom: 0; right: 0;
+  width: 12px; height: 12px;
+  background: #27ae60; border-radius: 50%;
+  border: 2px solid var(--bg-dark);
+}
+.bp-info { flex: 1; min-width: 0; }
+.bp-name { font-size: 13px; font-weight: 700; color: #fff; white-space: normal; line-height: 1.3; margin-bottom: 3px; }
+.bp-meta { font-size: 11px; color: rgba(255,255,255,0.38); white-space: normal; line-height: 1.4; }
+.bp-you { font-size: 10px; color: var(--primary); font-weight: 700; margin-top: 2px; }
+.bp-arrow { color: rgba(201,168,76,0.4); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+.bp-card:hover .bp-arrow { transform: translateX(-3px); color: var(--primary); }
+.bp-loading { text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.3); font-size: 13px; }
+.bp-spin { width: 28px; height: 28px; border: 2px solid rgba(201,168,76,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+
+/* Loading */
+#loading-screen { position:fixed; inset:0; background:var(--bg-dark); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px; transition:opacity 0.6s; }
+.loader-ring { width:55px; height:55px; border:3px solid rgba(201,168,76,0.2); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+#loading-screen p { color:var(--primary); font-size:13px; letter-spacing:2px; }
+
+/* Not found */
+#not-found { display:none; position:fixed; inset:0; background:var(--bg-dark); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+#not-found.show { display:flex; }
+#not-found .icon { font-size:60px; }
+#not-found h2 { color:var(--primary); font-size:22px; }
+#not-found p { color:rgba(255,255,255,0.5); font-size:14px; }
+
+/* Mobile */
+@media (max-width:480px) {
+  .form-row { grid-template-columns:1fr; }
+  .slide-arrow { display:none; }
+  .corner { width:42px; height:42px; }
+  .university-logo { width:110px; height:110px; }
+  .university-logo img { width:110px; height:110px; }
+}
+
+/* ═══ REVISION PANEL ═══ */
+#action-panel {
+  position:fixed; bottom:0; left:0; right:0; z-index:500;
+  background:rgba(8,6,10,.97);
+  border-top:1px solid var(--primary);
+  padding:18px 20px;
+  display:none;
+  backdrop-filter:blur(12px);
+  box-shadow:0 -8px 40px rgba(0,0,0,.5);
+  animation:slideUp .4s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.action-panel-title{font-size:14px;color:var(--primary-light);font-weight:700;margin-bottom:12px;text-align:center;}
+.action-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.ap-btn{padding:12px 24px;border:none;border-radius:50px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;}
+.ap-approve{background:linear-gradient(135deg,#27ae60,#1e8449);color:#fff;box-shadow:0 4px 20px rgba(39,174,96,.4);}
+.ap-approve:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.ap-revise{background:rgba(201,168,76,.15);border:1px solid var(--primary);color:var(--primary-light);}
+.ap-revise:hover{background:rgba(201,168,76,.25);}
+.ap-close{background:transparent;color:rgba(255,255,255,.4);font-size:12px;padding:8px 16px;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;}
+#revision-form-wrap{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;}
+#revision-form-wrap.open{display:flex;}
+.revision-form-inner{background:#1a1720;border:1px solid rgba(201,168,76,.3);border-radius:20px 20px 0 0;padding:28px 24px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;}
+.revision-form-title{font-size:17px;font-weight:700;color:var(--primary-light);margin-bottom:6px;}
+.revision-form-sub{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:20px;}
+.rev-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.rev-option{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;color:rgba(255,255,255,.7);transition:all .2s;display:flex;align-items:center;gap:7px;}
+.rev-option.selected{border-color:var(--primary);color:var(--primary-light);background:rgba(201,168,76,.1);}
+.rev-option:hover{border-color:var(--primary);background:rgba(201,168,76,.07);}
+.rev-notes{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;resize:vertical;min-height:80px;outline:none;direction:rtl;transition:border-color .2s;}
+.rev-notes:focus{border-color:var(--primary);}
+.rev-submit{width:100%;background:linear-gradient(135deg,var(--primary),#a07830);color:#000;border:none;border-radius:12px;padding:14px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;transition:all .25s;}
+.rev-submit:hover{filter:brightness(1.1);}
+.rev-cancel{width:100%;background:transparent;border:none;color:rgba(255,255,255,.4);font-family:'Tajawal',sans-serif;font-size:13px;cursor:pointer;padding:8px;margin-top:6px;}
+#approved-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#27ae60,#1e8449);padding:20px;text-align:center;animation:slideUp .4s ease;}
+.approved-inner{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;}
+
+
+/* ═══ SITE FOOTER ═══ */
+.site-footer{
+  margin-top:60px;
+  padding:30px 20px;
+  border-top:1px solid rgba(255,255,255,.1);
+  text-align:center;
+  background:var(--bg-dark);
+}
+.footer-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  margin-bottom:14px;
+}
+.footer-links a{
+  color:var(--primary-light);
+  text-decoration:none;
+  font-size:14px;
+  cursor:pointer;
+  transition:opacity 0.2s;
+}
+.footer-links a:hover{ opacity:0.7; }
+.footer-ig-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px; height:34px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  transition:transform 0.2s, opacity 0.2s;
+}
+.footer-ig-btn:hover{ transform:scale(1.12); opacity:0.9; }
+.footer-ig-btn svg{ display:block; }
+.footer-copy{
+  font-size:13px;
+  color:#888;
+}
+.footer-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.footer-modal.show{ display:flex; }
+.footer-modal-box{
+  width:90%;
+  max-width:480px;
+  background:#1a1720;
+  border:1px solid rgba(201,168,76,0.3);
+  border-radius:20px;
+  padding:28px 24px 24px;
+  color:white;
+  position:relative;
+}
+.footer-modal-close{
+  position:absolute;
+  top:14px;
+  left:16px;
+  background:none;
+  border:none;
+  color:rgba(255,255,255,0.4);
+  font-size:22px;
+  cursor:pointer;
+  line-height:1;
+  transition:color 0.2s;
+}
+.footer-modal-close:hover{ color:white; }
+.footer-modal-box h3{
+  color:var(--primary-light);
+  margin-bottom:14px;
+  font-size:17px;
+  padding-left:30px;
+}
+.footer-modal-box p{
+  color:rgba(255,255,255,0.7);
+  font-size:14px;
+  line-height:1.9;
+}
+
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-ring"></div>
+  <p>جارٍ التحميل...</p>
+</div>
+
+<div id="not-found">
+  <div class="icon">📔</div>
+  <h2>الدفتر غير موجود</h2>
+  <p>تأكد من صحة الرابط</p>
+</div>
+
+<div id="toast"></div>
+
+<!-- ═══ COVER ═══ -->
+<section id="cover">
+
+  <!-- TOP BAR — PREMIUM GLASS -->
+  <div class="cover-top-bar">
+    <div class="top-glass-panel">
+      <a href="index.html" class="tgp-brand">
+        <img src="gradbook-logo.png" alt="Grad Book">
+        <span>Grad Book</span>
+      </a>
+      <div class="tgp-stat">
+        <span class="tgp-stat-icon">💌</span>
+        <span class="tgp-stat-val" id="badge-num">0</span>
+        <span class="tgp-stat-lbl" id="badge-lbl">رسالة</span>
+      </div>
+      <div class="tgp-stat">
+        <span class="tgp-stat-icon">📸</span>
+        <span class="tgp-stat-val" id="photos-num">0</span>
+        <span class="tgp-stat-lbl" id="photos-lbl">صورة</span>
+      </div>
+      <div class="tgp-stat">
+        <span class="tgp-stat-icon">👀</span>
+        <span class="tgp-stat-val" id="visits-num">0</span>
+        <span class="tgp-stat-lbl" id="visits-lbl">زيارة</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="slides-container"></div>
+  <div class="cover-overlay"></div>
+  <div id="particles"></div>
+
+  <!-- Cover Content -->
+  <div class="cover-content">
+    <!-- University Logo -->
+    <div class="university-logo" id="university-logo-wrap" onclick="window.open('index.html','_blank')" style="cursor:pointer;" title="Grad Book — اطلب دفترك">
+      <img id="university-logo-img" src="logo-transparent.png" alt="University Logo" onerror="this.parentElement.style.display='none'">
+    </div>
+
+    <div class="cover-subtitle" id="cover-subtitle">GRADUATION GUESTBOOK · دفتر التخرج</div>
+    <div id="cover-name-main"></div>
+    <div id="cover-name-secondary"></div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta" id="cover-meta"></div>
+  </div>
+
+  <button class="slide-arrow prev" onclick="slideNav(-1)">›</button>
+  <button class="slide-arrow next" onclick="slideNav(1)">‹</button>
+  <div class="slide-dots" id="slide-dots"></div>
+  <div class="cover-scroll-hint">↓</div>
+</section>
+
+
+<!-- ═══ MESSAGES SECTION ═══ -->
+<section id="messages-section">
+  <div class="section-header">
+    <div class="section-label" id="congrats-label">CONGRATULATIONS · تهاني</div>
+    <div class="section-title-ar" id="section-name-ar">تهاني التخرج</div>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Write form -->
+  <div class="write-form-wrap">
+    <div class="form-header">
+      <h3 id="form-title">✍️ اكتب تهنئتك</h3>
+      <p id="form-sub">رسالتك ستصل فوراً 📲</p>
+    </div>
+    <div class="form-body">
+      <div class="form-row">
+        <div>
+          <div class="field-label" id="lbl-sender">اسمك *</div>
+          <input class="field-input" id="f-sender" type="text" placeholder="أدخل اسمك">
+        </div>
+        <div>
+          <div class="field-label" id="lbl-relation">صفتك</div>
+          <select class="field-input" id="f-relation">
+            <option value="">اختر...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div>
+          <div class="field-label" id="lbl-message">رسالتك *</div>
+          <textarea class="field-input" id="f-message" placeholder="اكتب تهنئتك هنا..."></textarea>
+        </div>
+      </div>
+
+      <div class="field-label" id="lbl-emoji">إيموجي سريعة</div>
+      <div class="emoji-row">
+        <span class="emoji-pick" onclick="addEmoji('🎓')">🎓</span>
+        <span class="emoji-pick" onclick="addEmoji('🌟')">🌟</span>
+        <span class="emoji-pick" onclick="addEmoji('🏆')">🏆</span>
+        <span class="emoji-pick" onclick="addEmoji('💐')">💐</span>
+        <span class="emoji-pick" onclick="addEmoji('❤️')">❤️</span>
+        <span class="emoji-pick" onclick="addEmoji('🎉')">🎉</span>
+        <span class="emoji-pick" onclick="addEmoji('✨')">✨</span>
+        <span class="emoji-pick" onclick="addEmoji('👨‍⚕️')">👨‍⚕️</span>
+        <span class="emoji-pick" onclick="addEmoji('🩺')">🩺</span>
+        <span class="emoji-pick" onclick="addEmoji('🌹')">🌹</span>
+        <span class="emoji-pick" onclick="addEmoji('🤲')">🤲</span>
+        <span class="emoji-pick" onclick="addEmoji('💊')">💊</span>
+      </div>
+
+      <div class="field-label" id="lbl-photo">صورة مع الرسالة (اختياري)</div>
+      <div class="photo-upload-area" onclick="document.getElementById('msg-photo-input').click()">
+        <p id="photo-upload-btn">📷 انقر لرفع صورة</p>
+        <img id="photo-preview">
+      </div>
+      <input type="file" id="msg-photo-input" accept="image/*" onchange="previewPhoto(event)">
+
+      <button class="submit-btn" id="submit-btn" onclick="submitMessage()">
+        إرسال التهنئة ✈️
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages hidden — only owner sees via Telegram -->
+  <div class="msgs-hidden-notice">
+    <div class="icon">📲</div>
+    <p id="hidden-notice">تصل التهاني مباشرة لصاحب الدفتر على تيليغرام</p>
+    <span id="hidden-sub" style="font-size:13px;color:#bbb;display:block;margin-top:6px;">Messages are delivered directly to the graduate via Telegram</span>
+  </div>
+</section>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DEFAULT_BG = [
+  'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80',
+  'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80',
+  'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=1600&q=80',
+  'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=1600&q=80',
+];
+
+let bookData = null;
+let currentSlide = 0;
+let slides = [];
+let fakeCount = 0;
+
+// ═══ INIT ═══
+async function init() {
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  if (!slug) { showNotFound(); return; }
+  const {data, error} = await sb.from('guestbooks').select('*').eq('slug', slug).single();
+  if (error || !data) { showNotFound(); return; }
+  bookData = data;
+  applyBook(data);
+  await loadRealCount();
+  startFakeCounter();
+  hideLoading();
+  // Stats
+  const slug2 = new URLSearchParams(window.location.search).get('slug') || '';
+  const realCount = parseInt(document.getElementById('badge-num')?.textContent || '0');
+  initStats(slug2, realCount);
+}
+
+function hideLoading() {
+  const el = document.getElementById('loading-screen');
+  el.style.opacity = '0';
+  setTimeout(() => el.style.display = 'none', 600);
+}
+function showNotFound() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('not-found').classList.add('show');
+}
+
+// ═══ LANGUAGE TRANSLATIONS FOR DAFTAR ═══
+const LANG = {
+  ar: {
+    dir: 'rtl',
+    loading:       'جارٍ التحميل...',
+    notFound:      'الدفتر غير موجود',
+    notFoundSub:   'تأكد من صحة الرابط',
+    subtitle:      'دفتر التخرج · GRADUATION GUESTBOOK',
+    congratsLabel: 'CONGRATULATIONS · تهاني',
+    badge:         (n) => `✉ ${n} تهنئة`,
+    sectionTitle:  (name) => `تهاني تخرج ${name}`,
+    formTitle:     '✍️ اكتب تهنئتك',
+    formSub:       'رسالتك ستصل فوراً 📲',
+    lblSender:     'اسمك *',
+    lblRelation:   'صفتك',
+    lblMessage:    'رسالتك *',
+    lblEmoji:      'إيموجي سريعة',
+    lblPhoto:      'صورة مع الرسالة (اختياري)',
+    photoBtn:      '📷 انقر لرفع صورة',
+    submitBtn:     'إرسال التهنئة ✈️',
+    submitting:    '⏳ جارٍ الإرسال...',
+    successMsg:    '🎉 تم إرسال تهنئتك!',
+    namePlaceholder: 'أدخل اسمك',
+    msgPlaceholder:  'اكتب تهنئتك هنا...',
+    hiddenNotice:  'تصل التهاني مباشرة لصاحب الدفتر على تيليغرام',
+    hiddenSub:     'Messages are delivered directly to the graduate via Telegram',
+    relations: [
+      { group: 'عربي', options: ['زميل / زميلة في الدراسة','صديق مقرب','أخ / أخت','أحد الوالدين','أحد الأقارب','أستاذ / دكتور'] },
+    ],
+    chooseRelation: 'اختر...',
+    errName: '⚠️ أدخل اسمك',
+    errMsg:  '⚠️ اكتب رسالتك',
+    errSend: '❌ خطأ في الإرسال',
+  },
+  en: {
+    dir: 'ltr',
+    loading:       'Loading...',
+    notFound:      'Guestbook not found',
+    notFoundSub:   'Check the link and try again',
+    subtitle:      'GRADUATION GUESTBOOK · دفتر التخرج',
+    congratsLabel: 'CONGRATULATIONS · тебя поздравляют',
+    badge:         (n) => `✉ ${n} Messages`,
+    sectionTitle:  (name) => `Congratulations, ${name}!`,
+    formTitle:     '✍️ Write Your Message',
+    formSub:       'Your message will be delivered instantly 📲',
+    lblSender:     'Your Name *',
+    lblRelation:   'Relation',
+    lblMessage:    'Your Message *',
+    lblEmoji:      'Quick Emojis',
+    lblPhoto:      'Add a Photo (optional)',
+    photoBtn:      '📷 Click to upload photo',
+    submitBtn:     'Send Congratulations ✈️',
+    submitting:    '⏳ Sending...',
+    successMsg:    '🎉 Your message was sent!',
+    namePlaceholder: 'Enter your name',
+    msgPlaceholder:  'Write your congratulations...',
+    hiddenNotice:  'Messages are delivered directly to the graduate via Telegram',
+    hiddenSub:     'تصل التهاني مباشرة لصاحب الدفتر على تيليغرام',
+    relations: [
+      { group: 'English', options: ['Classmate','Best Friend','Brother / Sister','Parent','Relative','Professor'] },
+    ],
+    chooseRelation: 'Choose...',
+    errName: '⚠️ Enter your name',
+    errMsg:  '⚠️ Write your message',
+    errSend: '❌ Failed to send, try again',
+  },
+  ru: {
+    dir: 'ltr',
+    loading:       'Загрузка...',
+    notFound:      'Книга не найдена',
+    notFoundSub:   'Проверьте правильность ссылки',
+    subtitle:      'КНИГА ВЫПУСКНИКА · GRADUATION GUESTBOOK',
+    congratsLabel: 'ПОЗДРАВЛЕНИЯ · Congratulations',
+    badge:         (n) => `✉ ${n} поздравлений`,
+    sectionTitle:  (name) => `Поздравляем, ${name}!`,
+    formTitle:     '✍️ Написать поздравление',
+    formSub:       'Сообщение придёт мгновенно 📲',
+    lblSender:     'Твоё имя *',
+    lblRelation:   'Кем приходишься',
+    lblMessage:    'Твоё поздравление *',
+    lblEmoji:      'Быстрые эмодзи',
+    lblPhoto:      'Фото к поздравлению (необязательно)',
+    photoBtn:      '📷 Нажми для загрузки фото',
+    submitBtn:     'Отправить поздравление ✈️',
+    submitting:    '⏳ Отправка...',
+    successMsg:    '🎉 Поздравление отправлено!',
+    namePlaceholder: 'Введи своё имя',
+    msgPlaceholder:  'Напиши поздравление...',
+    hiddenNotice:  'Поздравления доставляются выпускнику напрямую в Telegram',
+    hiddenSub:     'Messages are delivered directly to the graduate via Telegram',
+    relations: [
+      { group: 'Русский', options: ['Одногруппник / Одногруппница','Лучший друг / Подруга','Брат / Сестра','Родитель','Двоюродный брат / сестра','Профессор'] },
+    ],
+    chooseRelation: 'Выбери...',
+    errName: '⚠️ Введи своё имя',
+    errMsg:  '⚠️ Напиши поздравление',
+    errSend: '❌ Ошибка отправки, попробуй снова',
+  },
+};
+
+let currentLang = 'ar';
+
+function applyLanguage(lang, ownerName) {
+  currentLang = lang || 'ar';
+  const L = LANG[currentLang];
+
+  // Direction & html lang
+  document.documentElement.dir  = L.dir;
+  document.documentElement.lang = currentLang;
+  document.body.style.direction  = L.dir;
+
+  // Subtitle
+  document.getElementById('cover-subtitle').textContent = L.subtitle;
+
+  // Badge
+  updateBadge(fakeCount);
+
+  // Section title
+  document.getElementById('section-name-ar').textContent = L.sectionTitle(ownerName || '');
+
+  // Congrats label
+  document.getElementById('congrats-label').textContent = L.congratsLabel;
+
+  // Form texts
+  document.getElementById('form-title').textContent   = L.formTitle;
+  document.getElementById('form-sub').textContent     = L.formSub;
+  document.getElementById('lbl-sender').textContent   = L.lblSender;
+  document.getElementById('lbl-relation').textContent = L.lblRelation;
+  document.getElementById('lbl-message').textContent  = L.lblMessage;
+  document.getElementById('lbl-emoji').textContent    = L.lblEmoji;
+  document.getElementById('lbl-photo').textContent    = L.lblPhoto;
+  document.getElementById('photo-upload-btn').textContent = L.photoBtn;
+  document.getElementById('submit-btn').textContent   = L.submitBtn;
+  document.getElementById('f-sender').placeholder     = L.namePlaceholder;
+  document.getElementById('f-message').placeholder    = L.msgPlaceholder;
+  document.getElementById('hidden-notice').textContent = L.hiddenNotice;
+  document.getElementById('hidden-sub').textContent   = L.hiddenSub;
+
+  // Rebuild relation select
+  const relSel = document.getElementById('f-relation');
+  relSel.innerHTML = `<option value="">${L.chooseRelation}</option>`;
+  L.relations.forEach(grp => {
+    const og = document.createElement('optgroup');
+    og.label = grp.group;
+    grp.options.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = o;
+      og.appendChild(opt);
+    });
+    relSel.appendChild(og);
+  });
+
+  // Loading / not found texts
+  document.querySelector('#loading-screen p').textContent = L.loading;
+  document.querySelector('#not-found h2').textContent     = L.notFound;
+  document.querySelector('#not-found p').textContent      = L.notFoundSub;
+}
+
+// ═══ APPLY ═══
+// ═══ FACULTY & UNIVERSITY NAMES ═══
+const FACULTY_NAMES = {
+  general:    { ar: 'كلية الطب العام',        en: 'General Medicine',           ru: 'Лечебный факультет' },
+  dentistry:  { ar: 'كلية طب الأسنان',        en: 'Dentistry',                  ru: 'Стоматологический факультет' },
+  pharmacy:   { ar: 'كلية الصيدلة',           en: 'Pharmacy',                   ru: 'Фармацевтический факультет' },
+  nursing:    { ar: 'كلية التمريض',           en: 'Nursing',                    ru: 'Факультет сестринского дела' },
+  pediatrics: { ar: 'طب الأطفال',             en: 'Pediatrics',                 ru: 'Педиатрический факультет' },
+  surgery:    { ar: 'كلية الجراحة',           en: 'Surgery',                    ru: 'Хирургический факультет' },
+  other:      { ar: 'كلية أخرى',             en: 'Other Faculty',              ru: 'Другой факультет' },
+};
+const UNIVERSITY_NAMES = {
+  volgmu:   { ar: 'جامعة فولغوغراد الطبية', en: 'Volgograd State Medical University', ru: 'ВолгГМУ' },
+  default:  { ar: '',                        en: '',                                   ru: '' },
+};
+
+function getFacultyName(key, lang) {
+  if (!key) return '';
+  const k = key.toLowerCase();
+  if (FACULTY_NAMES[k]) return FACULTY_NAMES[k][lang] || FACULTY_NAMES[k]['en'] || key;
+  return key; // إذا مش موجود خلّيه كما هو
+}
+
+function getUniversityName(uni, lang) {
+  if (!uni) return '';
+  const k = uni.toLowerCase().replace(/\s/g,'');
+  if (k.includes('volg') || k.includes('волг') || k.includes('volgmu')) {
+    return UNIVERSITY_NAMES['volgmu'][lang] || uni;
+  }
+  return uni;
+}
+
+function applyBook(data) {
+  // Determine language: from DB field OR detect from owner_name script
+  let lang = data.default_lang || null;
+  if (!lang) {
+    const isArabic   = /[\u0600-\u06FF]/.test(data.owner_name || '');
+    const isCyrillic = /[\u0400-\u04FF]/.test(data.owner_name || '');
+    lang = isArabic ? 'ar' : isCyrillic ? 'ru' : 'en';
+  }
+
+  document.title = data.owner_name
+    ? (lang === 'ru' ? `Книга выпускника — ${data.owner_name}` : lang === 'en' ? `Grad Book — ${data.owner_name}` : `دفتر تخرج ${data.owner_name}`)
+    : 'Grad Book';
+
+  setTheme(data.cover_color || 'gold');
+
+  // University logo — from DB field or fallback to logo.png
+  const logoImg = document.getElementById('university-logo-img');
+  if (data.logo_url) {
+    logoImg.src = data.logo_url;
+  }
+  // else stays as logo.png (default)
+
+  // Apply full language UI
+  applyLanguage(lang, data.owner_name);
+
+  // ─── Cover Name ───
+  const mainName = data.owner_name    || '';
+  const nameEn   = data.owner_name_en || '';
+  const nameRu   = data.owner_name_ru || '';
+
+  // Primary name = the one matching chosen lang
+  let primaryName, primaryClass, secondaryHTML = '';
+  if (lang === 'ar') {
+    primaryName  = mainName;
+    primaryClass = 'ar';
+    if (nameEn && nameEn !== mainName) secondaryHTML += `<div class="cover-name-secondary en">${nameEn}</div>`;
+    if (nameRu && nameRu !== mainName) secondaryHTML += `<div class="cover-name-secondary ru">${nameRu}</div>`;
+  } else if (lang === 'en') {
+    primaryName  = nameEn || mainName;
+    primaryClass = 'en';
+    if (mainName && mainName !== primaryName) secondaryHTML += `<div class="cover-name-secondary ar">${mainName}</div>`;
+    if (nameRu && nameRu !== primaryName)     secondaryHTML += `<div class="cover-name-secondary ru">${nameRu}</div>`;
+  } else { // ru
+    primaryName  = nameRu || mainName;
+    primaryClass = 'ru';
+    if (mainName && mainName !== primaryName) secondaryHTML += `<div class="cover-name-secondary ar">${mainName}</div>`;
+    if (nameEn && nameEn !== primaryName)     secondaryHTML += `<div class="cover-name-secondary en">${nameEn}</div>`;
+  }
+
+  const mainEl = document.getElementById('cover-name-main');
+  mainEl.className  = `cover-name-main ${primaryClass}`;
+  mainEl.textContent = primaryName;
+  document.getElementById('cover-name-secondary').innerHTML = secondaryHTML;
+
+  // Meta — بالاسم الكامل بلغة الزبون
+  const parts = [];
+  if (data.faculty)    parts.push(getFacultyName(data.faculty, lang));
+  if (data.university) parts.push(getUniversityName(data.university, lang));
+  if (data.grad_year)  parts.push(data.grad_year);
+  document.getElementById('cover-meta').textContent = parts.join('  ·  ');
+
+  // QR + Stats Labels
+  initQR(data.slug, data.owner_name_en || data.owner_name || data.slug);
+  updateStatsLabels(lang);
+
+  // Open Graph meta tags ديناميكية
+  updateDaftarOGMeta(data, lang);
+
+  // Slides
+  const imgs = (data.bg_images && data.bg_images.length) ? data.bg_images : DEFAULT_BG;
+  buildSlides(imgs);
+  buildParticles();
+}
+
+// ═══ OG META ═══
+function updateDaftarOGMeta(data, lang) {
+  const name    = (lang === 'en' ? data.owner_name_en : lang === 'ru' ? data.owner_name_ru : null)
+                  || data.owner_name || '';
+  const faculty = getFacultyName(data.faculty || '', lang);
+  const year    = data.grad_year || '';
+  const slug    = data.slug || '';
+
+  // Title
+  const ogTitle = name
+    ? `🎓 ${name} — Grad Book`
+    : 'Grad Book — دفتر التخرج';
+
+  // Description
+  const descParts = [faculty, year ? `Class of ${year}` : ''].filter(Boolean);
+  const ogDesc = descParts.length
+    ? `${descParts.join(' · ')} | دفتر التخرج الرقمي`
+    : 'دفتر التخرج الرقمي الفاخر';
+
+  // Image — أول صورة من bg_images
+  let ogImage = '';
+  try {
+    const imgs = Array.isArray(data.bg_images) ? data.bg_images : JSON.parse(data.bg_images || '[]');
+    if (imgs.length > 0) {
+      ogImage = imgs[0].startsWith('http')
+        ? imgs[0]
+        : `${SUPABASE_URL}/storage/v1/object/public/gradbook-photos/${imgs[0]}`;
+    }
+  } catch(e) {}
+
+  // OG URL
+  const ogUrl = slug ? `${window.location.origin}${window.location.pathname}?slug=${slug}` : window.location.href;
+
+  const setMeta = (sel, val) => {
+    if (!val) return;
+    const el = document.querySelector(sel);
+    if (el) el.setAttribute('content', val);
+  };
+
+  setMeta('meta[property="og:title"]',        ogTitle);
+  setMeta('meta[property="og:description"]',  ogDesc);
+  setMeta('meta[property="og:url"]',          ogUrl);
+  setMeta('meta[name="twitter:title"]',       ogTitle);
+  setMeta('meta[name="twitter:description"]', ogDesc);
+  if (ogImage) {
+    setMeta('meta[property="og:image"]',  ogImage);
+    setMeta('meta[name="twitter:image"]', ogImage);
+  }
+
+  // og:url tag إن مش موجود
+  if (!document.querySelector('meta[property="og:url"]')) {
+    const urlMeta = document.createElement('meta');
+    urlMeta.setAttribute('property', 'og:url');
+    urlMeta.setAttribute('content', ogUrl);
+    document.head.appendChild(urlMeta);
+  }
+}
+
+// ═══ THEME ═══
+function setTheme(t) {
+  document.body.setAttribute('data-theme', t);
+}
+
+// ═══ FAKE COUNTER ═══
+async function loadRealCount() {
+  const {count} = await sb.from('messages').select('*', {count:'exact',head:true}).eq('guestbook_id', bookData.id);
+  const real = count || 0;
+  // Start between 10 and 100
+  fakeCount = Math.max(real, Math.floor(Math.random() * 91) + 10);
+  updateBadge(fakeCount);
+}
+
+function startFakeCounter() {
+  // Every 20-45 seconds add 1 to counter
+  function tick() {
+    fakeCount += 1;
+    updateBadge(fakeCount);
+    setTimeout(tick, Math.random() * 25000 + 20000);
+  }
+  setTimeout(tick, Math.random() * 25000 + 20000);
+}
+
+function updateBadge(n) {
+  const L = LANG[currentLang] || LANG['ar'];
+  const numEl = document.getElementById('badge-num');
+  const lblEl = document.getElementById('badge-lbl');
+  if(numEl) numEl.textContent = n;
+  if(lblEl){
+    const full = L.badge(n); // e.g. "✉ 5 تهنئة"
+    lblEl.textContent = full.split(' ').pop();
+  }
+}
+
+// ═══ SLIDES ═══
+function buildSlides(imgs) {
+  slides = imgs;
+  const container = document.getElementById('slides-container');
+  const dotsEl    = document.getElementById('slide-dots');
+  container.innerHTML = '';
+  dotsEl.innerHTML    = '';
+  imgs.forEach((url, i) => {
+    const div = document.createElement('div');
+    div.className = 'slide' + (i === 0 ? ' active' : '');
+    div.style.backgroundImage = `url(${url})`;
+    container.appendChild(div);
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsEl.appendChild(dot);
+  });
+  currentSlide = 0;
+  setInterval(() => slideNav(1), 6000);
+}
+
+function slideNav(dir) { goToSlide((currentSlide + dir + slides.length) % slides.length); }
+function goToSlide(idx) {
+  document.querySelectorAll('.slide')[currentSlide].classList.remove('active');
+  document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+  currentSlide = idx;
+  document.querySelectorAll('.slide')[currentSlide].classList.add('active');
+  document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+}
+
+// ═══ PARTICLES ═══
+function buildParticles() {
+  const c = document.getElementById('particles');
+  c.innerHTML = '';
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.bottom = '-10px';
+    p.style.width = p.style.height = (Math.random() * 2.5 + 1) + 'px';
+    p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    c.appendChild(p);
+  }
+}
+
+// ═══ SUBMIT ═══
+async function submitMessage() {
+  const L = LANG[currentLang];
+  const sender  = document.getElementById('f-sender').value.trim();
+  const rel     = document.getElementById('f-relation').value;
+  const message = document.getElementById('f-message').value.trim();
+  const photoFile = document.getElementById('msg-photo-input').files[0];
+  if (!sender)  return toast(L.errName);
+  if (!message) return toast(L.errMsg);
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = L.submitting;
+
+  let photoUrl = null;
+  if (photoFile) photoUrl = await toBase64(photoFile);
+
+  const {error} = await sb.from('messages').insert({
+    guestbook_id: bookData.id,
+    sender_name: sender,
+    sender_relation: rel,
+    message,
+    photo_url: photoUrl,
+    theme_used: document.body.getAttribute('data-theme') || 'gold'
+  });
+
+  if (error) {
+    toast(L.errSend);
+    btn.disabled = false;
+    btn.textContent = L.submitBtn;
+    return;
+  }
+
+  if (bookData.telegram_chat_id && bookData.telegram_bot_token) {
+    sendTelegram(bookData.telegram_bot_token, bookData.telegram_chat_id, sender, rel, message);
+  }
+
+  fakeCount += 1;
+  updateBadge(fakeCount);
+
+  launchConfetti();
+  toast(L.successMsg);
+  clearForm();
+  btn.disabled = false;
+  btn.textContent = L.submitBtn;
+}
+
+async function sendTelegram(token, chatId, sender, rel, message) {
+  const link = window.location.href;
+  const text = `🎓 تهنئة جديدة!\n\n👤 من: ${sender}${rel ? ' (' + rel + ')' : ''}\n\n💬 ${message.substring(0, 200)}\n\n🔗 ${link}`;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ chat_id: chatId, text: text })
+    });
+    const data = await res.json();
+    console.log('Telegram:', JSON.stringify(data));
+  } catch(e) { console.log('TG error:', e); }
+}
+
+function toBase64(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.readAsDataURL(file);
+  });
+}
+
+function clearForm() {
+  document.getElementById('f-sender').value  = '';
+  document.getElementById('f-relation').value = '';
+  document.getElementById('f-message').value  = '';
+  document.getElementById('msg-photo-input').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+}
+
+function addEmoji(e) {
+  const t = document.getElementById('f-message');
+  const pos = t.selectionStart;
+  t.value = t.value.slice(0, pos) + e + t.value.slice(pos);
+  t.focus();
+}
+
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const img = document.getElementById('photo-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(file);
+}
+
+function toast(msg, dur=3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function launchConfetti() {
+  const colors = ['#c9a84c','#f0d080','#fff','#a07830','#ffd700'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.width  = (Math.random()*8+4) + 'px';
+    c.style.height = (Math.random()*8+4) + 'px';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.animationDelay = Math.random() * 0.8 + 's';
+    c.style.animationDuration = (Math.random()*2+2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+
+
+// ═══ REVISION & APPROVAL SYSTEM ═══
+let actionOrderId = null;
+const ADMIN_BOT_TOKEN_DAFTAR = '8971222565:AAGyI9K6Ive2hI_V9F3Qy1GaL4_dlaM4t4Y';
+const ADMIN_CHAT_ID_DAFTAR   = '1343835667';
+
+function checkActionParam(){
+  const params = new URLSearchParams(window.location.search);
+  const action  = params.get('action');
+  actionOrderId = params.get('order');
+
+  if(action === 'approve'){
+    showActionPanel(true);
+  } else if(action === 'revise'){
+    showActionPanel(false);
+    // Auto-open revision form
+    setTimeout(()=> openRevisionForm(), 800);
+  }
+}
+
+function showActionPanel(approveFirst){
+  const panel = document.getElementById('action-panel');
+  panel.style.display = 'block';
+  const L = LANG[currentLang] || LANG.ar;
+  const title = document.getElementById('action-panel-title');
+  title.textContent = L.actionTitle || '🎓 شاهد دفترك واختر';
+  // Add bottom padding to page so panel doesn't cover content
+  document.body.style.paddingBottom = '100px';
+}
+
+async function approveBook(){
+  if(!bookData) return;
+
+  // Update order status to "completed" if we have order ID
+  if(actionOrderId){
+    await sb.from('orders').update({
+      status:'completed',
+      updated_at: new Date().toISOString()
+    }).eq('id', actionOrderId);
+  }
+
+  // Notify admin
+  const msg = `✅ *موافقة على الدفتر!*
+
+👤 ${bookData.owner_name}
+📔 ${window.location.href.split('?')[0]}
+${actionOrderId?'🔖 طلب: '+actionOrderId:''}`;
+  await sendTGDaftar(msg);
+
+  // Show approved banner
+  document.getElementById('action-panel').style.display = 'none';
+  document.getElementById('approved-banner').style.display = 'block';
+  const L = LANG[currentLang] || LANG.ar;
+  document.getElementById('approved-title').textContent = L.approvedTitle || 'تمت الموافقة على دفترك! 🎉';
+  toast('🎉 ' + (L.approvedTitle || 'تمت الموافقة!'));
+}
+
+function openRevisionForm(){
+  document.getElementById('revision-form-wrap').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeRevisionForm(){
+  document.getElementById('revision-form-wrap').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+let selectedRevTypes = [];
+function toggleRevOption(el, type){
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')){
+    if(!selectedRevTypes.includes(type)) selectedRevTypes.push(type);
+  } else {
+    selectedRevTypes = selectedRevTypes.filter(t => t !== type);
+  }
+}
+
+async function submitRevision(){
+  const notes = document.getElementById('rev-notes').value.trim();
+  if(!selectedRevTypes.length && !notes){
+    toast('⚠️ اختر نوع التعديل أو اكتب ملاحظة');
+    return;
+  }
+
+  const btn = document.querySelector('.rev-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ جارٍ الإرسال...';
+
+  // Update order in DB
+  if(actionOrderId){
+    await sb.from('orders').update({
+      status: 'revision_requested',
+      revision_types: selectedRevTypes,
+      revision_notes: notes,
+      updated_at: new Date().toISOString()
+    }).eq('id', actionOrderId);
+  }
+
+  // Notify admin
+  const typesList = selectedRevTypes.length ? selectedRevTypes.join('، ') : '—';
+  const orderCode = actionOrderId ? `
+🔖 رقم الطلب: ${actionOrderId}` : '';
+  const msg = `🔔 *طلب مراجعة جديد!*
+
+👤 الطالب: ${bookData?.owner_name||'—'}${orderCode}
+
+📋 التعديلات المطلوبة:
+${typesList}
+
+💬 الملاحظات:
+${notes||'—'}
+
+🔗 ${window.location.href.split('?')[0]}`;
+  await sendTGDaftar(msg);
+
+  closeRevisionForm();
+  document.getElementById('action-panel').style.display = 'none';
+
+  const L = LANG[currentLang] || LANG.ar;
+  toast('✅ ' + (L.revisionSent || 'تم إرسال طلب التعديل!'));
+
+  // Show thank you message
+  setTimeout(()=>{
+    const banner = document.getElementById('approved-banner');
+    banner.style.background = 'linear-gradient(135deg,#c9a84c,#a07830)';
+    banner.style.display = 'block';
+    document.getElementById('approved-title').textContent = L.revisionConfirm || 'تم استلام طلب التعديل — سنتواصل معك قريباً';
+  }, 500);
+
+  btn.disabled = false;
+  btn.textContent = 'إرسال طلب التعديل 📤';
+}
+
+async function sendTGDaftar(text){
+  if(!ADMIN_BOT_TOKEN_DAFTAR || !ADMIN_CHAT_ID_DAFTAR) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN_DAFTAR}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:ADMIN_CHAT_ID_DAFTAR, text, parse_mode:'Markdown'})
+    });
+  } catch(e){ console.log('TG err',e); }
+}
+
+// Add revision texts to LANG
+LANG.ar.actionTitle     = '🎓 شاهد دفترك — وافق أو اطلب تعديل';
+LANG.ar.approvedTitle   = 'تمت الموافقة على دفترك! 🎉';
+LANG.ar.revisionSent    = 'تم إرسال طلب التعديل!';
+LANG.ar.revisionConfirm = 'تم استلام طلب التعديل — سنتواصل معك قريباً';
+LANG.en.actionTitle     = '🎓 Review your book — Approve or Request Changes';
+LANG.en.approvedTitle   = 'Book Approved! 🎉';
+LANG.en.revisionSent    = 'Revision request sent!';
+LANG.en.revisionConfirm = 'Revision request received — we will contact you soon';
+LANG.ru.actionTitle     = '🎓 Посмотри книгу — одобри или запроси правки';
+LANG.ru.approvedTitle   = 'Книга одобрена! 🎉';
+LANG.ru.revisionSent    = 'Запрос на правки отправлен!';
+LANG.ru.revisionConfirm = 'Запрос получен — свяжемся скоро';
+
+// Hook into init
+const _origInit = init;
+window.init = async function(){
+  await _origInit();
+  checkActionParam();
+};
+
+window.addEventListener('load', init);
+
+// ═══ FOOTER MODAL ═══
+const FOOTER_CONTENT = {
+  privacy: {
+    title: 'Privacy Policy',
+    text: 'Your information is used only for creating your graduation guestbook. We never sell or share your data with third parties. Messages sent through the guestbook are delivered privately to the graduate via Telegram.'
+  },
+  terms: {
+    title: 'Terms of Service',
+    text: 'Users are responsible for the content they submit. Offensive, harmful, or illegal content may be removed without notice. By using Grad Book, you agree to use the service respectfully and within the law.'
+  },
+  contact: {
+    title: 'Contact Us',
+    text: 'Instagram: @alrefaee_m0hammad\n\nFor orders and inquiries, reach us on Instagram or Telegram.'
+  }
+};
+function openFooterModal(type){
+  const c = FOOTER_CONTENT[type];
+  document.getElementById('footer-modal-title').textContent = c.title;
+  document.getElementById('footer-modal-content').textContent = c.text;
+  document.getElementById('footer-modal').classList.add('show');
+}
+function closeFooterModal(){
+  document.getElementById('footer-modal').classList.remove('show');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const modal = document.getElementById('footer-modal');
+  if(modal) modal.addEventListener('click', function(e){
+    if(e.target === this) closeFooterModal();
+  });
+});
+
+
+// ═══ BOOKS PANEL ═══
+let booksLoaded = false;
+
+function toggleBooksPanel() {
+  const panel = document.getElementById('books-panel');
+  const overlay = document.getElementById('books-overlay');
+  if (panel.classList.contains('open')) {
+    closeBooksPanel();
+  } else {
+    panel.classList.add('open');
+    overlay.classList.add('show');
+    if (!booksLoaded) loadBooksPanel();
+  }
+}
+
+function closeBooksPanel() {
+  document.getElementById('books-panel').classList.remove('open');
+  document.getElementById('books-overlay').classList.remove('show');
+}
+
+async function loadBooksPanel() {
+  booksLoaded = true;
+  const list = document.getElementById('bp-list');
+  try {
+    const { data, error } = await sb
+      .from('guestbooks')
+      .select('slug, owner_name, owner_name_en, faculty, grad_year, bg_images')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || !data.length) {
+      list.innerHTML = '<div class="bp-loading">لا توجد دفاتر حالياً</div>';
+      return;
+    }
+
+    document.getElementById('bt-count').textContent = data.length;
+
+    const currentSlug = new URLSearchParams(window.location.search).get('slug');
+    list.innerHTML = data.map(b => {
+      const isCurrent = b.slug === currentSlug;
+      const name = b.owner_name || b.owner_name_en || b.slug;
+      const initial = (name[0] || '?').toUpperCase();
+      const bookLang = b.default_lang || 'en';
+      const meta = [getFacultyName(b.faculty, bookLang), b.grad_year].filter(Boolean).join(' · ');
+      const avatar = b.bg_images && b.bg_images[0]
+        ? `<img src="${b.bg_images[0]}" class="bp-avatar" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(201,168,76,0.4);" onerror="this.style.display='none'">`
+        : `<div class="bp-avatar">${initial}${isCurrent ? '<div class="bp-current-dot"></div>' : ''}</div>`;
+      
+      return `
+      <div class="bp-card ${isCurrent ? 'current' : ''}" onclick="${isCurrent ? 'closeBooksPanel()' : `window.location.href='?slug=${b.slug}'`}">
+        ${avatar}
+        <div class="bp-info">
+          <div class="bp-name">${name}</div>
+          ${meta ? `<div class="bp-meta">${meta}</div>` : ''}
+          ${isCurrent ? '<div class="bp-you">✦ أنت هنا</div>' : ''}
+        </div>
+        <div class="bp-arrow">${isCurrent ? '' : '←'}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="bp-loading">تعذّر التحميل</div>';
+  }
+}
+
+// تحميل عدد الدفاتر عند الفتح
+(async () => {
+  try {
+    const { count } = await sb.from('guestbooks').select('*', { count: 'exact', head: true }).eq('is_active', true);
+    const el = document.getElementById('bt-count');
+    if (el) el.textContent = count || '0';
+  } catch(e) {}
+})();
+
+
+// ═══ STATS & QR ═══
+
+// توليد رقم ثابت بناءً على slug (عشان يكون consistent)
+function seededRand(seed, min, max) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
+  h = Math.abs(h);
+  return min + (h % (max - min + 1));
+}
+
+function initStats(slug, realMsgCount) {
+  const visits  = seededRand(slug + 'v', 120, 480);
+  const photos  = seededRand(slug + 'p', 4, 18);
+  const msgs    = realMsgCount || seededRand(slug + 'm', 5, 40);
+
+  // Top bar
+  animateNum('badge-num',  msgs,    800);
+  animateNum('photos-num', photos,  900);
+  animateNum('visits-num', visits, 1000);
+
+  // Activity section
+  animateNum('act-visits', visits, 1200);
+  animateNum('act-msgs',   msgs,   1300);
+  animateNum('act-photos', photos, 1400);
+}
+
+function animateNum(id, target, delay) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  setTimeout(() => {
+    let start = 0;
+    const dur = 1000;
+    const step = 16;
+    const steps = dur / step;
+    const inc = target / steps;
+    const t = setInterval(() => {
+      start += inc;
+      if (start >= target) { el.textContent = target; clearInterval(t); }
+      else el.textContent = Math.floor(start);
+    }, step);
+  }, delay);
+}
+
+// QR Code (بسيط بدون library خارجية — نستخدم Google Charts API)
+function initQR(slug, name) {
+  const url = window.location.href.split('?')[0] + '?slug=' + slug;
+  const qrImg = document.createElement('img');
+  qrImg.style.cssText = 'width:150px;height:150px;display:block;';
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}&color=0a0600&bgcolor=ffffff&margin=0`;
+  qrImg.alt = 'QR Code';
+  const wrap = document.getElementById('qr-wrapper');
+  if (wrap) { wrap.innerHTML = ''; wrap.appendChild(qrImg); }
+
+  const nameEl = document.getElementById('qr-grad-name');
+  if (nameEl && name) nameEl.textContent = name;
+}
+
+function copyBookLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.qr-btn-copy');
+    const lbl = document.getElementById('qr-copy-lbl');
+    const orig = lbl.textContent;
+    lbl.textContent = '✓ تم النسخ';
+    btn.style.background = 'rgba(39,174,96,0.2)';
+    btn.style.borderColor = 'rgba(39,174,96,0.5)';
+    setTimeout(() => { lbl.textContent = orig; btn.style.background = ''; btn.style.borderColor = ''; }, 2000);
+  });
+}
+
+function shareSocial(platform) {
+  const url = encodeURIComponent(window.location.href);
+  const name = document.getElementById('qr-grad-name')?.textContent || '';
+  const text = encodeURIComponent('🎓 ' + name + ' — دفتر التخرج');
+  let shareUrl = '';
+  switch(platform) {
+    case 'whatsapp':
+      shareUrl = 'https://wa.me/?text=' + text + '%0A' + url;
+      break;
+    case 'telegram':
+      shareUrl = 'https://t.me/share/url?url=' + url + '&text=' + text;
+      break;
+    case 'instagram':
+      // Instagram doesn't support direct URL sharing — copy link and show toast
+      copyBookLink();
+      showToast('📋 تم نسخ الرابط — الصقه في قصتك على Instagram');
+      return;
+    case 'snapchat':
+      shareUrl = 'https://www.snapchat.com/share?url=' + url;
+      break;
+  }
+  if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
+}
+
+function shareBook() {
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: window.location.href });
+  } else {
+    copyBookLink();
+  }
+}
+
+// تحديث labels حسب اللغة
+function updateStatsLabels(lang) {
+  const labels = {
+    ar: { visits:'زيارة', msgs:'رسالة', photos:'صورة', label:'إحصائيات الدفتر', title:'يتابعه الجميع', hint:'امسح الكود · افتح الدفتر', copy:'نسخ الرابط', share:'مشاركة', sub:'دفتر التخرج', social:'شارك على', socialCopy:'نسخ رابط الدفتر' },
+    en: { visits:'Visits', msgs:'Messages', photos:'Photos', label:'Book Activity', title:'Everyone is Watching', hint:'Scan QR · Open Book', copy:'Copy Link', share:'Share', sub:'Graduation Guestbook', social:'Share on', socialCopy:'Copy Book Link' },
+    ru: { visits:'Визитов', msgs:'Сообщений', photos:'Фото', label:'Статистика', title:'За ним следят все', hint:'Скан QR · Открыть книгу', copy:'Копировать', share:'Поделиться', sub:'Книга выпускника', social:'Поделиться в', socialCopy:'Копировать ссылку' },
+  };
+  const t = labels[lang] || labels['en'];
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('act-visits-lbl', t.visits); set('visits-lbl', t.visits);
+  set('act-msgs-lbl',   t.msgs);   set('badge-lbl',  t.msgs);
+  set('act-photos-lbl', t.photos); set('photos-lbl', t.photos);
+  set('act-label', t.label);
+  set('act-title', t.title);
+  set('qr-hint',   t.hint + '\n✨ ' + (lang==='ar'?'اترك ذكرى · شارك مع الأصدقاء':lang==='ru'?'Оставь память · Поделись с друзьями':'Leave a Memory · Share with Friends'));
+  set('qr-copy-lbl', t.copy);
+  set('qr-share-lbl', t.share);
+  set('qr-grad-sub', t.sub);
+  set('qr-social-lbl', t.social);
+  set('qr-social-copy-lbl', t.socialCopy);
+}
+
+</script>
+
+
+
+<!-- ═══ ACTION PANEL (تظهر لما يفتح الرابط بـ ?action=approve أو revise) ═══ -->
+<div id="action-panel">
+  <div class="action-panel-title" id="action-panel-title">🎓 شاهد دفترك واختر</div>
+  <div class="action-btns">
+    <button class="ap-btn ap-approve" onclick="approveBook()">✅ موافقة على الدفتر</button>
+    <button class="ap-btn ap-revise" onclick="openRevisionForm()">✏️ طلب تعديل</button>
+    <button class="ap-close ap-btn" onclick="document.getElementById('action-panel').style.display='none'">✕</button>
+  </div>
+</div>
+
+<!-- ═══ REVISION FORM ═══ -->
+<div id="revision-form-wrap">
+  <div class="revision-form-inner">
+    <div class="revision-form-title">✏️ طلب تعديل على الدفتر</div>
+    <div class="revision-form-sub">اختر نوع التعديل المطلوب (يمكن اختيار أكثر من واحد)</div>
+    <div class="rev-options" id="rev-options">
+      <div class="rev-option" onclick="toggleRevOption(this,'تغيير صورة الغلاف')">📸 تغيير صورة الغلاف</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'إضافة صور')">➕ إضافة صور</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'حذف صور')">🗑️ حذف صور</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل الاسم')">✍️ تعديل الاسم</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل الكلية')">🏥 تعديل الكلية</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تعديل سنة التخرج')">📅 تعديل سنة التخرج</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'تغيير الثيم')">🎨 تغيير الثيم</div>
+      <div class="rev-option" onclick="toggleRevOption(this,'أخرى')">💬 أخرى</div>
+    </div>
+    <textarea class="rev-notes" id="rev-notes" placeholder="اكتب تفاصيل التعديل المطلوب..."></textarea>
+    <button class="rev-submit" onclick="submitRevision()">إرسال طلب التعديل 📤</button>
+    <button class="rev-cancel" onclick="closeRevisionForm()">إلغاء</button>
+  </div>
+</div>
+
+<!-- ═══ APPROVED BANNER ═══ -->
+<div id="approved-banner">
+  <div class="approved-inner">
+    <span style="font-size:32px;">🎉</span>
+    <div>
+      <div id="approved-title">تمت الموافقة على دفترك!</div>
+      <div style="font-size:12px;opacity:.8;margin-top:2px;">شكراً — تم إرسال تأكيد الموافقة</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SITE FOOTER ═══ -->
+
+<!-- ═══ ACTIVITY STATS ═══ -->
+<section id="activity-section">
+  <div class="activity-inner">
+    <div class="activity-header">
+      <div class="activity-label" id="act-label">إحصائيات الدفتر</div>
+      <div class="activity-title" id="act-title">يتابعه الجميع</div>
+    </div>
+    <div class="activity-cards">
+      <div class="act-card">
+        <span class="act-icon">👀</span>
+        <div class="act-num" id="act-visits">—</div>
+        <div class="act-lbl" id="act-visits-lbl">زيارة</div>
+      </div>
+      <div class="act-card">
+        <span class="act-icon">💌</span>
+        <div class="act-num" id="act-msgs">—</div>
+        <div class="act-lbl" id="act-msgs-lbl">رسالة</div>
+      </div>
+      <div class="act-card">
+        <span class="act-icon">📸</span>
+        <div class="act-num" id="act-photos">—</div>
+        <div class="act-lbl" id="act-photos-lbl">صورة</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ QR SECTION ═══ -->
+<section id="qr-section">
+  <div class="qr-glass-card">
+    <div class="qr-card-brand">
+      <img src="gradbook-logo.png" alt="Grad Book">
+      <span>GRAD BOOK</span>
+    </div>
+    <div class="qr-wrapper" id="qr-wrapper">
+      <canvas id="qr-canvas"></canvas>
+    </div>
+    <div class="qr-grad-name" id="qr-grad-name">—</div>
+    <div class="qr-grad-sub" id="qr-grad-sub">Graduation Guestbook</div>
+    <div class="qr-hint" id="qr-hint">
+      امسح الكود · افتح الدفتر<br>
+      <strong>اترك ذكرى · شارك مع الأصدقاء</strong>
+    </div>
+    <div class="qr-actions">
+      <button class="qr-btn qr-btn-copy" onclick="copyBookLink()">
+        <span>🔗</span> <span id="qr-copy-lbl">نسخ الرابط</span>
+      </button>
+      <button class="qr-btn qr-btn-share" onclick="shareBook()">
+        <span>↗</span> <span id="qr-share-lbl">مشاركة</span>
+      </button>
+    </div>
+
+    <!-- ═══ SOCIAL SHARE ═══ -->
+    <div class="qr-social-divider">
+      <span id="qr-social-lbl">شارك على</span>
+    </div>
+    <div class="qr-social-btns">
+      <!-- WhatsApp -->
+      <button class="qr-social-btn soc-wa" onclick="shareSocial('whatsapp')" title="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="#25D366"/>
+        </svg>
+        WhatsApp
+      </button>
+      <!-- Telegram -->
+      <button class="qr-social-btn soc-tg" onclick="shareSocial('telegram')" title="Telegram">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" fill="#28A7EA"/>
+        </svg>
+        Telegram
+      </button>
+      <!-- Instagram -->
+      <button class="qr-social-btn soc-ig" onclick="shareSocial('instagram')" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#f09433"/>
+              <stop offset="25%" style="stop-color:#e6683c"/>
+              <stop offset="50%" style="stop-color:#dc2743"/>
+              <stop offset="75%" style="stop-color:#cc2366"/>
+              <stop offset="100%" style="stop-color:#bc1888"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="url(#ig-grad)"/>
+        </svg>
+        Instagram
+      </button>
+      <!-- Snapchat -->
+      <button class="qr-social-btn soc-sc" onclick="shareSocial('snapchat')" title="Snapchat">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.166.006C10.99-.028 7.923.307 6.38 3.235c-.525.986-.4 3.14-.375 3.762-.357.175-.74.185-1.075.155-.48-.04-.965.24-.98.71-.01.395.28.795 1.06.945.045.01.09.02.14.03.215.045.555.12.775.415.24.33.195.83-.045 1.655-.01.04-.73 1.88-2.395 2.87-.29.17-.44.49-.38.82.07.36.38.63.77.665.52.05 1.08.03 1.63-.07.125.32.435.57.97.75.525.175.86.42.875.78.01.235-.105.46-.33.67-.51.47-.565.96-.34 1.37.295.53.985.74 2.255.72.395 0 .84.05 1.375.17.59.14 1.19.56 1.84.99.47.31.96.63 1.5.84.38.15.755.225 1.13.225.375 0 .75-.075 1.135-.225.54-.21 1.025-.525 1.5-.84.645-.43 1.245-.85 1.84-.99.535-.12.98-.17 1.37-.17 1.27.025 1.96-.19 2.26-.72.225-.41.17-.9-.34-1.37-.225-.21-.34-.435-.33-.67.015-.36.35-.605.875-.78.53-.18.845-.43.965-.745.55.1 1.115.12 1.63.07.39-.035.7-.305.77-.665.06-.33-.09-.65-.38-.82-1.665-.99-2.38-2.83-2.39-2.87-.24-.825-.285-1.325-.045-1.655.22-.295.56-.37.775-.415.05-.01.095-.02.14-.03.78-.15 1.065-.55 1.06-.945-.015-.47-.5-.75-.98-.71-.33.03-.715.02-1.07-.155.025-.62.15-2.775-.38-3.76C16.08.305 13.34-.03 12.166.006z" fill="#FFFC00" stroke="#000" stroke-width="0.5"/>
+        </svg>
+        Snapchat
+      </button>
+    </div>
+    <!-- Copy link row -->
+    <div class="qr-social-copy-row">
+      <button class="qr-social-btn soc-copy" onclick="copyBookLink()">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span id="qr-social-copy-lbl">نسخ رابط الدفتر</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a onclick="openFooterModal('privacy')">Privacy Policy</a>
+    <a onclick="openFooterModal('terms')">Terms of Service</a>
+    <a onclick="openFooterModal('contact')">Contact Us</a>
+    <a class="footer-ig-btn" href="https://www.instagram.com/alrefaee_m0hammad" target="_blank" title="Instagram">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    </a>
+  </div>
+  <div class="footer-copy">© 2026 Grad Book</div>
+</footer>
+
+<div class="footer-modal" id="footer-modal">
+  <div class="footer-modal-box">
+    <button class="footer-modal-close" onclick="closeFooterModal()">✕</button>
+    <h3 id="footer-modal-title"></h3>
+    <p id="footer-modal-content"></p>
+  </div>
+</div>
+
+
+<!-- ═══ BOOKS PANEL ═══ -->
+<div id="books-overlay" onclick="closeBooksPanel()"></div>
+
+<button id="books-toggle" onclick="toggleBooksPanel()">
+  <span class="bt-icon">🎓</span>
+  <span class="bt-label">دفاتر الطلاب</span>
+  <span class="bt-count" id="bt-count">...</span>
+</button>
+
+<div id="books-panel">
+  <div class="bp-header">
+    <div class="bp-title">🎓 دفاتر الطلاب</div>
+    <button class="bp-close" onclick="closeBooksPanel()">✕</button>
+  </div>
+  <div class="bp-subtitle">اختر دفتراً واكتب تهنئتك</div>
+  <div class="bp-list" id="bp-list">
+    <div class="bp-loading"><div class="bp-spin"></div>جارٍ التحميل...</div>
+  </div>
+</div>
+
+</body>
+</html>
