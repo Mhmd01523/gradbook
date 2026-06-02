@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>الدفع — Grad Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL    = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY    = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+  const ADMIN_BOT_TOKEN = '8971222565:AAGyI9K6Ive2hI_V9F3Qy1GaL4_dlaM4t4Y';
+  const ADMIN_CHAT_ID   = '1343835667';
+  const GRADBOOK_BOT    = 'gradbook_notifications_bot';
+  const PRICE_RUB       = 1500;
+  const TBANK_CARD      = '2200700879896578'; //
+</script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --bg: #08060a;
+  --bg2: #0e0b14;
+  --text: #f5f0e8;
+  --text2: rgba(245,240,232,0.55);
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(201,168,76,0.2);
+}
+html, body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Tajawal',sans-serif; }
+
+/* BG */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.08), transparent 60%),
+              radial-gradient(ellipse 50% 40% at 80% 100%, rgba(100,60,200,0.05), transparent 60%);
+  pointer-events:none; z-index:0;
+}
+
+.page { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:24px 16px 60px; }
+
+/* Header */
+.pay-header { text-align:center; margin-bottom:32px; }
+.pay-logo { display:inline-flex; align-items:center; gap:10px; text-decoration:none; margin-bottom:20px; }
+.pay-logo img { width:36px; height:36px; filter:drop-shadow(0 0 8px rgba(201,168,76,0.5)); }
+.pay-logo span { font-size:16px; font-weight:700; color:var(--gold-light); letter-spacing:1px; }
+.pay-title { font-size:clamp(22px,6vw,30px); font-weight:900; color:#fff; margin-bottom:6px; }
+.pay-sub { font-size:13px; color:var(--text2); }
+
+/* Order ID Card */
+.order-id-card {
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04));
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-align:center;
+  margin-bottom:20px;
+}
+.order-id-label { font-size:11px; color:var(--gold); letter-spacing:3px; text-transform:uppercase; margin-bottom:6px; }
+.order-id-val { font-size:26px; font-weight:900; color:#fff; letter-spacing:2px; font-family:'Cormorant Garamond',serif; }
+.order-name { font-size:13px; color:var(--text2); margin-top:4px; }
+
+/* Amount Card */
+.amount-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 20px;
+  text-align:center;
+  margin-bottom:20px;
+  position:relative; overflow:hidden;
+}
+.amount-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.amount-label { font-size:11px; color:var(--text2); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+.amount-val { font-size:42px; font-weight:900; color:var(--gold-light); line-height:1; font-family:'Cormorant Garamond',serif; }
+.amount-currency { font-size:18px; color:var(--gold); margin-right:4px; }
+.amount-note { font-size:11px; color:rgba(255,255,255,0.25); margin-top:8px; }
+
+/* Steps */
+.steps-title { font-size:12px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:16px; text-align:center; }
+.step-item {
+  display:flex; align-items:flex-start; gap:14px;
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:10px;
+}
+.step-num {
+  width:30px; height:30px; border-radius:50%;
+  background: linear-gradient(135deg, var(--gold), #a07830);
+  color:#000; font-weight:900; font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.step-text { flex:1; }
+.step-text strong { display:block; font-size:14px; color:#fff; margin-bottom:3px; }
+.step-text span { font-size:12px; color:var(--text2); line-height:1.5; }
+
+/* Bank Cards */
+.banks-title { font-size:12px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:16px; text-align:center; margin-top:24px; }
+.bank-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius:16px;
+  padding:18px 20px;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  position:relative;
+  overflow:hidden;
+  transition: border-color 0.2s;
+}
+.bank-card:hover { border-color: rgba(201,168,76,0.4); }
+.bank-icon { font-size:28px; flex-shrink:0; }
+.bank-info { flex:1; }
+.bank-name { font-size:13px; font-weight:700; color:#fff; margin-bottom:4px; }
+.bank-num { font-size:18px; font-weight:900; color:var(--gold-light); letter-spacing:2px; font-family:'Cormorant Garamond',serif; }
+.copy-btn {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.25);
+  color: var(--gold);
+  padding: 7px 12px;
+  border-radius: 50px;
+  font-size:11px; font-weight:700;
+  cursor:pointer; font-family:'Tajawal',sans-serif;
+  transition:all 0.2s; white-space:nowrap;
+}
+.copy-btn:hover { background:rgba(201,168,76,0.2); }
+.copy-btn.copied { background:rgba(39,174,96,0.15); border-color:rgba(39,174,96,0.4); color:#27ae60; }
+
+/* Warning */
+.pay-warning {
+  background: rgba(255,180,0,0.06);
+  border: 1px solid rgba(255,180,0,0.25);
+  border-radius:12px;
+  padding:14px 16px;
+  display:flex; gap:10px; align-items:flex-start;
+  margin-bottom:24px;
+  margin-top:8px;
+}
+.pay-warning .warn-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.pay-warning p { font-size:12px; color:rgba(255,220,100,0.85); line-height:1.6; }
+
+/* TG Section */
+.tg-section {
+  background: linear-gradient(135deg, rgba(41,182,246,0.08), rgba(41,182,246,0.03));
+  border: 1px solid rgba(41,182,246,0.25);
+  border-radius:20px;
+  padding:24px 20px;
+  text-align:center;
+  margin-top:24px;
+}
+.tg-icon { font-size:40px; margin-bottom:12px; }
+.tg-title { font-size:17px; font-weight:700; color:#fff; margin-bottom:6px; }
+.tg-sub { font-size:12px; color:rgba(255,255,255,0.45); line-height:1.6; margin-bottom:20px; }
+.tg-btn {
+  display:inline-flex; align-items:center; gap:10px;
+  background: linear-gradient(135deg, #29b6f6, #0288d1);
+  color:#fff;
+  padding:14px 28px;
+  border-radius:50px;
+  text-decoration:none;
+  font-size:15px; font-weight:700; font-family:'Tajawal',sans-serif;
+  box-shadow:0 4px 20px rgba(41,182,246,0.3);
+  transition:all 0.25s;
+}
+.tg-btn:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(41,182,246,0.4); }
+.tg-btn svg { width:22px; height:22px; fill:#fff; }
+.tg-note { font-size:11px; color:rgba(255,255,255,0.25); margin-top:14px; line-height:1.6; }
+
+/* Done Section (hidden) */
+.done-section {
+  display:none;
+  text-align:center;
+  padding:40px 20px;
+  background: var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:20px;
+  margin-top:20px;
+}
+.done-icon { font-size:52px; margin-bottom:16px; }
+.done-title { font-size:20px; font-weight:700; color:#fff; margin-bottom:8px; }
+.done-sub { font-size:13px; color:var(--text2); line-height:1.7; }
+
+/* Toast */
+#toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:#1a1400; border:1px solid var(--gold); border-radius:50px;
+  padding:10px 20px; font-size:13px; color:var(--gold-light);
+  opacity:0; transition:all 0.3s; z-index:999; white-space:nowrap;
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Lang buttons */
+.lang-bar { display:flex; gap:8px; justify-content:center; margin-bottom:24px; }
+.lang-btn { background:var(--glass); border:1px solid rgba(255,255,255,0.1); color:var(--text2); padding:6px 14px; border-radius:50px; cursor:pointer; font-size:12px; font-family:'Tajawal',sans-serif; transition:all 0.2s; }
+.lang-btn.active { border-color:var(--gold); color:var(--gold-light); background:rgba(201,168,76,0.08); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="pay-header">
+    <a href="index.html" class="pay-logo">
+      <img src="gradbook-logo.png" alt="Grad Book">
+      <span>GRAD BOOK</span>
+    </a>
+
+    <!-- Lang -->
+    <div class="lang-bar">
+      <button class="lang-btn" onclick="setLang('ar')">🇸🇦 العربية</button>
+      <button class="lang-btn active" onclick="setLang('ru')">🇷🇺 Русский</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+    </div>
+
+    <div class="pay-title" id="pay-title">Оплата заказа</div>
+    <div class="pay-sub" id="pay-sub">Завершите оплату для начала работы</div>
+  </div>
+
+  <!-- Order ID -->
+  <div class="order-id-card">
+    <div class="order-id-label" id="lbl-order">رقم الطلب</div>
+    <div class="order-id-val" id="order-code-display">—</div>
+    <div class="order-name" id="customer-name-display"></div>
+  </div>
+
+  <!-- Amount -->
+  <div class="amount-card">
+    <div class="amount-label" id="lbl-amount">المبلغ المطلوب</div>
+    <div class="amount-val"><span class="amount-currency">₽</span><span id="amount-val">1500</span></div>
+    <div class="amount-note" id="amount-note">شامل كل التصاميم والإشعارات</div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps-title" id="steps-title">خطوات الدفع</div>
+  <div class="step-item">
+    <div class="step-num">1</div>
+    <div class="step-text">
+      <strong id="step1-title">انسخ رقم البطاقة</strong>
+      <span id="step1-sub">انسخ رقم البطاقة واضغط "نسخ"</span>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">2</div>
+    <div class="step-text">
+      <strong id="step2-title">أرسل المبلغ</strong>
+      <span id="step2-sub">أرسل ₽1500 مع ملاحظة: رقم طلبك</span>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-num">3</div>
+    <div class="step-text">
+      <strong id="step3-title">افتح بوت تيليغرام</strong>
+      <span id="step3-sub">اضغط الزر أدناه وابعث صورة إيصال الدفع</span>
+    </div>
+  </div>
+
+  <!-- Bank Cards -->
+  <div class="banks-title" id="banks-title">وسائل الدفع</div>
+
+  
+  <div class="bank-card">
+    <div class="bank-icon">🟡</div>
+    <div class="bank-info">
+      <div class="bank-name">T-Bank (Тинькофф)</div>
+      <div class="bank-num" id="tbank-num">—</div>
+    </div>
+    <button class="copy-btn" id="copy-tbank" onclick="copyCard('tbank')">نسخ</button>
+  </div>
+
+  <!-- Warning -->
+  <div class="pay-warning">
+    <div class="warn-icon">⚠️</div>
+    <p id="warn-text">بعد إتمام التحويل، افتح بوت تيليغرام وأرسل صورة الإيصال. لن يبدأ تنفيذ الطلب قبل تأكيد الدفع.</p>
+  </div>
+
+  <!-- Telegram Connect -->
+  <div class="tg-section">
+    <div class="tg-icon">✈️</div>
+    <div class="tg-title" id="tg-title">ربط تيليغرام للمتابعة</div>
+    <div class="tg-sub" id="tg-sub">بعد الضغط على Start في البوت، أرسل صورة إيصال الدفع. سنتحقق ونبدأ تنفيذ طلبك فوراً.</div>
+    <a class="tg-btn" id="tg-open-btn" href="#" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19l-2.02 9.52c-.15.67-.54.84-1.1.52l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.21-3.02 5.5-4.97c.24-.21-.05-.33-.37-.12L7.1 14.47l-2.94-.92c-.64-.2-.65-.64.13-.95l11.5-4.43c.53-.19 1 .13.82.94l.33-.92z"/></svg>
+      <span id="tg-btn-text">فتح بوت تيليغرام</span>
+    </a>
+    <div class="tg-note" id="tg-note">سيتم تأكيد دفعك وإرسال جميع التحديثات عبر البوت</div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ═══ TRANSLATIONS ═══
+const LANGS = {
+  ar: {
+    dir:'rtl',
+    title:'الدفع مطلوب',
+    sub:'أكمل التحويل لبدء تنفيذ دفترك',
+    lblOrder:'رقم الطلب',
+    lblAmount:'المبلغ المطلوب',
+    amountNote:'شامل كل التصاميم والإشعارات',
+    stepsTitle:'خطوات الدفع',
+    step1t:'انسخ رقم البطاقة', step1s:'انسخ رقم البطاقة واضغط نسخ',
+    step2t:'أرسل المبلغ',      step2s:'أرسل ₽1500 مع ملاحظة رقم طلبك',
+    step3t:'افتح البوت',       step3s:'اضغط الزر أدناه وأرسل صورة إيصال الدفع',
+    banksTitle:'وسائل الدفع',
+    warnText:'بعد التحويل، افتح البوت وأرسل صورة الإيصال. لن يبدأ تنفيذ الطلب قبل تأكيد الدفع.',
+    tgTitle:'ربط تيليغرام للمتابعة',
+    tgSub:'بعد الضغط Start أرسل صورة الإيصال. سنتحقق ونبدأ التنفيذ فوراً.',
+    tgBtn:'فتح بوت تيليغرام',
+    tgNote:'سيتم تأكيد دفعك وإرسال جميع التحديثات عبر البوت',
+    copyText:'نسخ', copied:'✓ تم',
+  },
+  ru: {
+    dir:'ltr',
+    title:'Оплата заказа',
+    sub:'Завершите перевод для начала работы',
+    lblOrder:'Номер заказа',
+    lblAmount:'Сумма к оплате',
+    amountNote:'Включает все дизайны и уведомления',
+    stepsTitle:'Шаги оплаты',
+    step1t:'Скопируй номер карты', step1s:'Скопируй номер карты и нажми "Копировать"',
+    step2t:'Переведи сумму',        step2s:'Переведи ₽1500, в комментарии укажи номер заказа',
+    step3t:'Открой Telegram-бот',  step3s:'Нажми кнопку ниже и отправь скриншот оплаты',
+    banksTitle:'Способы оплаты',
+    warnText:'После перевода открой бота и отправь скриншот. Работа начнётся только после подтверждения оплаты.',
+    tgTitle:'Подключи Telegram для продолжения',
+    tgSub:'После нажатия Start отправь скриншот оплаты. Подтвердим и начнём работу.',
+    tgBtn:'Открыть Telegram-бот',
+    tgNote:'Подтверждение оплаты и все обновления придут через бота',
+    copyText:'Копировать', copied:'✓ Скопировано',
+  },
+  en: {
+    dir:'ltr',
+    title:'Payment Required',
+    sub:'Complete your transfer to start production',
+    lblOrder:'Order ID',
+    lblAmount:'Amount Due',
+    amountNote:'Includes all designs and notifications',
+    stepsTitle:'Payment Steps',
+    step1t:'Copy Card Number', step1s:'Copy the card number and tap Copy',
+    step2t:'Send Payment',      step2s:'Transfer ₽1500 with your Order ID as note',
+    step3t:'Open Telegram Bot', step3s:'Tap the button below and send your payment screenshot',
+    banksTitle:'Payment Methods',
+    warnText:'After the transfer, open the bot and send a payment screenshot. Production starts only after payment is confirmed.',
+    tgTitle:'Connect Telegram to Continue',
+    tgSub:'After pressing Start, send your payment screenshot. We\'ll verify and begin production.',
+    tgBtn:'Open Telegram Bot',
+    tgNote:'Payment confirmation and all updates will be sent through the bot',
+    copyText:'Copy', copied:'✓ Copied',
+  }
+};
+
+let currentLang = 'ru';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = LANGS[lang];
+  document.documentElement.dir = t.dir;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['ar','ru','en'][i] === lang);
+  });
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('pay-title',      t.title);
+  set('pay-sub',        t.sub);
+  set('lbl-order',      t.lblOrder);
+  set('lbl-amount',     t.lblAmount);
+  set('amount-note',    t.amountNote);
+  set('steps-title',    t.stepsTitle);
+  set('step1-title',    t.step1t); set('step1-sub', t.step1s);
+  set('step2-title',    t.step2t); set('step2-sub', t.step2s);
+  set('step3-title',    t.step3t); set('step3-sub', t.step3s);
+  set('banks-title',    t.banksTitle);
+  set('warn-text',      t.warnText);
+  set('tg-title',       t.tgTitle);
+  set('tg-sub',         t.tgSub);
+  set('tg-btn-text',    t.tgBtn);
+  set('tg-note',        t.tgNote);
+  
+  set('copy-tbank',     t.copyText);
+}
+
+function copyCard(bank) {
+  const num = TBANK_CARD;
+  const clean = num.replace(/\s/g, '');
+  navigator.clipboard.writeText(clean).then(() => {
+    const btn = document.getElementById('copy-' + bank);
+    const orig = LANGS[currentLang].copyText;
+    btn.textContent = LANGS[currentLang].copied;
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+  toast('✓ ' + num);
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ═══ INIT ═══
+async function init() {
+  // جيب بيانات الطلب من URL
+  const params = new URLSearchParams(window.location.search);
+  const orderCode = params.get('order') || params.get('code') || '';
+  const lang = params.get('lang') || 'ru';
+
+  // حدد اللغة
+  setLang(lang);
+  document.querySelectorAll('.lang-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['ar','ru','en'][i] === lang);
+  });
+
+  // أظهر رقم الطلب
+  document.getElementById('order-code-display').textContent = orderCode || '—';
+  
+  document.getElementById('tbank-num').textContent = TBANK_CARD;
+
+  // رابط البوت مع Order Code
+  const botLink = `https://t.me/${GRADBOOK_BOT}?start=${orderCode}`;
+  document.getElementById('tg-open-btn').href = botLink;
+
+  // جيب اسم الزبون من Supabase
+  if (orderCode) {
+    try {
+      const { data } = await sb.from('orders').select('customer_name, status').eq('order_code', orderCode).single();
+      if (data) {
+        document.getElementById('customer-name-display').textContent = data.customer_name || '';
+        // لو الدفع اتأكد بالفعل
+        if (data.status === 'paid' || data.status === 'in_progress' || data.status === 'ready' || data.status === 'delivered') {
+          showPaidState();
+        }
+      }
+    } catch(e) {}
+  }
+}
+
+function showPaidState() {
+  // إخفاء زر TG وإظهار رسالة تأكيد
+  document.querySelector('.tg-section').innerHTML = `
+    <div style="text-align:center;padding:10px 0">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:8px">${currentLang==='ru'?'Оплата подтверждена':currentLang==='en'?'Payment Confirmed':'تم تأكيد الدفع'}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45)">${currentLang==='ru'?'Ваш заказ в работе':currentLang==='en'?'Your order is in production':'طلبك قيد التنفيذ'}</div>
+    </div>`;
+}
+
+init();
+</script>
+</body>
+</html>
