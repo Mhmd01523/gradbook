@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إدارة دفاتر التخرج — الاحترافية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --gold:#c9a84c; --gold-light:#f0d080; --dark:#0d0d0d; --dark2:#141414;
+  --dark3:#1c1c1c; --dark4:#242424; --border:#2a2a2a;
+  --text:#e8e0d0; --text2:#a09070;
+  --danger:#c0392b; --success:#27ae60; --blue:#0088cc; --orange:#e67e22;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Tajawal',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* SETUP */
+#setup-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1a1500 0%,#0d0d0d 70%);}
+.setup-box{background:var(--dark3);border:1px solid var(--gold);border-radius:16px;padding:48px;width:100%;max-width:500px;box-shadow:0 0 60px rgba(201,168,76,0.15);}
+.setup-logo{text-align:center;margin-bottom:32px;}
+.setup-logo h1{font-size:28px;color:var(--gold);font-weight:700;margin-bottom:6px;}
+.setup-logo p{color:var(--text2);font-size:14px;}
+
+/* LAYOUT */
+#main-screen{display:none;}
+.sidebar{position:fixed;right:0;top:0;bottom:0;width:240px;background:var(--dark2);border-left:1px solid var(--border);padding:24px 0;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.sidebar-logo h2{color:var(--gold);font-size:16px;font-weight:700;}
+.sidebar-logo p{color:var(--text2);font-size:11px;margin-top:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;color:var(--text2);font-size:14px;transition:all .2s;border-right:3px solid transparent;position:relative;}
+.nav-item:hover,.nav-item.active{color:var(--gold);background:rgba(201,168,76,.07);border-right-color:var(--gold);}
+.nav-badge{background:var(--danger);color:#fff;border-radius:10px;padding:2px 7px;font-size:11px;font-weight:700;margin-right:auto;animation:badgePulse 1.5s infinite;}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.6}}
+.content{margin-right:240px;padding:32px;min-height:100vh;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.stat-card.danger::before{background:linear-gradient(90deg,transparent,var(--danger),transparent);}
+.stat-card.orange::before{background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+.stat-card.success::before{background:linear-gradient(90deg,transparent,var(--success),transparent);}
+.stat-card:hover{border-color:rgba(201,168,76,.4);}
+.stat-num{font-size:32px;font-weight:900;color:var(--gold);line-height:1;}
+.stat-card.danger .stat-num{color:var(--danger);}
+.stat-card.orange .stat-num{color:var(--orange);}
+.stat-card.success .stat-num{color:var(--success);}
+.stat-label{font-size:12px;color:var(--text2);margin-top:6px;}
+
+/* CARDS */
+.section-card{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;}
+.section-title{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:13px;color:var(--text2);}
+input,select,textarea{background:var(--dark4);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .2s;direction:rtl;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;}
+
+/* BUTTONS */
+.btn{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#000;}
+.btn-gold:hover{filter:brightness(1.15);transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+/* ORDER CARDS */
+.order-card{background:var(--dark4);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;transition:border-color .2s;}
+.order-card::before{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;}
+.order-card.pending::before{background:var(--orange);}
+.order-card.paid::before{background:var(--success);}
+.order-card:hover{border-color:rgba(201,168,76,.35);}
+.order-header-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:12px;}
+.order-name{font-size:16px;font-weight:700;}
+.order-time{font-size:11px;color:var(--text2);white-space:nowrap;}
+.order-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.order-detail{font-size:12px;color:var(--text2);}
+.order-detail span{color:var(--text);font-weight:500;}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-pending{background:rgba(230,126,34,.2);color:var(--orange);}
+.badge-paid{background:rgba(39,174,96,.2);color:var(--success);}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark3);border:1px solid var(--gold);color:var(--gold);padding:12px 24px;border-radius:30px;font-size:14px;z-index:9999;transition:transform .3s;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.page-header h2{font-size:22px;font-weight:700;}
+.page-header p{font-size:13px;color:var(--text2);margin-top:2px;}
+.empty-state{text-align:center;padding:48px;color:var(--text2);}
+.empty-state .icon{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<div id="setup-screen">
+  <div class="setup-box">
+    <div class="setup-logo"><h1>⚙️ إعداد نظام الإدارة</h1><p>يتم الربط تلقائياً مع قاعدة البيانات والبوت</p></div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label>🔒 كلمة سر لوحة التحكم</label><input id="s-pass" type="password" placeholder="أدخل كلمة المرور التي تريدها"></div>
+      <button class="btn btn-gold" onclick="saveSetup()" style="width:100%;justify-content:center;margin-top:8px;">حفظ والدخول لوحة التحكم ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-screen">
+  <div class="sidebar">
+    <div class="sidebar-logo"><h2>🎓 دفاتر التخرج</h2><p>لوحة الإدارة الحية</p></div>
+    <div class="nav-item active" onclick="showTab('dashboard',this)">📊 الرئيسية</div>
+    <div class="nav-item" onclick="showTab('orders',this)" id="nav-orders">📥 إدارة الطلبات</div>
+    <div class="nav-item" onclick="showTab('create',this)">⚡ إنشاء يدوي مباشر</div>
+    <div style="margin-top:16px;padding:20px;">
+      <button class="btn btn-outline btn-sm" onclick="logout()" style="width:100%;justify-content:center;">🚪 خروج</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="page-header">
+        <div><h2>لوحة التحكم والإحصاءات</h2><p>نظرة عامة على البيانات الحية المستلمة من السيرفر</p></div>
+        <button class="btn btn-outline btn-sm" onclick="refreshAll()">🔄 تحديث الإحصاءات</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card" onclick="showTab('orders',document.getElementById('nav-orders'))">
+          <div class="stat-num" id="stat-total">0</div><div class="stat-label">إجمالي المتقدمين</div>
+        </div>
+        <div class="stat-card danger" onclick="showTab('orders',document.getElementById('nav-orders'))">
+          <div class="stat-num" id="stat-pending">0</div><div class="stat-label">⏳ بانتظار السداد</div>
+        </div>
+        <div class="stat-card success" onclick="showTab('orders',document.getElementById('nav-orders'))">
+          <div class="stat-num" id="stat-paid">0</div><div class="stat-label">✅ دفاتر مفعلة (Paid)</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-orders" class="tab-content">
+      <div class="page-header">
+        <div><h2>📥 كشف وإدارة الطلبات الحية</h2><p>اضغط تأكيد الدفع فور تسلم التحويل البنكي أو الموافقة</p></div>
+        <div style="display:flex;gap:8px;">
+          <select id="orders-filter" class="btn btn-outline btn-sm" style="padding:6px 12px; background:#141414;" onchange="loadOrders()">
+            <option value="all">كل الحالات</option>
+            <option value="pending">قيد الانتظار (Pending)</option>
+            <option value="paid">تم السداد (Paid)</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="loadOrders()">🔄 تحديث</button>
+        </div>
+      </div>
+      <div id="orders-list"><div class="empty-state"><div class="icon">📭</div>جاري سحب الجداول من السيرفر...</div></div>
+    </div>
+
+    <div id="tab-create" class="tab-content">
+      <div class="page-header"><div><h2>⚡ إنشاء قيد/طلب مباشر في السيرفر</h2><p>أضف خريجاً يدوياً مباشرة إلى قاعدة البيانات</p></div></div>
+      <div class="section-card">
+        <div class="form-grid">
+          <div class="form-group"><label>اسم الطالب الكامل *</label><input id="f-name" type="text" placeholder="مثال: محمد السعيد"></div>
+          <div class="form-group"><label>الكلية أو التخصص *</label><input id="f-faculty" type="text" placeholder="مثال: كلية الهندسة"></div>
+          <div class="form-group"><label>سنة التخرج *</label><input id="f-year" type="text" placeholder="2026" value="2026"></div>
+          <div class="form-group"><label>الرابط الفريد (Slug) *</label><input id="f-slug" type="text" placeholder="mohammed-2026" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"></div>
+          <div class="form-group"><label>لغة العرض الأساسية</label>
+            <select id="f-lang">
+              <option value="ar">العربية (AR)</option>
+              <option value="en">الإنجليزية (EN)</option>
+              <option value="ru">الروسية (RU)</option>
+              <option value="fr">الفرنسية (FR)</option>
+              <option value="es">الإسبانية (ES)</option>
+              <option value="tr">التركية (TR)</option>
+              <option value="de">الألمانية (DE)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>حالة الدفع الفورية</label>
+            <select id="f-status">
+              <option value="pending">قيد الانتظار (Pending)</option>
+              <option value="paid">مدفوع ومفعل فوراً (Paid)</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px;">
+          <button class="btn btn-gold" onclick="createManualOrder()">✨ إضافة وضخ البيانات</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// الثوابت المأخوذة من إعدادات مشروعك الأساسي
+const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+let supabaseClient = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof supabase !== 'undefined') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  
+  // التحقق من الجلسة المحفوظة لكلمة المرور
+  const savedPass = localStorage.getItem('gb_admin_pass');
+  if (savedPass) {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    refreshAll();
+  }
+});
+
+function saveSetup() {
+  const pass = document.getElementById('s-pass').value.trim();
+  if(!pass) return toast('⚠️ يرجى تعيين كلمة مرور للوحة');
+  localStorage.setItem('gb_admin_pass', pass);
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'block';
+  refreshAll();
+  toast('✅ تم الدخول بنجاح');
+}
+
+function logout() {
+  localStorage.removeItem('gb_admin_pass');
+  location.reload();
+}
+
+function showTab(tabId, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  if(el) el.classList.add('active');
+  
+  if(tabId === 'orders') loadOrders();
+}
+
+async function refreshAll() {
+  if(!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from('orders').select('status');
+    if(error) throw error;
+    
+    let total = data.length;
+    let paid = data.filter(o => o.status === 'paid').length;
+    let pending = data.filter(o => o.status === 'pending').length;
+    
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-paid').textContent = paid;
+    document.getElementById('stat-pending').textContent = pending;
+  } catch(e) {
+    console.error(e);
+    toast('❌ خطأ أثناء تحديث الإحصاءات');
+  }
+}
+
+async function loadOrders() {
+  const container = document.getElementById('orders-list');
+  if(!supabaseClient) return;
+  
+  try {
+    const filter = document.getElementById('orders-filter').value;
+    let query = supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+    
+    if(filter !== 'all') {
+      query = query.eq('status', filter);
+    }
+    
+    const { data: orders, error } = await query;
+    if(error) throw error;
+    
+    container.innerHTML = '';
+    if(!orders || orders.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>لا توجد طلبات تطابق الفلتر المختار</div>`;
+      return;
+    }
+    
+    orders.forEach(order => {
+      const card = document.createElement('div');
+      card.className = `order-card ${order.status}`;
+      
+      // بناء رابط المعاينة التلقائي لدفتر التخرج بناءً على الـ slug
+      const previewLink = window.location.href.replace('admin.html','') + `preview.html?slug=${order.order_code || order.slug}`;
+      
+      card.innerHTML = `
+        <div class="order-header-row">
+          <div>
+            <div class="order-name">${order.name || order.customer_name || 'طالب غير مسمى'}</div>
+            <div style="font-size:11px; color:var(--text2); margin-top:4px; font-family:monospace;">كود التفعيل: #${order.order_code || '---'}</div>
+          </div>
+          <span class="badge badge-${order.status}">${order.status === 'paid' ? 'Paid — مدفوع ومفعل' : 'Pending — بانتظار السداد'}</span>
+        </div>
+        <div class="order-details">
+          <div class="order-detail">الكلية: <span>${order.faculty || '—'}</span></div>
+          <div class="order-detail">السنة: <span>${order.year || '—'}</span></div>
+          <div class="order-detail">اللغة المختارة: <span style="text-transform:uppercase; color:var(--gold-light);">${order.lang || 'ar'}</span></div>
+          <div class="order-detail">رابط المعاينة: <a href="${previewLink}" target="_blank" style="color:var(--gold); text-decoration:none;">🔗 فتح الرابط</a></div>
+        </div>
+        <div class="actions" style="margin-top:12px; display:flex; gap:8px;">
+          ${order.status === 'pending' ? `<button class="btn btn-gold btn-sm" onclick="approveOrder('${order.order_code}')">✓ تأكيد الدفع وتفعيل البوت</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="deleteOrder('${order.order_code || order.slug}')" style="color:var(--danger); border-color:rgba(192,57,43,0.3)">🗑️ حذف</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch(e) {
+    console.error(e);
+    container.innerHTML = `<div class="empty-state"><div class="icon">❌</div>حدث خطأ أثناء جلب الجداول</div>`;
+  }
+}
+
+async function approveOrder(code) {
+  if(!supabaseClient || !code) return;
+  if(confirm('هل أنت متأكد من تغيير حالة العميل إلى Paid؟ سيقوم البوت على الـ Render بإرسال الإشعار فوراً للمستخدم ويفتح له صفحة رفع الصور!')) {
+    try {
+      const { error } = await supabaseClient.from('orders').update({ status: 'paid' }).eq('order_code', code);
+      if(error) throw error;
+      toast('✅ تم تفعيل الطلب بنجاح وتحديث البوت!');
+      refreshAll();
+      loadOrders();
+    } catch(e) {
+      console.error(e);
+      toast('❌ فشل تحديث حالة الطلب');
+    }
+  }
+}
+
+async function deleteOrder(code) {
+  if(!supabaseClient || !code) return;
+  if(confirm('🚨 تحذير: هل أنت متأكد تماماً من حذف هذا السجل نهائياً من قاعدة البيانات؟')) {
+    try {
+      const { error } = await supabaseClient.from('orders').delete().eq('order_code', code);
+      if(error) throw error;
+      toast('🗑️ تم الحذف بنجاح');
+      refreshAll();
+      loadOrders();
+    } catch(e) {
+      console.error(e);
+      toast('❌ فشل الحذف');
+    }
+  }
+}
+
+async function createManualOrder() {
+  if(!supabaseClient) return;
+  
+  const name = document.getElementById('f-name').value.trim();
+  const faculty = document.getElementById('f-faculty').value.trim();
+  const year = document.getElementById('f-year').value.trim();
+  const slug = document.getElementById('f-slug').value.trim();
+  const lang = document.getElementById('f-lang').value;
+  const status = document.getElementById('f-status').value;
+  
+  if(!name || !faculty || !slug) {
+    return toast('⚠️ يرجى ملء الحقول النجمية الأساسية أولاً');
+  }
+  
+  // توليد كود عشوائي فريد للطلب مثل الباقي
+  const randomCode = 'GB-' + Math.floor(100000 + Math.random() * 900000);
+  
+  try {
+    const { error } = await supabaseClient.from('orders').insert([{
+      order_code: randomCode,
+      name: name,
+      customer_name: name,
+      faculty: faculty,
+      year: year,
+      slug: slug,
+      lang: lang,
+      status: status,
+      created_at: new Date()
+    }]);
+    
+    if(error) throw error;
+    
+    toast('✅ تم حقن وإنشاء الطالب يدوياً بالسيرفر!');
+    // تفريغ النموذج
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-faculty').value = '';
+    document.getElementById('f-slug').value = '';
+    
+    refreshAll();
+  } catch(e) {
+    console.error(e);
+    toast('❌ حدث خطأ أثناء الحقن المباشر');
+  }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
