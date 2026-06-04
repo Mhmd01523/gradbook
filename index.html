@@ -45,10 +45,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .gold-border {
-            border-image: linear-gradient(to right, var(--gold-dark), var(--gold-primary), var(--gold-light), var(--gold-dark)) 1;
-        }
-
         .glass-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -63,7 +59,6 @@
             transform: translateY(-5px);
         }
 
-        /* Particles Background */
         #particles-js {
             position: fixed;
             width: 100%;
@@ -79,7 +74,6 @@
             z-index: 2;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -91,15 +85,6 @@
             border-radius: 4px;
         }
 
-        /* Language Switcher Active State */
-        .lang-btn.active {
-            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-        }
-
-        /* Floating Animation */
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-15px) rotate(3deg); }
@@ -112,7 +97,6 @@
 </head>
 <body>
 
-    <!-- خلفية الجسيمات المتحركة -->
     <div id="particles-js"></div>
 
     <div class="content-wrapper min-h-screen flex flex-col justify-between">
@@ -128,33 +112,26 @@
                     <span class="text-[9px] tracking-widest text-gray-400 uppercase block -mt-1">Premium Edition</span>
                 </div>
             </div>
-
-            <!-- أزرار تبديل اللغة الفاخرة -->
-            <div class="flex bg-black/60 p-1 rounded-full border border-gray-800 dir-ltr">
-                <button onclick="switchLanguage('ar')" id="btn-ar" class="lang-btn active px-3 py-1.5 rounded-full text-xs transition-all duration-300 font-medium">عربي</button>
-                <button onclick="switchLanguage('en')" id="btn-en" class="lang-btn px-3 py-1.5 rounded-full text-xs transition-all duration-300 font-medium">EN</button>
-                <button onclick="switchLanguage('ru')" id="btn-ru" class="lang-btn px-3 py-1.5 rounded-full text-xs transition-all duration-300 font-medium">RU</button>
-            </div>
+            <!-- تم حذف أزرار اللغات ليعمل الموقع تلقائياً بحسب لغة جهاز الطالب -->
         </header>
 
-        <!-- MAIN CONTENT CONTAINER -->
         <main class="container mx-auto px-4 py-8 flex-grow">
             
             <!-- HERO SECTION -->
             <section class="text-center py-12 md:py-20 max-w-4xl mx-auto">
                 <span class="inline-block px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-[var(--gold-primary)] text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
-                    <i class="fa-solid fa-star mr-1"></i> <span data-key="hero-badge">تخصيص حصري ومميز</span>
+                    <i class="fa-solid fa-star mr-1"></i> <span>تخصيص حصري ومميز</span>
                 </span>
                 <h1 class="text-4xl md:text-7xl font-black tracking-tight mb-6 leading-tight">
-                    <span data-key="hero-title-1">صمم غلاف كتاب</span> <br>
-                    <span class="gold-text uppercase font-black" data-key="hero-title-2">تخرجك الفاخر</span>
+                    <span>صمم غلاف كتاب</span> <br>
+                    <span class="gold-text uppercase font-black">تخرجك الفاخر</span>
                 </h1>
-                <p class="text-gray-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light" data-key="hero-desc">
+                <p class="text-gray-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light">
                     الآن وبخطوات بسيطة، املأ بياناتك وارفع صورك المفضلة لتوليد معاينة حية لغطاء كتاب تخرجك المصمم بأعلى معايير الفخامة والطباعة الرقمية.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <a href="#order-form-section" class="px-8 py-4 w-full sm:w-auto rounded-lg bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold-primary)] text-black font-bold text-center shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                        <i class="fa-solid fa-file-pen mr-2"></i> <span data-key="btn-start">ابدأ الطلب الآن</span>
+                        <i class="fa-solid fa-file-pen mr-2"></i> <span>ابدأ الطلب الآن</span>
                     </a>
                 </div>
             </section>
@@ -166,8 +143,8 @@
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold mb-1 gold-text" data-key="feat-1-title">معاينة فورية ذكية</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed" data-key="feat-1-desc">احصل على تصور كامل ومباشر لشكل كتابك وغلافك بمجرد إكمال تعبئة البيانات.</p>
+                        <h3 class="text-lg font-bold mb-1 gold-text">معاينة فورية ذكية</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">احصل على تصور كامل ومباشر لشكل كتابك وغلافك بمجرد إكمال تعبئة البيانات.</p>
                     </div>
                 </div>
 
@@ -176,8 +153,8 @@
                         <i class="fa-solid fa-palette"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold mb-1 gold-text" data-key="feat-2-title">تخصيص اللغات والكليات</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed" data-key="feat-2-desc">ندعم كليات الطب العام، الأسنان، والصيدلة باللغات العربية، الإنجليزية والروسية.</p>
+                        <h3 class="text-lg font-bold mb-1 gold-text">تخصيص اللغات والكليات</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">ندعم كليات الطب العام، الأسنان، والصيدلة باللغات العربية، الإنجليزية والروسية.</p>
                     </div>
                 </div>
 
@@ -186,8 +163,8 @@
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold mb-1 gold-text" data-key="feat-3-title">تخزين آمن وبوت تلغرام</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed" data-key="feat-3-desc">تُرفع بيانات وصورك بأمان تام إلى الخوادم السحابية مع إشعارك الفوري عبر التلغرام.</p>
+                        <h3 class="text-lg font-bold mb-1 gold-text">تخزين آمن وبوت تلغرام</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">تُرفع بيانات وصورك بأمان تام إلى الخوادم السحابية مع إشعارك الفوري عبر التلغرام.</p>
                     </div>
                 </div>
             </section>
@@ -195,13 +172,12 @@
             <!-- ORDER FORM SECTION -->
             <section id="order-form-section" class="max-w-3xl mx-auto mt-12 scroll-mt-24">
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl md:text-4xl font-black mb-2" data-key="form-section-title">إستمارة تسجيل البيانات</h2>
-                    <p class="text-sm text-gray-400" data-key="form-section-desc">يرجى إدخال البيانات بدقة عالية حيث سيتم اعتمادها مباشرة في الطباعة الرقمية للغلاف</p>
+                    <h2 class="text-2xl md:text-4xl font-black mb-2">إستمارة تسجيل البيانات</h2>
+                    <p class="text-sm text-gray-400">يرجى إدخال البيانات بدقة عالية حيث سيتم اعتمادها مباشرة في الطباعة الرقمية للغلاف</p>
                 </div>
 
                 <form id="graduation-form" class="glass-card p-6 md:p-10 rounded-2xl space-y-6 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--gold-dark)] via-[var(--gold-primary)] to-[var(--gold-dark)]"></div>
-                   <!-- الاسم الكامل -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">الاسم الكامل للخريج / الخريجة *</label>
                         <div class="relative">
@@ -212,9 +188,8 @@
                         </div>
                     </div>
 
-                    <!-- الكلية والتخصص المصلحة لـ Supabase -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">الكلية أو التخصص الجامعي *</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">الالتحاق بالكلية أو التخصص الجامعي *</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 rounded-r-lg bg-black/30 border-l border-gray-800 px-3">
                                 <i class="fa-solid fa-university text-sm"></i>
@@ -231,17 +206,14 @@
                         </div>
                     </div>
 
-                    <!-- الهاتف الذكي المقيد بـ +7 -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">رقم الهاتف الروسي (أو حساب التليجرام) *</label>
                         <div class="relative flex">
                             <span class="inline-flex items-center px-4 rounded-r-lg border border-r-0 border-gray-800 bg-black/40 text-[var(--gold-light)] font-bold text-sm select-none">+7</span>
-                            <input type="text" id="o-tg" required class="w-full bg-black/40 border border-gray-800 focus:border-[var(--gold-primary)] rounded-l-lg py-3.5 px-4 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all text-left" placeholder="900 000-00-00 أو يوزر التليجرام" oninput="handlePhoneInput(this)">
+                            <input type="text" id="o-tg" required class="w-full bg-black/40 border border-gray-800 focus:border-[var(--gold-primary)] rounded-l-lg py-3.5 px-4 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all text-left font-mono" placeholder="900 000-00-00 أو يوزر التليجرام" oninput="handlePhoneInput(this)">
                         </div>
-                        <p class="text-[11px] text-gray-500 mt-1">إذا كتبت رقماً، سيتم قفله تلقائياً على صيغة المفتاح الروسي الصحيح.</p>
                     </div>
 
-                    <!-- سنة التخرج الافتراضية الذكية -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">سنة التخرج</label>
                         <div class="relative">
@@ -252,9 +224,8 @@
                         </div>
                     </div>
 
-                    <!-- لغة الدفتر الرئيسية -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">لغة الدفتر الرئيسية</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">لغة الدفتر الرئيسية المعتمدة</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 rounded-r-lg bg-black/30 border-l border-gray-800 px-3">
                                 <i class="fa-solid fa-language text-sm"></i>
@@ -271,33 +242,28 @@
                         </div>
                     </div>
 
-                    <!-- قسم رفع صور الغلاف الفاخر -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-1">📸 صورك للغلاف (اختياري)</label>
-                        <p class="text-[11px] text-gray-500 mb-3">أضف من 1 إلى 5 صور — ستظهر كخلفية في دفترك الفاخر</p>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-1">📸 صورك الفاخرة للغلاف والمعرض (اختياري)</label>
+                        <p class="text-[11px] text-gray-500 mb-3">يمكنك اختيار من 1 إلى 5 صور بصيغة عالية الجودة لعرضها حياً في ألبومك</p>
                         
                         <div class="grid grid-cols-5 gap-3" id="photos-grid">
-                            <!-- سيتم توليد المربعات برمجياً -->
-                        </div>
+                            </div>
                         
                         <div class="text-center text-xs text-[var(--gold-primary)] mt-2 font-semibold" id="photos-counter">0 / 5</div>
                         
-                        <!-- شريط التحميل الأنيق المحدث -->
                         <div class="hidden mt-4 bg-yellow-500/5 border border-yellow-500/10 rounded-lg p-3 text-center" id="upload-progress">
-                            <span class="text-xs text-[var(--gold-primary)] font-medium block mb-2" id="progress-text">جارٍ رفع الصور إلى السيرفر...</span>
+                            <span class="text-xs text-[var(--gold-primary)] font-medium block mb-2" id="progress-text">جاري رفع ألبوم الصور الخاص بك إلى الخوادم السحابية...</span>
                             <div class="w-full bg-gray-900 rounded-full h-1.5 overflow-hidden">
                                 <div class="bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold-primary)] h-1.5 w-0 transition-all duration-300" id="progress-bar"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ملاحظات إضافية -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">ملاحظات إضافية</label>
-                        <textarea id="o-notes" rows="3" class="w-full bg-black/40 border border-gray-800 focus:border-[var(--gold-primary)] rounded-lg py-3 px-4 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all resize-none" placeholder="أي طلبات خاصة أو تعديلات تريدها على التصميم..."></textarea>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[var(--gold-light)] mb-2">ملاحظات أو طلبات خاصة للمصمم</label>
+                        <textarea id="o-notes" rows="3" class="w-full bg-black/40 border border-gray-800 focus:border-[var(--gold-primary)] rounded-lg py-3 px-4 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-[var(--gold-primary)] transition-all resize-none" placeholder="اكتب هنا أي تعديلات خاصة تريد من الفريق تطبيقها..."></textarea>
                     </div>
 
-                    <!-- زر الإرسال وتوليد المعاينة -->
                     <button type="button" id="order-btn" onclick="submitOrder()" class="w-full py-4 bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold-primary)] text-black font-black text-center rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all duration-300 transform hover:-translate-y-0.5">
                         <span id="order-btn-text">✨ توليد المعاينة الحية</span>
                     </button>
@@ -305,6 +271,7 @@
                 </form>
             </section>
         </main>
+
         <footer class="w-full py-6 text-center border-t border-gray-950 bg-black/60 backdrop-blur-md mt-12 text-xs text-gray-600 tracking-widest uppercase">
             &copy; 2026 GRADBOOK Premium Edition. All Rights Reserved.
         </footer>
@@ -339,6 +306,33 @@
         let selectedPhotos = [];
         let activeLang = 'ar';
 
+        // دالة ذكية تقرأ لغة المتصفح أو الجهاز وتغير اتجاه الصفحة واختيار اللغة فوراً
+        function detectDeviceLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            const shortLang = browserLang.toLowerCase().split('-')[0];
+            
+            const supportedLangs = ['ar', 'en', 'ru', 'fr', 'zh', 'es', 'pt'];
+            
+            if (supportedLangs.includes(shortLang)) {
+                applyLang(shortLang);
+            } else {
+                applyLang('en'); // لغة احتياطية إذا كان المتصفح بلغة غير مدعومة
+            }
+        }
+
+        function applyLang(lang) {
+            activeLang = lang;
+            const dir = (lang === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.dir = dir;
+            document.documentElement.lang = lang;
+            
+            const langSelect = document.getElementById('o-lang');
+            if (langSelect) langSelect.value = lang;
+        }
+
+        // تشغيل كاشف اللغة فور تحميل الصفحة وعناصرها
+        window.addEventListener('DOMContentLoaded', detectDeviceLanguage);
+
         // توليد مربعات رفع الصور الخمسة الفاخرة تلقائياً
         const grid = document.getElementById('photos-grid');
         for (let i = 0; i < 5; i++) {
@@ -354,12 +348,10 @@
             grid.appendChild(box);
         }
 
-        // التعامل الذكي مع رقم الهاتف ومفتاح +7
+        // معالجة وحظر تكرار المفتاح الروسي تلقائياً
         function handlePhoneInput(input) {
             let val = input.value;
-            // مسح أي رموز غير رقمية
             val = val.replace(/[^0-9]/g, '');
-            // إذا بدأ بـ 7 احذفها لمنع التكرار مع البادئة الثابتة
             if (val.startsWith('7') && val.length > 1) {
                 val = val.substring(1);
             }
@@ -372,7 +364,6 @@
 
             selectedPhotos[index] = file;
             
-            // تحديث واجهة المربع لعرض صورة مصغرة
             const reader = new FileReader();
             reader.onload = function(event) {
                 const boxContent = document.getElementById(`box-content-${index}`);
@@ -391,21 +382,6 @@
             document.getElementById('photos-counter').textContent = `${count} / 5`;
         }
 
-        function switchLanguage(lang) {
-            activeLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${lang}`).classList.add('active');
-            document.getElementById('o-lang').value = lang;
-            applyLang(lang);
-        }
-
-        function applyLang(lang) {
-            activeLang = lang;
-            const dir = (lang === 'ar') ? 'rtl' : 'ltr';
-            document.documentElement.dir = dir;
-            document.documentElement.lang = lang;
-        }
-
         async function submitOrder() {
             const btn = document.getElementById('order-btn');
             const btnText = document.getElementById('order-btn-text');
@@ -419,11 +395,10 @@
             const notes = document.getElementById('o-notes').value.trim();
 
             if (!name || !faculty || !phoneVal) {
-                Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى ملء الحقول الإجبارية أولاً', confirmButtonColor: '#AA7C11' });
+                Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى ملء جميع الحقول الإجبارية أولاً لإتمام طلبك الفاخر', confirmButtonColor: '#AA7C11' });
                 return;
             }
 
-            // صياغة الهاتف النهائي بشكل سليم
             let finalPhone = phoneVal;
             if (!phoneVal.startsWith('@') && !phoneVal.startsWith('+')) {
                 finalPhone = '+7' + phoneVal;
@@ -452,13 +427,13 @@
                         const { data: urlData } = sb.storage.from('covers').getPublicUrl(fileName);
                         uploadedUrls.push(urlData.publicUrl);
                         
-                        // تحديث شريط التحميل الحقيقي
+                        // تعديل شريط التحميل الفعلي المصلح ليتحرك تلقائياً
                         const pct = Math.round(((i + 1) / actualFiles.length) * 100);
                         progBar.style.width = `${pct}%`;
                     }
                 }
 
-                // الحفظ في قاعدة البيانات بالقيم العربية الصريحة لـ Supabase
+                // حفظ البيانات النهائي في Supabase
                 let orderPayload = {
                     order_code: orderCode,
                     status: 'pending',
@@ -475,9 +450,9 @@
                 const { error: insertError } = await sb.from('orders').insert([orderPayload]);
                 if (insertError) throw insertError;
 
-                // إرسال إشعار التليجرام الفوري الفخم
+                // التنبيه الفوري الفخم عبر بوت التليجرام
                 const photosLine = uploadedUrls.length ? `\n📸 صور الغلاف (${uploadedUrls.length}):\n` + uploadedUrls.map((u,ix)=>`${ix+1}. ${u}`).join('\n') : '';
-                const tgText = `🎓 طلب دفتر تخرج جديد!\n\n🔖 رقم الطلب: ${orderCode}\n👤 الاسم: ${name}\n📱 الاتصال/التيليغرام: ${finalPhone}\n🏫 الكلية: ${faculty}\n📅 سنة التخرج: ${year || '2026'}\n🌍 اللغة: ${activeLang.toUpperCase()}\n💬 ملاحظات: ${notes || '-'}${photosLine}`;
+                const tgText = `🎓 طلب دفتر تخرج جديد!\n\n🔖 رقم الطلب: ${orderCode}\n👤 الاسم: ${name}\n📱 الاتصال/التيليغرام: ${finalPhone}\n🏫 الكلية: ${faculty}\n📅 سنة التخرج: ${year || '2026'}\n🌍 لغة المتصفح: ${activeLang.toUpperCase()}\n💬 ملاحظات: ${notes || '-'}${photosLine}`;
 
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -485,11 +460,11 @@
                     body: JSON.stringify({ chat_id: CHAT_ID, text: tgText })
                 });
 
-                // الانتقال الآمن والذكي إلى صفحة المعاينة الحية
+                // الانتقال المباشر لصفحة المعاينة الحية الفاخرة
                 window.location.href = `preview.html?order=${orderCode}&lang=${activeLang}`;
 
             } catch (err) {
-                Swal.fire({ icon: 'error', title: 'خطأ', text: 'حدث خطأ أثناء الإرسال: ' + err.message, confirmButtonColor: '#AA7C11' });
+                Swal.fire({ icon: 'error', title: 'خطأ روتيني', text: 'حدث خطأ أثناء إرسال البيانات: ' + err.message, confirmButtonColor: '#AA7C11' });
                 btn.disabled = false;
                 btnText.textContent = '✨ توليد المعاينة الحية';
                 progZone.classList.add('hidden');
