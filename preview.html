@@ -471,10 +471,10 @@ function drawPhotos(photos) {
       dotsContainer.innerHTML = '';
       
       photos.forEach((url, index) => {
-        // إضافة الصورة للألبوم كبريفيو مموه ومحمي بـ 🔒
+        // إضافة الصورة للألبوم كبريفيو مموه ومحمي
         const item = document.createElement('div');
         item.className = 'gallery-item';
-        item.innerHTML = `<img src="${url}"><div class=\"gallery-lock-overlay\"><span>🔒</span></div>`;
+        item.innerHTML = `<img src="${url}"><div class="gallery-lock-overlay"><span>🔒</span></div>`;
         galleryContainer.appendChild(item);
 
         // إضافة نقاط التنقل للغلاف الرئيسي
@@ -486,7 +486,7 @@ function drawPhotos(photos) {
           bgContainer.style.opacity = 0;
           setTimeout(() => {
             bgContainer.style.backgroundImage = `url('${url}')`;
-            bgContainer.style.opacity = 1];
+            bgContainer.style.opacity = 1;
           }, 200);
         };
         dotsContainer.appendChild(dot);
