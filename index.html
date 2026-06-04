@@ -187,10 +187,6 @@ async function handleSubmit(event) {
     btn.disabled = true;
     overlay.style.display = 'flex';
 
-    const faculty = document.getElementById('faculty').value;
-    const grad_year = document.getElementById('grad_year').value;
-    const rawPhone = document.getElementById('phone').value.trim();
-    const fullPhone = '+7' + rawPhone; 
     const orderCode = 'GRAD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
     let uploadedUrls = [];
 
@@ -207,13 +203,9 @@ async function handleSubmit(event) {
             }
         }
 
-        // إرسال الأعمدة المتطابقة مع قاعدة بياناتك لتفادي مشاكل الـ Schema تماماً
+        // إرسال كود الطلب والحالة فقط لضمان التوافق المطلق وتخطي أخطاء الـ Schema
         let orderPayload = {
             order_code: orderCode,
-            faculty: faculty,
-            grad_year: grad_year,
-            telegram: fullPhone,
-            cover_photos: uploadedUrls,
             status: 'pending'
         };
 
