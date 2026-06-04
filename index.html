@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grad Book — Digital Album</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap&v=css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
@@ -13,7 +13,7 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     </script>
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; }
         :root {
             --gold: #c9a84c;
             --gold-light: #f0d080;
@@ -22,35 +22,35 @@
             --text2: rgba(245,240,232,0.55);
             --glass-border: rgba(201,168,76,0.15);
         }
-        html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
-        html[dir="rtl"] label, html[dir="rtl"] input, html[dir="rtl"] select { text-align: right; }
-        html[dir="rtl"] .country-code { left: auto; right: 15px; }
+        html, body { min-height: 100% !important; background: #08060a !important; color: #f5f0e8 !important; font-family: 'Tajawal', sans-serif !important; overflow-x: hidden !important; }
+        html[dir="rtl"] label, html[dir="rtl"] input, html[dir="rtl"] select { text-align: right !important; }
+        html[dir="rtl"] .country-code { left: auto !important; right: 15px !important; }
         html[dir="rtl"] .phone-input { padding-left: 15px !important; padding-right: 45px !important; text-align: right !important; }
-        .container { max-width: 600px; margin: 0 auto; padding: 60px 24px; position: relative; }
-        .logo-area { text-align: center; margin-bottom: 50px; }
-        .logo { font-family: 'Cormorant Garamond', serif; font-size: 46px; font-weight: 300; color: var(--gold-light); letter-spacing: 7px; text-transform: uppercase; margin-bottom: 14px; }
-        .subtitle { font-size: 14px; color: var(--text2); letter-spacing: 1px; font-weight: 400; line-height: 1.6; }
-        form { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 35px; border-radius: 28px; display: flex; flex-direction: column; gap: 26px; backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        label { font-size: 13px; color: var(--gold-light); font-weight: 700; text-align: left; letter-spacing: 0.5px; text-transform: uppercase; }
-        input, select { background: rgba(255,255,255,0.02); border: 1px solid rgba(201,168,76,0.18); border-radius: 16px; padding: 18px; color: #fff; font-family: inherit; font-size: 15px; transition: all 0.3s; width: 100%; text-align: left; }
-        input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 15px rgba(201,168,76,0.25); background: rgba(255,255,255,0.05); }
-        option { background: #141118; color: #fff; }
-        .phone-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
-        .country-code { position: absolute; left: 15px; color: var(--gold-light); font-weight: bold; direction: ltr; user-select: none; pointer-events: none; font-size: 15px; z-index: 10; }
-        .phone-input { width: 100%; padding-left: 45px !important; direction: ltr !important; text-align: left !important; }
-        .file-zone { border: 1px dashed rgba(201,168,76,0.3); padding: 45px 24px; text-align: center; border-radius: 18px; cursor: pointer; background: rgba(201,168,76,0.02); transition: all 0.4s; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        .file-zone:hover { border-color: var(--gold); transform: translateY(-2px); }
-        .file-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(201,168,76,0.08); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 24px; }
-        .file-text-main { font-size: 14px; color: #fff; font-weight: 500; }
-        .file-text-sub { font-size: 11px; color: var(--text2); }
-        #file-input { display: none; }
-        .preview-thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 14px; width: 100%; }
-        .thumb { width: 100%; aspect-ratio: 1 / 1; max-height: 70px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(201,168,76,0.4); }
-        .submit-btn { background: linear-gradient(135deg, var(--gold), #a07830); color: #000; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; width: 100%; box-shadow: 0 6px 25px rgba(201,168,76,0.25); }
-        .submit-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 30px rgba(201,168,76,0.4); }
-        #loading-overlay { position: fixed; inset: 0; background: rgba(8,6,10,0.94); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
-        .spinner { width: 45px; height: 45px; border: 3px solid rgba(201,168,76,0.1); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        .container { max-width: 600px !important; margin: 0 auto !important; padding: 60px 24px !important; position: relative !important; }
+        .logo-area { text-align: center !important; margin-bottom: 50px !important; }
+        .logo { font-family: 'Cormorant Garamond', serif !important; font-size: 46px !important; font-weight: 300 !important; color: #f0d080 !important; letter-spacing: 7px !important; text-transform: uppercase !important; margin-bottom: 14px !important; }
+        .subtitle { font-size: 14px !important; color: rgba(245,240,232,0.55) !important; letter-spacing: 1px !important; font-weight: 400 !important; line-height: 1.6 !important; }
+        form { background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(201,168,76,0.15) !important; padding: 35px !important; border-radius: 28px !important; display: flex !important; flex-direction: column !important; gap: 26px !important; backdrop-filter: blur(20px) !important; box-shadow: 0 30px 60px rgba(0,0,0,0.6) !important; margin-top: 20px !important; }
+        .input-group { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+        label { font-size: 13px !important; color: #f0d080 !important; font-weight: 700 !important; text-align: left !important; letter-spacing: 0.5px !important; text-transform: uppercase !important; }
+        input, select { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(201,168,76,0.18) !important; border-radius: 16px !important; padding: 18px !important; color: #fff !important; font-family: inherit !important; font-size: 15px !important; transition: all 0.3s !important; width: 100 !important; text-align: left !important; display: block !important; }
+        input:focus, select:focus { outline: none !important; border-color: #c9a84c !important; box-shadow: 0 0 15px rgba(201,168,76,0.25) !important; background: rgba(255,255,255,0.05) !important; }
+        option { background: #141118 !important; color: #fff !important; }
+        .phone-wrapper { position: relative !important; display: flex !important; align-items: center !important; width: 100% !important; }
+        .country-code { position: absolute !important; left: 15px !important; color: #f0d080 !important; font-weight: bold !important; direction: ltr !important; user-select: none !important; pointer-events: none !important; font-size: 15px !important; z-index: 10 !important; }
+        .phone-input { width: 100% !important; padding-left: 45px !important; direction: ltr !important; text-align: left !important; }
+        .file-zone { border: 1px dashed rgba(201,168,76,0.3) !important; padding: 45px 24px !important; text-align: center !important; border-radius: 18px !important; cursor: pointer !important; background: rgba(201,168,76,0.02) !important; transition: all 0.4s !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 12px !important; }
+        .file-zone:hover { border-color: #c9a84c !important; transform: translateY(-2px) !important; }
+        .file-icon { width: 52px !important; height: 52px !important; border-radius: 50% !important; background: rgba(201,168,76,0.08) !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #f0d080 !important; font-size: 24px !important; }
+        .file-text-main { font-size: 14px !important; color: #fff !important; font-weight: 500 !important; }
+        .file-text-sub { font-size: 11px !important; color: rgba(245,240,232,0.55) !important; }
+        #file-input { display: none !important; }
+        .preview-thumbnails { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 10px !important; margin-top: 14px !important; width: 100% !important; }
+        .thumb { width: 100% !important; aspect-ratio: 1 / 1 !important; max-height: 70px !important; border-radius: 12px !important; object-fit: cover !important; border: 1px solid rgba(201,168,76,0.4) !important; }
+        .submit-btn { background: linear-gradient(135deg, #c9a84c, #a07830) !important; color: #000 !important; border: none !important; padding: 18px !important; border-radius: 16px !important; font-size: 16px !important; font-weight: 700 !important; cursor: pointer !important; margin-top: 15px !important; transition: all 0.3s !important; width: 100% !important; box-shadow: 0 6px 25px rgba(201,168,76,0.25) !important; }
+        .submit-btn:hover { transform: translateY(-3px) !important; filter: brightness(1.1) !important; box-shadow: 0 10px 30px rgba(201,168,76,0.4) !important; }
+        #loading-overlay { position: fixed !important; inset: 0 !important; background: rgba(8,6,10,0.94) !important; z-index: 9999 !important; display: none !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 20px !important; }
+        .spinner { width: 45px !important; height: 45px !important; border: 3px solid rgba(201,168,76,0.1) !important; border-top-color: #c9a84c !important; border-radius: 50% !important; animation: spin 1s linear infinite !important; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -58,7 +58,7 @@
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <div id="loading-text" style="color:var(--gold-light); font-size:15px;">Creating your digital album...</div>
+    <div id="loading-text" style="color:#f0d080; font-size:15px;">Creating your digital album...</div>
 </div>
 
 <div class="container">
@@ -162,7 +162,7 @@ function previewImages(input) {
     selectedFiles = Array.from(input.files).slice(0, 5);
     
     if(selectedFiles.length > 0) {
-        statusText.innerHTML = `${lang.successSelect} <span style="color:var(--gold-light); font-weight:700;">${selectedFiles.length}</span>`;
+        statusText.innerHTML = `${lang.successSelect} <span style="color:#f0d080; font-weight:700;">${selectedFiles.length}</span>`;
     } else {
         statusText.textContent = lang.uploadMain;
     }
@@ -208,7 +208,6 @@ async function handleSubmit(event) {
             }
         }
 
-        // هنا السحر الحقيقي: ربط الخانات بأسماء الأعمدة الفعلية والمؤكدة في جدولك
         let orderPayload = {
             order_code: orderCode,
             status: 'pending',
