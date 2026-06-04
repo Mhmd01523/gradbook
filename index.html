@@ -1,0 +1,259 @@
+!DOCTYPE html
+html lang=en
+head
+meta charset=UTF-8
+meta name=viewport content=width=device-width, initial-scale=1.0, maximum-scale=1.0
+titleGrad Book — Digital Albumtitle
+link rel=preconnect href=httpsfonts.googleapis.com
+link href=httpsfonts.googleapis.comcss2family=Tajawalwght@300;400;500;700;900&family=Cormorant+Garamondital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap rel=stylesheet
+script src=httpscdn.jsdelivr.netnpm@supabasesupabase-js@2script
+script
+  const SUPABASE_URL = 'httpslhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+script
+style
+, before, after { margin 0; padding 0; box-sizing border-box; }
+root {
+  --gold #c9a84c;
+  --gold-light #f0d080;
+  --bg #08060a;
+  --text #f5f0e8;
+  --text2 rgba(245,240,232,0.55);
+  --glass-border rgba(201,168,76,0.15);
+}
+html, body { min-height 100%; background var(--bg); color var(--text); font-family 'Tajawal', sans-serif; overflow-x hidden; }
+
+html[dir=rtl] label, html[dir=rtl] input, html[dir=rtl] select { text-align right; }
+html[dir=rtl] .country-code { left auto; right 15px; }
+html[dir=rtl] .phone-input { padding-left 15px !important; padding-right 45px !important; text-align right !important; }
+
+.container { max-width 600px; margin 0 auto; padding 60px 24px; position relative; }
+.logo-area { text-align center; margin-bottom 50px; }
+.logo { font-family 'Cormorant Garamond', serif; font-size 46px; font-weight 300; color var(--gold-light); letter-spacing 7px; text-transform uppercase; margin-bottom 14px; }
+.subtitle { font-size 14px; color var(--text2); letter-spacing 1px; font-weight 400; line-height 1.6; }
+
+form { background rgba(255,255,255,0.03); border 1px solid var(--glass-border); padding 35px; border-radius 28px; display flex; flex-direction column; gap 26px; backdrop-filter blur(20px); box-shadow 0 30px 60px rgba(0,0,0,0.6); }
+.input-group { display flex; flex-direction column; gap 10px; }
+label { font-size 13px; color var(--gold-light); font-weight 700; text-align left; letter-spacing 0.5px; text-transform uppercase; }
+input, select { background rgba(255,255,255,0.02); border 1px solid rgba(201,168,76,0.18); border-radius 16px; padding 18px; color #fff; font-family inherit; font-size 15px; transition all 0.3s; width 100%; text-align left; }
+inputfocus, selectfocus { outline none; border-color var(--gold); box-shadow 0 0 15px rgba(201,168,76,0.25); background rgba(255,255,255,0.05); }
+
+option { background #141118; color #fff; }
+
+.phone-wrapper { position relative; display flex; align-items center; width 100%; }
+.country-code { position absolute; left 15px; color var(--gold-light); font-weight bold; direction ltr; user-select none; pointer-events none; font-size 15px; z-index 10; }
+.phone-input { width 100%; padding-left 45px !important; direction ltr !important; text-align left !important; }
+
+.file-zone { 
+  border 1px dashed rgba(201,168,76,0.3); 
+  padding 45px 24px; 
+  text-align center; 
+  border-radius 18px; 
+  cursor pointer; 
+  background rgba(201,168,76,0.02); 
+  transition all 0.4s;
+  display flex; flex-direction column; align-items center; gap 12px;
+}
+.file-zonehover { border-color var(--gold); transform translateY(-2px); }
+.file-icon { width 52px; height 52px; border-radius 50%; background rgba(201,168,76,0.08); display flex; align-items center; justify-content center; color var(--gold-light); font-size 24px; }
+.file-text-main { font-size 14px; color #fff; font-weight 500; }
+.file-text-sub { font-size 11px; color var(--text2); }
+#file-input { display none; }
+
+.preview-thumbnails { display grid; grid-template-columns repeat(5, 1fr); gap 10px; margin-top 14px; width 100%; }
+.thumb { width 100%; aspect-ratio 1  1; max-height 70px; border-radius 12px; object-fit cover; border 1px solid rgba(201,168,76,0.4); }
+
+.submit-btn { background linear-gradient(135deg, var(--gold), #a07830); color #000; border none; padding 18px; border-radius 16px; font-size 16px; font-weight 700; cursor pointer; margin-top 15px; transition all 0.3s; width 100%; box-shadow 0 6px 25px rgba(201,168,76,0.25); }
+.submit-btnhover { transform translateY(-3px); filter brightness(1.1); box-shadow 0 10px 30px rgba(201,168,76,0.4); }
+
+#loading-overlay { position fixed; inset 0; background rgba(8,6,10,0.94); z-index 9999; display none; flex-direction column; align-items center; justify-content center; gap 20px; }
+.spinner { width 45px; height 45px; border 3px solid rgba(201,168,76,0.1); border-top-color var(--gold); border-radius 50%; animation spin 1s linear infinite; }
+@keyframes spin { to { transform rotate(360deg); } }
+style
+head
+body
+
+div id=loading-overlay
+  div class=spinnerdiv
+  div id=loading-text style=colorvar(--gold-light); font-size15px;Creating your digital album...div
+div
+
+div class=container
+  div class=logo-area
+    div class=logoGrad Bookdiv
+    div class=subtitle id=sub-titleDesign your digital album and preview it instantlydiv
+  div
+
+  form id=order-form onsubmit=handleSubmit(event)
+    div class=input-group
+      label id=lbl-name for=nameFull Namelabel
+      input type=text id=name required placeholder=Enter your name
+    div
+
+    div class=input-group
+      label id=lbl-faculty for=facultyFaculty  Specialtylabel
+      select id=faculty requiredselect
+    div
+
+    div class=input-group
+      label id=lbl-year for=grad_yearGraduation Yearlabel
+      select id=grad_year required
+        option value=20262026option
+        option value=20252025option
+        option value=20272027option
+      select
+    div
+
+    div class=input-group
+      label id=lbl-phone for=phonePhone Number (RU)label
+      div class=phone-wrapper
+        span class=country-code+7span
+        input type=tel id=phone required placeholder=900 000-00-00 inputmode=tel class=phone-input oninput=validateRussianPhone(this)
+      div
+    div
+
+    div class=input-group
+      label id=lbl-photosAlbum Cover & Gallery Photoslabel
+      div class=file-zone onclick=document.getElementById('file-input').click()
+        div class=file-icon+div
+        div class=file-text-main id=upload-statusClick here to upload photosdiv
+        div class=file-text-sub id=upload-subYou can upload up to 5 high-quality photosdiv
+        input type=file id=file-input multiple accept=image onchange=previewImages(this)
+      div
+      div class=preview-thumbnails id=thumbs-containerdiv
+    div
+
+    button type=submit class=submit-btn id=submit-btnCreate & Preview Album 🚀button
+  form
+div
+
+script
+const translations = {
+  ru {
+    dir ltr, subtitle Создайте свой цифровой альбом и просмотрите его перед активацией, lblName ФИО Выпускника, phName Введите ваше полное имя, lblFaculty Факультет  Специальность, lblYear Год выпуска, lblPhone Номер телефона (РФ), lblPhotos Фотографии для обложки и галереи, uploadMain Нажмите здесь, чтобы загрузить фото, uploadSub Вы можете загрузить до 5 фотографий, btnSubmit Создать и просмотреть альбом 🚀, loading Создаем ваш цифровой альбом..., faculties [{ val كلية الطب العام, text Лечебное дело (Общая медицина) }, { val كلية طب الأسنان, text Стоматологический факультет }, { val كلية الصيدلة, text Фармацевтический факультет }], selectFaculty Выберите факультет..., successSelect ✅ Выбрано фото , errorMsg Ошибка 
+  },
+  ar {
+    dir rtl, subtitle صمم دفتر تخرجك الرقمي وعاينه فوراً قبل التفعيل, lblName الاسم الكامل للخريجة, phName اكتب اسمك الثلاثي أو الثنائي, lblFaculty الكلية أو التخصص الجامعي, lblYear سنة التخرج, lblPhone رقم الهاتف (الروسي), lblPhotos ألبوم صور الغلاف والمعرض, uploadMain اضغط هنا لاختيار صورك الفاخرة, uploadSub يمكنك رفع حتى 5 صور بصيغة عالية الجودة, btnSubmit إنشاء الدفتر ومعاينته حياً 🚀, loading جاري رفع صورك الفاخرة وإنشاء ألبومك..., faculties [{ val كلية الطب العام, text كلية الطب العام }, { val كلية طب الأسنان, text كلية طب الأسنان }, { val كلية الصيدلة, text كلية الصيدلة }], selectFaculty اختر الكلية من هنا..., successSelect ✅ تم اختيار صور بنجاح , errorMsg حدث خطأ 
+  },
+  en {
+    dir ltr, subtitle Design your digital album and preview it instantly, lblName Full Name, phName Enter your full name, lblFaculty Faculty  Specialty, lblYear Graduation Year, lblPhone Phone Number (RU), lblPhotos Album Cover & Gallery Photos, uploadMain Click here to upload photos, uploadSub You can upload up to 5 high-quality photos, btnSubmit Create & Preview Album 🚀, loading Creating your digital album..., faculties [{ val كلية الطب العام, text General Medicine }, { val كلية طب الأسنان, text Faculty of Dentistry }, { val كلية الصيدلة, text Faculty of Pharmacy }], selectFaculty Select faculty..., successSelect ✅ Selected photos , errorMsg An error occurred 
+  }
+};
+
+let currentLang = 'en';
+const userLang = navigator.language  navigator.userLanguage;
+const langCode = userLang.substring(0, 2).toLowerCase();
+if (translations[langCode]) currentLang = langCode;
+
+const lang = translations[currentLang];
+document.documentElement.lang = currentLang;
+document.documentElement.dir = lang.dir;
+document.getElementById('sub-title').textContent = lang.subtitle;
+document.getElementById('lbl-name').textContent = lang.lblName;
+document.getElementById('name').placeholder = lang.phName;
+document.getElementById('lbl-faculty').textContent = lang.lblFaculty;
+document.getElementById('lbl-year').textContent = lang.lblYear;
+document.getElementById('lbl-phone').textContent = lang.lblPhone;
+document.getElementById('lbl-photos').textContent = lang.lblPhotos;
+document.getElementById('upload-status').textContent = lang.uploadMain;
+document.getElementById('upload-sub').textContent = lang.uploadSub;
+document.getElementById('submit-btn').textContent = lang.btnSubmit;
+document.getElementById('loading-text').textContent = lang.loading;
+
+const facultySelect = document.getElementById('faculty');
+let facultyOptions = `option value= disabled selected${lang.selectFaculty}option`;
+lang.faculties.forEach(f = { facultyOptions += `option value=${f.val}${f.text}option`; });
+facultySelect.innerHTML = facultyOptions;
+
+let selectedFiles = [];
+
+function validateRussianPhone(input) {
+  input.value = input.value.replace([^0-9]g, '');
+  if (input.value.startsWith('7')) input.value = input.value.substring(1);
+}
+
+function previewImages(input) {
+  const container = document.getElementById('thumbs-container');
+  const statusText = document.getElementById('upload-status');
+  container.innerHTML = '';
+  selectedFiles = Array.from(input.files).slice(0, 5);
+  
+  if(selectedFiles.length  0) {
+    statusText.innerHTML = `${lang.successSelect} span style=colorvar(--gold-light); font-weight700;${selectedFiles.length}span`;
+  } else {
+    statusText.textContent = lang.uploadMain;
+  }
+  
+  selectedFiles.forEach(file = {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.createElement('img');
+      img.className = 'thumb';
+      img.src = e.target.result;
+      container.appendChild(img);
+    }
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const overlay = document.getElementById('loading-overlay');
+  
+  btn.disabled = true;
+  overlay.style.display = 'flex';
+
+  const nameValue = document.getElementById('name').value.trim();
+  const faculty = document.getElementById('faculty').value;
+  const grad_year = document.getElementById('grad_year').value;
+  const rawPhone = document.getElementById('phone').value.trim();
+  const fullPhone = '+7' + rawPhone; 
+  const orderCode = 'GRAD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  let uploadedUrls = [];
+
+  try {
+    if (selectedFiles.length  0) {
+      for (let i = 0; i  selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${orderCode}_${i}_${Date.now()}.${fileExt}`;
+        const { data, error } = await sb.storage.from('covers').upload(fileName, file);
+        if (error) throw error;
+        const { data urlData } = sb.storage.from('covers').getPublicUrl(fileName);
+        uploadedUrls.push(urlData.publicUrl);
+      }
+    }
+
+    let orderPayload = {
+      order_code orderCode,
+      faculty faculty,
+      grad_year grad_year,
+      telegram fullPhone,
+      cover_photos uploadedUrls,
+      status 'pending',
+      name nameValue,
+      full_name nameValue,
+      student_name nameValue,
+      username nameValue
+    };
+
+    const { error insertError } = await sb.from('orders').insert([orderPayload]);
+
+    if (insertError) {
+      const { error fallbackError } = await sb.from('orders').insert([{ order_code orderCode, status 'pending' }]);
+      if (fallbackError) throw insertError;
+    }
+
+    window.location.href = `preview.htmlorder=${orderCode}`;
+
+  } catch (err) {
+    alert(lang.errorMsg + err.message);
+    btn.disabled = false;
+    overlay.style.display = 'none';
+  }
+}
+script
+body
+html
