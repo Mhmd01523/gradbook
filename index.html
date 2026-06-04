@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // إعدادات قاعدة البيانات الخاصة بك
   const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -23,51 +22,97 @@
   --bg2: #0e0b14;
   --text: #f5f0e8;
   --text2: rgba(245,240,232,0.55);
-  --glass: rgba(255,255,255,0.03);
-  --glass-border: rgba(201,168,76,0.15);
+  --glass: rgba(255,255,255,0.02);
+  --glass-border: rgba(201,168,76,0.12);
 }
 html, body { min-height:100%; background:var(--bg); color:var(--text); font-family:'Tajawal', sans-serif; overflow-x:hidden; }
 
 .container { max-width:500px; margin:0 auto; padding:40px 20px; }
-.logo { text-align:center; font-family:'Cormorant Garamond', serif; font-size:32px; color:var(--gold-light); letter-spacing:4px; margin-bottom:10px; text-transform:uppercase; }
-.subtitle { text-align:center; font-size:14px; color:var(--text2); margin-bottom:40px; }
+.logo { text-align:center; font-family:'Cormorant Garamond', serif; font-size:32px; color:var(--gold-light); letter-spacing:4px; margin-bottom:5px; text-transform:uppercase; }
+.subtitle { text-align:center; font-size:13px; color:var(--text2); margin-bottom:35px; letter-spacing:0.5px; }
 
-form { background:var(--glass); border:1px solid var(--glass-border); padding:24px; border-radius:20px; display:flex; flex-direction:column; gap:20px; backdrop-filter:blur(10px); }
-.input-group { display:flex; flex-direction:column; gap:8px; }
-label { font-size:13px; color:var(--gold-light); font-weight:500; }
-input, select { background:rgba(255,255,255,0.02); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:14px; color:#fff; font-family:inherit; font-size:14px; transition:all 0.3s; }
-input:focus, select:focus { outline:none; border-color:var(--gold); box-shadow:0 0 10px rgba(201,168,76,0.15); }
+form { background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); padding:26px; border-radius:24px; display:flex; flex-direction:column; gap:22px; backdrop-filter:blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.input-group { display:flex; flex-direction:column; gap:9px; }
+label { font-size:13px; color:var(--gold-light); font-weight:700; letter-spacing:0.3px; }
+input, select { background:rgba(255,255,255,0.02); border:1px solid rgba(201,168,76,0.18); border-radius:14px; padding:15px; color:#fff; font-family:inherit; font-size:14px; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+input:focus, select:focus { outline:none; border-color:var(--gold); box-shadow:0 0 12px rgba(201,168,76,0.2); background:rgba(255,255,255,0.04); }
 
-/* تنسيق حقل الهاتف الروسي */
 .phone-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
 .country-code { position: absolute; left: 15px; color: var(--gold-light); font-weight: bold; direction: ltr; user-select: none; pointer-events: none; font-size: 15px; }
 .phone-input { width: 100%; padding-left: 45px !important; direction: ltr !important; text-align: left !important; }
 
-.file-zone { border:1px dashed rgba(201,168,76,0.3); padding:30px; text-align:center; border-radius:12px; cursor:pointer; background:rgba(201,168,76,0.01); transition:all 0.3s; }
-.file-zone:hover { border-color:var(--gold); background:rgba(201,168,76,0.03); }
-.file-zone span { font-size:13px; color:var(--text2); }
+/* 💎 تصميم خانة تحميل الصور الفاخر الجديد 💎 */
+.file-zone { 
+  border: 1px dashed rgba(201,168,76,0.3); 
+  padding: 35px 20px; 
+  text-align: center; 
+  border-radius: 16px; 
+  cursor: pointer; 
+  background: linear-gradient(180deg, rgba(201,168,76,0.01) 0%, rgba(201,168,76,0.03) 100%); 
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.file-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(201,168,76,0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.file-zone:hover::before { opacity: 1; }
+.file-zone:hover { 
+  border-color: var(--gold); 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201,168,76,0.1);
+}
+.file-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-light);
+  font-size: 22px;
+  font-weight: 300;
+  transition: all 0.3s;
+}
+.file-zone:hover .file-icon {
+  background: var(--gold);
+  color: #08060a;
+  transform: scale(1.05);
+}
+.file-text-main { font-size: 14px; color: #fff; font-weight: 500; }
+.file-text-sub { font-size: 11px; color: var(--text2); }
 #file-input { display:none; }
-.preview-thumbnails { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:10px; }
-.thumb { aspect-ratio:1; border-radius:8px; object-fit:cover; border:1px solid var(--gold); }
 
-.submit-btn { background:linear-gradient(135deg, var(--gold), #a07830); color:#000; border:none; padding:16px; border-radius:14px; font-size:16px; font-weight:700; cursor:pointer; margin-top:10px; transition:all 0.3s; box-shadow:0 4px 20px rgba(201,168,76,0.2); }
+.preview-thumbnails { display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin-top:12px; }
+.thumb { aspect-ratio:1; border-radius:10px; object-fit:cover; border:1px solid rgba(201,168,76,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: all 0.3s; }
+.thumb:hover { transform: scale(1.05); border-color: var(--gold); }
+
+.submit-btn { background:linear-gradient(135deg, var(--gold), #a07830); color:#000; border:none; padding:16px; border-radius:14px; font-size:15px; font-weight:700; cursor:pointer; margin-top:10px; transition:all 0.3s; box-shadow:0 4px 20px rgba(201,168,76,0.2); }
 .submit-btn:hover { transform:translateY(-2px); filter:brightness(1.1); box-shadow:0 6px 25px rgba(201,168,76,0.35); }
 .submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-/* Loading Layer */
-#loading-overlay { position:fixed; inset:0; background:rgba(8,6,10,0.9); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; gap:15px; }
+#loading-overlay { position:fixed; inset:0; background:rgba(8,6,10,0.92); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; gap:15px; }
 .spinner { width:40px; height:40px; border:3px solid rgba(201,168,76,0.1); border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-
-html[dir="ltr"] .country-code { left: 15px; }
-html[dir="ltr"] .phone-input { padding-left: 45px !important; }
 </style>
 </head>
 <body>
 
 <div id="loading-overlay">
   <div class="spinner"></div>
-  <div style="color:var(--gold-light); font-size:14px;" id="loading-text">جاري رفع الصور الفاخرة وإنشاء طلبك...</div>
+  <div style="color:var(--gold-light); font-size:14px; font-weight:500;">جاري رفع صورك الفاخرة وإنشاء ألبومك...</div>
 </div>
 
 <div class="container">
@@ -76,19 +121,23 @@ html[dir="ltr"] .phone-input { padding-left: 45px !important; }
 
   <form id="order-form" onsubmit="handleSubmit(event)">
     
-    <!-- الاسم الكامل -->
     <div class="input-group">
-      <label for="name">الاسم الكامل للخيّج/ة</label>
-      <required><input type="text" id="name" required placeholder="اكتب اسمك الثلاثي أو الثنائي"></required>
+      <label for="name">الاسم الكامل للخريج/ة</label>
+      <input type="text" id="name" required placeholder="اكتب اسمك الثلاثي أو الثنائي">
     </div>
 
-    <!-- الكلية / التخصص -->
     <div class="input-group">
       <label for="faculty">الكلية أو التخصص الجامعي</label>
-      <input type="text" id="faculty" required placeholder="مثال: كلية الطب البشري">
+      <select id="faculty" required>
+        <option value="" disabled selected>اختر الكلية...</option>
+        <option value="كلية الطب البشري">كلية الطب البشري</option>
+        <option value="كلية طب الأسنان">كلية طب الأسنان</option>
+        <option value="كلية الهندسة">كلية الهندسة</option>
+        <option value="كلية الصيدلة">كلية الصيدلة</option>
+        <option value="تخصص آخر">تخصص آخر</option>
+      </select>
     </div>
 
-    <!-- سنة التخرج -->
     <div class="input-group">
       <label for="grad_year">سنة التخرج</label>
       <select id="grad_year" required>
@@ -98,7 +147,6 @@ html[dir="ltr"] .phone-input { padding-left: 45px !important; }
       </select>
     </div>
 
-    <!-- رقم الهاتف الروسي المطور -->
     <div class="input-group">
       <label for="phone">رقم الهاتف (الروسي)</label>
       <div class="phone-wrapper">
@@ -116,11 +164,13 @@ html[dir="ltr"] .phone-input { padding-left: 45px !important; }
       </div>
     </div>
 
-    <!-- قسم رفع الصور -->
+    <!-- 💎 كود خانة تحميل الصور المطور بالكامل 💎 -->
     <div class="input-group">
-      <label>ألبوم صور الغلاف والمعرض (يمكنك رفع حتى 5 صور)</label>
+      <label>ألبوم صور الغلاف والمعرض</label>
       <div class="file-zone" onclick="document.getElementById('file-input').click()">
-        <span>✨ اضغط هنا لاختيار صورك الفاخرة</span>
+        <div class="file-icon">+</div>
+        <div class="file-text-main" id="upload-status">اضغط هنا لاختيار صورك الفاخرة</div>
+        <div class="file-text-sub">يمكنك رفع حتى 5 صور بصيغة عالية الجودة</div>
         <input type="file" id="file-input" multiple accept="image/*" onchange="previewImages(this)">
       </div>
       <div class="preview-thumbnails" id="thumbs-container"></div>
@@ -133,7 +183,6 @@ html[dir="ltr"] .phone-input { padding-left: 45px !important; }
 <script>
 let selectedFiles = [];
 
-// كود ذكي لمنع كتابة الأحرف وإجبار الكيبورد الرقمي والتعامل مع الكود +7
 function validateRussianPhone(input) {
   input.value = input.value.replace(/[^0-9]/g, '');
   if (input.value.startsWith('7')) {
@@ -143,8 +192,15 @@ function validateRussianPhone(input) {
 
 function previewImages(input) {
   const container = document.getElementById('thumbs-container');
+  const statusText = document.getElementById('upload-status');
   container.innerHTML = '';
-  selectedFiles = Array.from(input.files).slice(0, 5); // حد أقصى 5 صور
+  selectedFiles = Array.from(input.files).slice(0, 5);
+  
+  if(selectedFiles.length > 0) {
+    statusText.innerHTML = `✅ تم اختيار <span style="color:var(--gold-light); font-weight:700;">${selectedFiles.length}</span> صور بنجاح`;
+  } else {
+    statusText.textContent = "اضغط هنا لاختيار صورك الفاخرة";
+  }
   
   selectedFiles.forEach(file => {
     const reader = new FileReader();
@@ -158,7 +214,6 @@ function previewImages(input) {
   });
 }
 
-// توليد كود عشوائي فريد للطلب
 function generateOrderCode() {
   return 'GRAD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 }
@@ -172,10 +227,8 @@ async function handleSubmit(event) {
   overlay.style.display = 'flex';
 
   const name = document.getElementById('name').value.trim();
-  const faculty = document.getElementById('faculty').value.trim();
+  const faculty = document.getElementById('faculty').value;
   const grad_year = document.getElementById('grad_year').value;
-  
-  // دمج رمز الدولة مع الرقم المكتوب ليرسل لـ Supabase كاملاً ومثالياً لقاعدة بياناتك
   const rawPhone = document.getElementById('phone').value.trim();
   const fullPhone = '+7' + rawPhone; 
   
@@ -183,7 +236,6 @@ async function handleSubmit(event) {
   let uploadedUrls = [];
 
   try {
-    // 1️⃣ رفع الصور إلى الـ Storage في Supabase إن وجدت
     if (selectedFiles.length > 0) {
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
@@ -191,7 +243,7 @@ async function handleSubmit(event) {
         const fileName = `${orderCode}_${i}_${Date.now()}.${fileExt}`;
         
         const { data, error } = await sb.storage
-          .from('covers') // تأكد أن اسم الـ Bucket عندك هو covers ومفتوح للعامة Public
+          .from('covers')
           .upload(fileName, file);
 
         if (error) throw error;
@@ -204,28 +256,25 @@ async function handleSubmit(event) {
       }
     }
 
-    // 2️⃣ إدخال البيانات في جدول الـ orders
     const { error: insertError } = await sb
       .from('orders')
       .insert([{
         order_code: orderCode,
         name: name,
-        full_name: name, // لحماية الكود القديم إن وجد
+        full_name: name, 
         faculty: faculty,
         grad_year: grad_year,
-        phone: fullPhone, // يتم حفظ الرقم كاملاً مع +7 هنا
+        telegram: fullPhone, 
         cover_photos: uploadedUrls,
         status: 'pending'
       }]);
 
     if (insertError) throw insertError;
 
-    // 3️⃣ التحويل التلقائي لصفحة المعاينة الفاخرة بعد النجاح
     window.location.href = `preview.html?order=${orderCode}`;
 
   } catch (err) {
     alert('حدث خطأ أثناء حفظ البيانات، يرجى المحاولة مرة أخرى: ' + err.message);
-    console.error(err);
     btn.disabled = false;
     overlay.style.display = 'none';
   }
