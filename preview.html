@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grad Book - كتاب التخرج الرقمي</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-slate-200 p-4 md:p-8">
+
+    <!-- زر تغيير اللغة -->
+    <div class="max-w-4xl mx-auto flex justify-end mb-6">
+        <select id="lang-select" class="glass text-slate-200 px-4 py-2 rounded-xl border-none outline-none cursor-pointer focus:ring-2 focus:ring-indigo-500">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+            <option value="tr">Türkçe</option>
+            <option value="ru">Русский</option>
+            <option value="fr">Français</option>
+            <option value="pt">Português</option>
+        </select>
+    </div>
+
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- القسم الأيسر: نموذج إدخال البيانات والدفع -->
+        <div class="glass rounded-3xl p-6 md:p-8 flex flex-col justify-between">
+            <div>
+                <h1 id="main-title" class="text-3xl font-bold mb-2 text-gradient">اصنع كتاب تخرجك الرقمي</h1>
+                <p id="main-desc" class="text-slate-400 text-sm mb-8">املاً بياناتك، ارفع صورتك، وشاهد المعاينة الحية فوراً قبل الدفع.</p>
+                
+                <form id="order-form" class="space-y-5" onsubmit="event.preventDefault();">
+                    <div>
+                        <label id="lbl-name" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">الاسم الكامل</label>
+                        <input type="text" id="name" required class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" placeholder="أدخل اسمك الثلاثي">
+                    </div>
+
+                    <div>
+                        <label id="lbl-uni" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">الجامعة / المعهد</label>
+                        <input type="text" id="university" required class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" placeholder="مثال: جامعة موسكو الحكومية">
+                    </div>
+
+                    <div>
+                        <label id="lbl-msg" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">كلمة التخرج أو الإهداء</label>
+                        <textarea id="message" rows="3" required class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" placeholder="اكتب هنا كلمتك المفضلة بمناسبة التخرج..."></textarea>
+                    </div>
+
+                    <div>
+                        <label id="lbl-img" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">الصورة الشخصية للتخرج</label>
+                        <div class="relative w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 flex items-center justify-between">
+                            <span id="file-chosen" class="text-sm text-slate-500">لم يتم اختيار صورة</span>
+                            <label for="image-upload" id="btn-browse" class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-all">تصفح</label>
+                            <input type="file" id="image-upload" accept="image/*" required class="hidden">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800/60">
+                        <div class="flex justify-between items-center mb-4">
+                            <span id="lbl-price" class="text-sm text-slate-400">سعر الخدمة:</span>
+                            <span class="text-xl font-bold text-emerald-400">1,500 ₽</span>
+                        </div>
+                        <button type="button" id="btn-pay" class="w-full bg-gradient-to-r cursor-pointer from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-center text-sm">
+                            الانتقال إلى الدفع بأمان
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- القسم الأيمن: شاشة المعاينة الفورية (Live Preview) -->
+        <div class="flex flex-col justify-center items-center">
+            <div class="w-full max-w-sm aspect-[3/4] glass rounded-[2.5rem] p-6 shadow-2xl relative overflow-hidden border border-slate-700/50 flex flex-col justify-between items-center text-center">
+                
+                <!-- تأثيرات إضاءة خلفية للمعاينة -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl -z-10"></div>
+                
+                <div class="w-full flex flex-col items-center flex-1 justify-center">
+                    <!-- إطار الصورة الشخصية المحدثة حياً -->
+                    <div class="w-32 h-32 rounded-2xl bg-slate-800/40 border border-slate-700/60 overflow-hidden mb-6 shadow-md flex items-center justify-center">
+                        <img id="preview-book-img" src="" alt="Graduation Portrait" class="w-full h-full object-cover hidden">
+                        <!-- أيقونة افتراضية تظهر قبل رفع الصورة -->
+                        <svg id="preview-placeholder-icon" class="w-12 h-12 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- النصوص المعروضة والمحدثة حياً -->
+                    <h2 id="preview-name" class="text-xl font-bold tracking-wide text-slate-100 mb-1">اسم الخريج</h2>
+                    <p id="preview-university" class="text-xs text-indigo-400 font-medium tracking-wider uppercase mb-4">اسم الجامعة / المعهد</p>
+                    
+                    <p id="preview-message" class="text-xs text-slate-400 leading-relaxed max-w-[85%] italic">"نص التهنئة وكلمة التخرج المكتوبة ستظهر في هذا المكان بشكل منسق وأنيق..."</p>
+                </div>
+
+                <div class="w-full pt-4 border-t border-slate-800/40 flex justify-between items-center text-[10px] text-slate-500 tracking-widest uppercase">
+                    <span>Grad Book © 2026</span>
+                    <span>Class of 2026</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- منطق العمل للترجمة والمعاينة الفورية الحية -->
+    <script>
+        const translations = {
+            ar: {
+                title: "اصنع كتاب تخرجك الرقمي",
+                desc: "املاً بياناتك، ارفع صورتك، وشاهد المعاينة الحية فوراً قبل الدفع.",
+                name: "الاسم الكامل",
+                pName: "أدخل اسمك الثلاثي",
+                uni: "الجامعة / المعهد",
+                pUni: "مثال: جامعة موسكو الحكومية",
+                msg: "كلمة التخرج أو الإهداء",
+                pMsg: "اكتب هنا كلمتك المفضلة بمناسبة التخرج...",
+                img: "الصورة الشخصية للتخرج",
+                noFile: "لم يتم اختيار صورة",
+                browse: "تصفح",
+                price: "سعر الخدمة:",
+                pay: "الانتقال إلى الدفع بأمان",
+                prevName: "اسم الخريج",
+                prevUni: "اسم الجامعة / المعهد",
+                prevMsg: "\"نص التهنئة وكلمة التخرج المكتوبة ستظهر في هذا المكان بشكل منسق وأنيق...\""
+            },
+            en: {
+                title: "Create Your Digital Grad Book",
+                desc: "Fill in your details, upload your portrait, and watch the live preview before making a payment.",
+                name: "Full Name",
+                pName: "Enter your full name",
+                uni: "University / Institute",
+                pUni: "e.g., Moscow State University",
+                msg: "Graduation Message / Dedication",
+                pMsg: "Write your favorite graduation quote or memory here...",
+                img: "Graduation Portrait Photo",
+                noFile: "No image selected",
+                browse: "Browse",
+                price: "Service Price:",
+                pay: "Proceed to Secure Payment",
+                prevName: "Graduate Name",
+                prevUni: "University Name",
+                prevMsg: "\"Your graduation quote and digital message will appear beautifully stylized right here...\""
+            },
+            tr: {
+                title: "Dijital Mezuniyet Kitabınızı Oluşturun",
+                desc: "Bilgilerinizi girin, fotoğrafınızı yükleyin ve ödeme yapmadan önce canlı önizlemeyi izleyin.",
+                name: "Adı Soyadı",
+                pName: "Tam adınızı girin",
+                uni: "Üniversite / Enstitü",
+                pUni: "Örn: Moskova Devlet Üniversitesi",
+                msg: "Mezuniyet Mesajı / İthaf",
+                pMsg: "Buraya favori mezuniyet sözünüzü yazın...",
+                img: "Mezuniyet Portre Fotoğrafı",
+                noFile: "Fotoğraf seçilmedi",
+                browse: "Gözat",
+                price: "Hizmet Bedeli:",
+                pay: "Güvenli Ödemeye Geç",
+                prevName: "Mezun Adı",
+                prevUni: "Üniversite Adı",
+                prevMsg: "\"Mezuniyet mesajınız ve dijital ithafınız burada şık bir şekilde listelenecektir...\""
+            },
+            ru: {
+                title: "Создайте цифровую выпускную книгу",
+                desc: "Заполните данные, загрузите фото и смотрите живой предпросмотр перед оплатой.",
+                name: "Полное имя",
+                pName: "Введите ваше полное имя",
+                uni: "Университет / Институт",
+                pUni: "Например: МГУ им. Ломоносова",
+                msg: "Выпускное послание / Пожелание",
+                pMsg: "Напишите здесь вашу любимую цитату или пожелание...",
+                img: "Выпускная портретная фотография",
+                noFile: "Файл не выбран",
+                browse: "Обзор",
+                price: "Стоимость услуги:",
+                pay: "Перейти к безопасной оплате",
+                prevName: "Имя выпускника",
+                prevUni: "Название университета",
+                prevMsg: "\"Ваше выпускное послание и текст пожелания будут красиво отображаться прямо здесь...\""
+            },
+            fr: {
+                title: "Créez votre livre de remise des diplômes",
+                desc: "Remplissez vos données, importez votre photo et visualisez l'aperçu en direct avant de payer.",
+                name: "Nom complet",
+                pName: "Entrez votre nom complet",
+                uni: "Université / Institut",
+                pUni: "Ex: Université d'État de Moscou",
+                msg: "Message de remise des diplômes",
+                pMsg: "Écrivez votre citation ou dédicace préférée ici...",
+                img: "Photo de portrait de diplôme",
+                noFile: "Aucune image sélectionnée",
+                browse: "Parcourir",
+                price: "Prix du service:",
+                pay: "Passer au paiement sécurisé",
+                prevName: "Nom du diplômé",
+                prevUni: "Nom de l'université",
+                prevMsg: "\"Votre message de diplôme et votre texte personnalisé s'afficheront élégamment ici...\""
+            },
+            pt: {
+                title: "Crie seu Livro de Formatura Digital",
+                desc: "Preencha seus dados, envie sua foto e veja a prévia ao vivo antes de pagar.",
+                name: "Nome Completo",
+                pName: "Insira seu nome completo",
+                uni: "Universidade / Instituto",
+                pUni: "Ex: Universidade Estatal de Moscou",
+                msg: "Mensagem de Formatura / Dedicatória",
+                pMsg: "Escreva sua citação de formatura favorita aqui...",
+                img: "Foto de Retrato de Formatura",
+                noFile: "Nenhuma imagem selecionada",
+                browse: "Escolher",
+                price: "Preço do Serviço:",
+                pay: "Ir para o Pagamento Seguro",
+                prevName: "Nome do Formando",
+                prevUni: "Nome da Universidade",
+                prevMsg: "\"Sua mensagem de formatura e dedicatória digital aparecerão estilizadas aqui...\""
+            }
+        };
+
+        // دالة تبديل اللغات وتحديث الواجهات والاتجاهات
+        function setLanguage(lang) {
+            const t = translations[lang] || translations.ar;
+            
+            // تحديث نصوص الواجهة
+            document.getElementById('main-title').innerText = t.title;
+            document.getElementById('main-desc').innerText = t.desc;
+            document.getElementById('lbl-name').innerText = t.name;
+            document.getElementById('name').placeholder = t.pName;
+            document.getElementById('lbl-uni').innerText = t.uni;
+            document.getElementById('university').placeholder = t.pUni;
+            document.getElementById('lbl-msg').innerText = t.msg;
+            document.getElementById('message').placeholder = t.pMsg;
+            document.getElementById('lbl-img').innerText = t.img;
+            document.getElementById('btn-browse').innerText = t.browse;
+            document.getElementById('lbl-price').innerText = t.price;
+            document.getElementById('btn-pay').innerText = t.pay;
+
+            // تحديث نصوص المعاينة الافتراضية إذا كانت الحقول فارغة
+            if(!document.getElementById('name').value) document.getElementById('preview-name').innerText = t.prevName;
+            if(!document.getElementById('university').value) document.getElementById('preview-university').innerText = t.prevUni;
+            if(!document.getElementById('message').value) document.getElementById('preview-message').innerText = t.prevMsg;
+            if(!document.getElementById('image-upload').files.length) document.getElementById('file-chosen').innerText = t.noFile;
+
+            // تعديل اتجاه الصفحة (RTL لـ العربية، LTR للباقي)
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+                document.documentElement.lang = 'ar';
+            } else {
+                document.documentElement.dir = 'ltr';
+                document.documentElement.lang = lang;
+            }
+        }
+
+        // الاستماع لتغيير قائمة اللغات الساقطة
+        document.getElementById('lang-select').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+        // ==========================================
+        // منطق المعاينة الفورية الحية (Live Preview)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const nameInput = document.getElementById('name');
+            const uniInput = document.getElementById('university');
+            const messageInput = document.getElementById('message');
+            const imageInput = document.getElementById('image-upload');
+
+            const previewName = document.getElementById('preview-name');
+            const previewUni = document.getElementById('preview-university');
+            const previewMessage = document.getElementById('preview-message');
+            const previewImage = document.getElementById('preview-book-img');
+            const placeholderIcon = document.getElementById('preview-placeholder-icon');
+            const fileChosenLabel = document.getElementById('file-chosen');
+
+            // 1. تحديث الاسم حياً
+            nameInput.addEventListener('input', (e) => {
+                const currentLang = document.getElementById('lang-select').value;
+                previewName.innerText = e.target.value.trim() || translations[currentLang].prevName;
+            });
+
+            // 2. تحديث الجامعة حياً
+            uniInput.addEventListener('input', (e) => {
+                const currentLang = document.getElementById('lang-select').value;
+                previewUni.innerText = e.target.value.trim() || translations[currentLang].prevUni;
+            });
+
+            // 3. تحديث رسالة التهنئة حياً
+            messageInput.addEventListener('input', (e) => {
+                const currentLang = document.getElementById('lang-select').value;
+                previewMessage.innerText = e.target.value.trim() ? `"${e.target.value.trim()}"` : translations[currentLang].prevMsg;
+            });
+
+            // 4. توليد رابط مؤقت للصورة وعرضها فوراً عند اختيار الملف
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                const currentLang = document.getElementById('lang-select').value;
+                
+                if (file) {
+                    // تحديث اسم الملف المختار بجانب زر التصفح
+                    fileChosenLabel.innerText = file.name;
+                    fileChosenLabel.classList.remove('text-slate-500');
+                    fileChosenLabel.classList.add('text-slate-300');
+
+                    // توليد الرابط الوهمي المؤقت بالمتصفح
+                    const tempUrl = URL.createObjectURL(file);
+                    
+                    // إخفاء الأيقونة الافتراضية وعرض صورة العميل
+                    placeholderIcon.classList.add('hidden');
+                    previewImage.src = tempUrl;
+                    previewImage.classList.remove('hidden');
+
+                    // حفظ الملف بشكل مؤقت في الذاكرة لنستخدمه لاحقاً عند إتمام عملية الدفع
+                    window.selectedUserImageFile = file;
+                } else {
+                    fileChosenLabel.innerText = translations[currentLang].noFile;
+                    placeholderIcon.classList.remove('hidden');
+                    previewImage.classList.add('hidden');
+                    previewImage.src = "";
+                    window.selectedUserImageFile = null;
+                }
+            });
+
+            // قراءة المتغيرات الذكية من الرابط التلقائي (Slug) إن وجدت
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            if (slug) {
+                console.log("تم تحميل الصفحة للرابط المخصص الخريج:", slug);
+            }
+
+            // تفعيل اللغة الافتراضية عند البدء
+            setLanguage('ar');
+        });
+    </script>
+</body>
+</html>
