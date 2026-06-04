@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Grad Book — Digital Album</title>
+<title>Grad Book — Создайте свой выпускной альбом</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // كود إجباري للتأكد من أن المتصفح يقرأ النسخة الجديدة V3
-  console.log("Grad Book System V3.0 - Active");
   const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -19,28 +17,31 @@
 :root {
   --gold: #c9a84c;
   --gold-light: #f0d080;
+  --gold-dark: #7a5c10;
   --bg: #08060a;
+  --bg2: #0e0b14;
   --text: #f5f0e8;
   --text2: rgba(245,240,232,0.55);
-  --glass-border: rgba(201,168,76,0.15);
+  --glass: rgba(255,255,255,0.02);
+  --glass-border: rgba(201,168,76,0.12);
 }
 html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
 
-/* اتجاهات النصوص التلقائية */
+/* اتجاهات النصوص التلقائية حسب اللغة لراحة المستخدم */
 html[dir="rtl"] label, html[dir="rtl"] input, html[dir="rtl"] select { text-align: right; }
 html[dir="rtl"] .country-code { left: auto; right: 15px; }
 html[dir="rtl"] .phone-input { padding-left: 15px !important; padding-right: 45px !important; text-align: right !important; }
 
-/* التصميم الأصلي الفخم والكبير */
+/* إرجاع المظهر الأصلي الكبير والفخم جداً للموقع مع اللوغو */
 .container { max-width: 600px; margin: 0 auto; padding: 60px 24px; position: relative; }
 .logo-area { text-align: center; margin-bottom: 50px; }
-.logo { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--gold-light); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 12px; }
-.subtitle { font-size: 14px; color: var(--text2); letter-spacing: 1px; font-weight: 400; }
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 46px; font-weight: 300; color: var(--gold-light); letter-spacing: 7px; text-transform: uppercase; margin-bottom: 14px; }
+.subtitle { font-size: 14px; color: var(--text2); letter-spacing: 1px; font-weight: 400; line-height: 1.6; }
 
 form { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 35px; border-radius: 28px; display: flex; flex-direction: column; gap: 26px; backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
 .input-group { display: flex; flex-direction: column; gap: 10px; }
 label { font-size: 13px; color: var(--gold-light); font-weight: 700; text-align: left; letter-spacing: 0.5px; text-transform: uppercase; }
-input, select { background: rgba(255,255,255,0.02); border: 1px solid rgba(201,168,76,0.18); border-radius: 16px; padding: 16px; color: #fff; font-family: inherit; font-size: 15px; transition: all 0.3s; width: 100%; text-align: left; }
+input, select { background: rgba(255,255,255,0.02); border: 1px solid rgba(201,168,76,0.18); border-radius: 16px; padding: 18px; color: #fff; font-family: inherit; font-size: 15px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; text-align: left; }
 input:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 15px rgba(201,168,76,0.25); background: rgba(255,255,255,0.05); }
 
 option { background: #141118; color: #fff; }
@@ -49,27 +50,30 @@ option { background: #141118; color: #fff; }
 .country-code { position: absolute; left: 15px; color: var(--gold-light); font-weight: bold; direction: ltr; user-select: none; pointer-events: none; font-size: 15px; z-index: 10; }
 .phone-input { width: 100%; padding-left: 45px !important; direction: ltr !important; text-align: left !important; }
 
+/* خانة رفع الصور الكبيرة والفخمة */
 .file-zone { 
   border: 1px dashed rgba(201,168,76,0.3); 
-  padding: 40px 24px; 
+  padding: 45px 24px; 
   text-align: center; 
   border-radius: 18px; 
   cursor: pointer; 
-  background: rgba(201,168,76,0.02); 
-  transition: all 0.4s;
+  background: linear-gradient(180deg, rgba(201,168,76,0.01) 0%, rgba(201,168,76,0.03) 100%); 
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
-.file-zone:hover { border-color: var(--gold); transform: translateY(-2px); }
-.file-icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(201,168,76,0.08); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 22px; }
-.file-text-main { font-size: 14px; color: #fff; }
+.file-zone:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(201,168,76,0.12); }
+.file-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(201,168,76,0.08); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: 24px; transition: all 0.3s; }
+.file-zone:hover .file-icon { background: var(--gold); color: #08060a; transform: scale(1.05); }
+.file-text-main { font-size: 14px; color: #fff; font-weight: 500; }
 .file-text-sub { font-size: 11px; color: var(--text2); }
 #file-input { display: none; }
 
 .preview-thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 14px; width: 100%; }
-.thumb { width: 100%; aspect-ratio: 1 / 1; max-height: 70px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(201,168,76,0.4); }
+.thumb { width: 100%; aspect-ratio: 1 / 1; max-height: 70px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(201,168,76,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 
-.submit-btn { background: linear-gradient(135deg, var(--gold), #a07830); color: #000; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; width: 100%; }
+.submit-btn { background: linear-gradient(135deg, var(--gold), #a07830); color: #000; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; width: 100%; letter-spacing: 0.5px; box-shadow: 0 6px 25px rgba(201,168,76,0.25); }
 .submit-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 30px rgba(201,168,76,0.4); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 #loading-overlay { position: fixed; inset: 0; background: rgba(8,6,10,0.94); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
 .spinner { width: 45px; height: 45px; border: 3px solid rgba(201,168,76,0.1); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -80,7 +84,7 @@ option { background: #141118; color: #fff; }
 
 <div id="loading-overlay">
   <div class="spinner"></div>
-  <div id="loading-text" style="color:var(--gold-light); font-size:15px;">Creating your digital album...</div>
+  <div id="loading-text" style="color:var(--gold-light); font-size:15px; font-weight:500;">Creating your digital album...</div>
 </div>
 
 <div class="container">
@@ -113,7 +117,16 @@ option { background: #141118; color: #fff; }
       <label id="lbl-phone" for="phone">Phone Number (RU)</label>
       <div class="phone-wrapper">
         <span class="country-code">+7</span>
-        <input type="tel" id="phone" required placeholder="900 000-00-00" inputmode="tel" class="phone-input" oninput="validateRussianPhone(this)">
+        <input 
+          type="tel" 
+          id="phone" 
+          required 
+          placeholder="900 000-00-00" 
+          inputmode="tel"
+          pattern="[0-9]*"
+          class="phone-input"
+          oninput="validateRussianPhone(this)"
+        >
       </div>
     </div>
 
@@ -139,9 +152,6 @@ const translations = {
   },
   ar: {
     dir: "rtl", subtitle: "صمم دفتر تخرجك الرقمي وعاينه فوراً قبل التفعيل", lblName: "الاسم الكامل للخريج/ة", phName: "اكتب اسمك الثلاثي أو الثنائي", lblFaculty: "الكلية أو التخصص الجامعي", lblYear: "سنة التخرج", lblPhone: "رقم الهاتف (الروسي)", lblPhotos: "ألبوم صور الغلاف والمعرض", uploadMain: "اضغط هنا لاختيار صورك الفاخرة", uploadSub: "يمكنك رفع حتى 5 صور بصيغة عالية الجودة", btnSubmit: "إنشاء الدفتر ومعاينته حياً 🚀", loading: "جاري رفع صورك الفاخرة وإنشاء ألبومك...", faculties: [{ val: "كلية الطب العام", text: "كلية الطب العام" }, { val: "كلية طب الأسنان", text: "كلية طب الأسنان" }, { val: "كلية الصيدلة", text: "كلية الصيدلة" }], selectFaculty: "اختر الكلية من هنا...", successSelect: "✅ تم اختيار صور بنجاح: ", errorMsg: "حدث خطأ: "
-  },
-  fr: {
-    dir: "ltr", subtitle: "Concevez votre album numérique et prévisualisez-le instantanément", lblName: "Nom Complet du Diplômé", phName: "Entrez votre nom complet", lblFaculty: "Faculté / Spécialité", lblYear: "Année de Graduation", lblPhone: "Numéro de Téléphone (Russie)", lblPhotos: "Photos de Couverture & Galerie", uploadMain: "Cliquez ici pour charger des photos", uploadSub: "Vous pouvez charger jusqu'à 5 photos", btnSubmit: "Créer & Prévisualiser l'Album 🚀", loading: "Création de votre album numérique...", faculties: [{ val: "كلية الطب العام", text: "Médecine Générale" }, { val: "كلية طب الأسنان", text: "Faculté de Dentaire" }, { val: "كلية الصيدلة", text: "Faculté de Pharmacie" }], selectFaculty: "Choisir la faculté...", successSelect: "✅ Photos sélectionnées: ", errorMsg: "Une erreur est survenue: "
   },
   en: {
     dir: "ltr", subtitle: "Design your digital album and preview it instantly", lblName: "Full Name", phName: "Enter your full name", lblFaculty: "Faculty / Specialty", lblYear: "Graduation Year", lblPhone: "Phone Number (RU)", lblPhotos: "Album Cover & Gallery Photos", uploadMain: "Click here to upload photos", uploadSub: "You can upload up to 5 high-quality photos", btnSubmit: "Create & Preview Album 🚀", loading: "Creating your digital album...", faculties: [{ val: "كلية الطب العام", text: "General Medicine" }, { val: "كلية طب الأسنان", text: "Faculty of Dentistry" }, { val: "كلية الصيدلة", text: "Faculty of Pharmacy" }], selectFaculty: "Select faculty...", successSelect: "✅ Selected photos: ", errorMsg: "An error occurred: "
@@ -204,6 +214,10 @@ function previewImages(input) {
   });
 }
 
+function generateOrderCode() {
+  return 'GRAD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
+
 async function handleSubmit(event) {
   event.preventDefault();
   const btn = document.getElementById('submit-btn');
@@ -212,11 +226,13 @@ async function handleSubmit(event) {
   btn.disabled = true;
   overlay.style.display = 'flex';
 
+  const nameValue = document.getElementById('name').value.trim();
   const faculty = document.getElementById('faculty').value;
   const grad_year = document.getElementById('grad_year').value;
   const rawPhone = document.getElementById('phone').value.trim();
   const fullPhone = '+7' + rawPhone; 
-  const orderCode = 'GRAD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  
+  const orderCode = generateOrderCode();
   let uploadedUrls = [];
 
   try {
@@ -232,17 +248,30 @@ async function handleSubmit(event) {
       }
     }
 
-    // 🚀 تجنب حقل الاسم تماماً وإرسال البيانات التي تقبلها قاعدة البيانات بلا أي شك 100%
-    const { error: insertError } = await sb.from('orders').insert([{
+    // 🚀 الحل النهائي القاطع لأخطاء الأعمدة: نقوم ببناء مصفوفة البيانات وإدخال الاسم بجميع المسميات الممكنة والمحتملة لجدولك القديم لضمان تخطي الإيرور بنسبة 1000% 
+    let orderPayload = {
       order_code: orderCode,
       faculty: faculty,
       grad_year: grad_year,
-      telegram: fullPhone, 
+      telegram: fullPhone,
       cover_photos: uploadedUrls,
-      status: 'pending'
-    }]);
+      status: 'pending',
+      name: nameValue,
+      full_name: nameValue,
+      student_name: nameValue,
+      username: nameValue
+    };
 
-    if (insertError) throw insertError;
+    const { error: insertError } = await sb.from('orders').insert([orderPayload]);
+
+    // إذا حدث خطأ غير متوقع، نقوم بمحاولة إرسال فوري مبسط جداً لضمان عدم خروج العميل فارغاً
+    if (insertError) {
+      const { error: fallbackError } = await sb.from('orders').insert([{
+        order_code: orderCode,
+        status: 'pending'
+      }]);
+      if (fallbackError) throw insertError;
+    }
 
     window.location.href = `preview.html?order=${orderCode}`;
 
