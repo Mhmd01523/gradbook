@@ -187,7 +187,6 @@ async function handleSubmit(event) {
     btn.disabled = true;
     overlay.style.display = 'flex';
 
-    const nameValue = document.getElementById('name').value.trim();
     const faculty = document.getElementById('faculty').value;
     const grad_year = document.getElementById('grad_year').value;
     const rawPhone = document.getElementById('phone').value.trim();
@@ -208,25 +207,18 @@ async function handleSubmit(event) {
             }
         }
 
-        // إرسال البيانات بشكل آمن يتخطى جميع مشاكل ومسميات الأعمدة القديمة
+        // إرسال الأعمدة المتطابقة مع قاعدة بياناتك لتفادي مشاكل الـ Schema تماماً
         let orderPayload = {
             order_code: orderCode,
             faculty: faculty,
             grad_year: grad_year,
             telegram: fullPhone,
             cover_photos: uploadedUrls,
-            status: 'pending',
-            name: nameValue,
-            full_name: nameValue,
-            student_name: nameValue
+            status: 'pending'
         };
 
         const { error: insertError } = await sb.from('orders').insert([orderPayload]);
-
-        if (insertError) {
-            const { error: fallbackError } = await sb.from('orders').insert([{ order_code: orderCode, status: 'pending' }]);
-            if (fallbackError) throw insertError;
-        }
+        if (insertError) throw insertError;
 
         window.location.href = `preview.html?order=${orderCode}`;
 
