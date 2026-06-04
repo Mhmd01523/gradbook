@@ -83,14 +83,14 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 .banner-badge { background:var(--gold); color:#000; font-size:10px; font-weight:900; padding:3px 10px; border-radius:50px; letter-spacing:1px; text-transform:uppercase; }
 .banner-text { font-size:13px; color:var(--gold-light); font-weight: 500; }
 
-/* ══ HERO / COVER ══ */
+/* ══ HERO / COVER (تحديث المظهر لدمج البيانات) ══ */
 #cover-section {
   position:relative;
-  height:75svh;
-  min-height:450px;
+  height:85svh;
+  min-height:520px;
   overflow:hidden;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  border-bottom: 1px solid rgba(201,168,76,0.2);
+  border-bottom: 1px solid rgba(201,168,76,0.25);
 }
 .cover-bg {
   position:absolute; inset:0;
@@ -109,13 +109,15 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 }
 .cover-overlay {
   position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.85) 100%);
+  background:linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0.9) 100%);
 }
 
 .cover-content {
   position:relative; z-index:10;
   text-align:center;
-  padding:0 20px;
+  padding:24px;
+  width: 100%;
+  max-width: 500px;
   animation:fadeUp 1.2s ease both;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
@@ -123,15 +125,27 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 .cover-label { font-size:11px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:14px; font-family:'Cormorant Garamond',serif; }
 .cover-name {
   font-family:'Amiri',serif;
-  font-size:clamp(28px,8vw,52px);
+  font-size:clamp(32px,9vw,56px);
   font-weight:700;
   color:#fff;
-  text-shadow:0 0 30px rgba(0,0,0,0.9);
+  text-shadow:0 2px 20px rgba(0,0,0,0.95);
   line-height:1.2;
-  margin-bottom:6px;
+  margin-bottom:10px;
 }
-.cover-divider { width:90px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:14px auto; }
-.cover-meta { font-size:15px; color:rgba(255,255,255,0.8); letter-spacing:1px; }
+.cover-divider { width:120px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:16px auto; }
+
+/* ستايل بيانات الكلية المدمجة فوق الصورة */
+.cover-details-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+}
+.cover-faculty { font-weight: 500; color: var(--gold-light); font-size: 17px; }
+.cover-year { font-size: 14px; opacity: 0.8; letter-spacing: 1px; }
 
 /* Photo gallery dots */
 .cover-dots { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); z-index:20; display:flex; gap:6px; }
@@ -148,35 +162,6 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 }
 .sec-label { font-size:10px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:6px; font-family:'Cormorant Garamond',serif; }
 .sec-title { font-size:clamp(18px,5vw,24px); font-weight:700; color:#fff; margin-bottom:20px; }
-
-/* ══ PROFILE CARD ══ */
-.profile-card {
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:24px;
-  padding:24px;
-  display:flex;
-  gap:16px;
-  align-items:center;
-  position:relative;
-  overflow:hidden;
-}
-.profile-card::before {
-  content:'';
-  position:absolute; top:0; left:0; right:0; height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-}
-.profile-avatar-placeholder {
-  width:70px; height:70px;
-  border-radius:50%;
-  background:linear-gradient(135deg, var(--gold), #a07830);
-  display:flex; align-items:center; justify-content:center;
-  font-size:24px; font-weight:900; color:#000; flex-shrink:0;
-}
-.profile-info { flex:1; }
-.profile-name { font-family:'Amiri',serif; font-size:19px; font-weight:700; color:#fff; margin-bottom:4px; }
-.profile-detail { font-size:12px; color:var(--text2); margin-bottom:3px; }
-.profile-detail span { color:var(--gold-light); }
 
 /* ══ MESSAGES PREVIEW ══ */
 .messages-grid { display:flex; flex-direction:column; gap:12px; }
@@ -262,7 +247,7 @@ html[dir="ltr"] .preview-banner { text-align:left; }
   </div>
 </div>
 
-<!-- Cover Section -->
+<!-- Cover Section (المعلومات تظهر هنا مدمجة أمام الصورة مباشرة) -->
 <section id="cover-section">
   <div class="cover-bg no-photo" id="main-cover-bg"></div>
   <div class="cover-overlay"></div>
@@ -270,28 +255,15 @@ html[dir="ltr"] .preview-banner { text-align:left; }
     <div class="cover-label" id="lbl-cover-badge">DIGITAL GUESTBOOK</div>
     <h1 class="cover-name" id="display-cover-name">جاري التحميل...</h1>
     <div class="cover-divider"></div>
-    <div class="cover-meta" id="display-cover-meta">كتاب التخرج الرقمي</div>
+    <div class="cover-details-box">
+      <div class="cover-faculty" id="display-cover-faculty">...</div>
+      <div class="cover-year" id="display-cover-year">...</div>
+    </div>
   </div>
   <div class="cover-dots" id="cover-dots-container"></div>
 </section>
 
 <div class="page-wrap" style="padding-bottom:120px;">
-
-  <!-- Section 1: Profile -->
-  <div class="section-block">
-    <div class="sec-label">INFORMATION</div>
-    <h2 class="sec-title" id="lbl-sec-info">صاحب الدفتر</h2>
-    
-    <div class="profile-card">
-      <div class="profile-avatar-placeholder">🎓</div>
-      <div class="profile-info">
-        <div class="profile-name" id="display-profile-name">...</div>
-        <div class="profile-detail" id="display-profile-faculty">الكلية: <span>...</span></div>
-        <div class="profile-detail" id="display-profile-year">سنة التخرج: <span>...</span></div>
-        <div class="profile-detail" id="display-profile-lang">اللغة الأساسية: <span>...</span></div>
-      </div>
-    </div>
-  </div>
 
   <!-- Section 2: Mock Messages -->
   <div class="section-block">
@@ -343,7 +315,6 @@ html[dir="ltr"] .preview-banner { text-align:left; }
 <script>
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// جلب البارامترات من الرابط
 const urlParams = new URLSearchParams(window.location.search);
 const orderCode = urlParams.get('order') || '';
 const currentLang = urlParams.get('lang') || 'ar';
@@ -353,47 +324,34 @@ const T = {
     loading: "جاري تجهيز معاينة الدفتر الفاخر...",
     mode: "وضع المعاينة",
     bannerDesc: "هذه معاينة حية لشكل دفتر تخرجك الرقمي قبل الدفع وتفعيله.",
-    secInfo: "صاحب الدفتر",
     secMessages: "تهاني الأصدقاء (مثال)",
     secGallery: "ألبوم الصور المرفوعة",
     lockedMsg: "الرسائل تظهر بعد التفعيل",
     payText: "تفعيل الدفتر والانتقال للدفع",
-    faculty: "الكلية / التخصص",
-    year: "سنة التخرج",
-    lang: "لغة الدفتر الأساسية",
     errNotFound: "❌ لم نتمكن من العثور على بيانات هذا الطلب."
   },
   en: {
     loading: "Preparing your luxury book preview...",
     mode: "PREVIEW MODE",
     bannerDesc: "This is a live look at your digital graduation book before activation.",
-    secInfo: "Book Owner",
     secMessages: "Friends' Wishes (Example)",
     secGallery: "Uploaded Photo Album",
     lockedMsg: "Messages unlock after payment",
     payText: "Activate Book & Proceed to Pay",
-    faculty: "Faculty / Major",
-    year: "Graduation Year",
-    lang: "Main Book Language",
     errNotFound: "❌ Order details could not be found."
   },
   ru: {
     loading: "Подготовка премиум-превью книги...",
     mode: "РЕЖИМ ПРЕДПРОСМОТРА",
     bannerDesc: "Это живой предпросмотр вашей цифровой выпускной книги до оплаты.",
-    secInfo: "Владелец книги",
     secMessages: "Поздравления друзей (Пример)",
     secGallery: "Загруженный фотоальбом",
     lockedMsg: "Сообщения откроются после активации",
     payText: "Активировать книгу и перейти к оплате",
-    faculty: "Факультет / Специальность",
-    year: "Год выпуска",
-    lang: "Основной язык книги",
     errNotFound: "❌ Данные заказа не найдены."
   }
 };
 
-// ضبط اللغات والاتجاهات
 function applyLanguage() {
   const lang = T[currentLang] ? currentLang : 'en';
   const t = T[lang];
@@ -409,7 +367,6 @@ function applyLanguage() {
   document.getElementById('load-txt').textContent = t.loading;
   document.getElementById('lbl-mode').textContent = t.mode;
   document.getElementById('lbl-banner-desc').textContent = t.bannerDesc;
-  document.getElementById('lbl-sec-info').textContent = t.secInfo;
   document.getElementById('lbl-sec-messages').textContent = t.secMessages;
   document.getElementById('lbl-sec-gallery').textContent = t.secGallery;
   document.getElementById('btn-pay-text').textContent = t.payText;
@@ -417,7 +374,6 @@ function applyLanguage() {
   document.querySelectorAll('.lbl-locked-msg').forEach(el => el.textContent = t.lockedMsg);
 }
 
-// كود جلب البيانات الحقيقي من Supabase وعرضه داخل الدفتر
 async function loadOrderPreview() {
   applyLanguage();
   if (!orderCode) {
@@ -437,27 +393,17 @@ async function loadOrderPreview() {
       return;
     }
 
-    // حماية برمجية مرنة لقراءة الحقول بذكاء حتى لو اختلف حالة الأحرف الكبيرة أو الصغيرة
     const fullName = order.full_name || order.fullName || order.name || "خريج جديد";
-    const facultyStr = order.faculty || order.university || order.uni || "-";
-    const gradYear = order.grad_year || order.year || "-";
-    const bookLang = order.book_lang || order.lang || currentLang;
+    const facultyStr = order.faculty || order.university || order.uni || "";
+    const gradYear = order.grad_year || order.year || "";
 
-    // تعبئة البيانات في واجهة العميل الفاخرة
+    // حقن البيانات مباشرة فوق الغلاف الرئيسي والصورة
     document.getElementById('display-cover-name').textContent = fullName;
-    document.getElementById('display-profile-name').textContent = fullName;
+    document.getElementById('display-cover-faculty').textContent = facultyStr;
+    document.getElementById('display-cover-year').textContent = gradYear;
     
-    const lang = T[currentLang] ? currentLang : 'en';
-    const t = T[lang];
-    
-    document.getElementById('display-profile-faculty').innerHTML = `${t.faculty}: <span>${facultyStr}</span>`;
-    document.getElementById('display-profile-year').innerHTML = `${t.year}: <span>${gradYear}</span>`;
-    document.getElementById('display-profile-lang').innerHTML = `${t.lang}: <span>${bookLang}</span>`;
-    
-    // رسم ألبوم الصور
     drawPhotos(order.cover_photos || order.photos || []);
 
-    // إخفاء شاشة التحميل بعد الانتهاء
     setTimeout(() => {
       document.getElementById('loading-screen').classList.add('fade-out');
     }, 500);
