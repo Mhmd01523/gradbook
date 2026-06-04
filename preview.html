@@ -83,7 +83,7 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 .banner-badge { background:var(--gold); color:#000; font-size:10px; font-weight:900; padding:3px 10px; border-radius:50px; letter-spacing:1px; text-transform:uppercase; }
 .banner-text { font-size:13px; color:var(--gold-light); font-weight: 500; }
 
-/* ══ HERO / COVER (تحديث المظهر لدمج البيانات) ══ */
+/* ══ HERO / COVER ══ */
 #cover-section {
   position:relative;
   height:85svh;
@@ -134,7 +134,6 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 }
 .cover-divider { width:120px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:16px auto; }
 
-/* ستايل بيانات الكلية المدمجة فوق الصورة */
 .cover-details-box {
   margin-top: 10px;
   display: flex;
@@ -177,7 +176,7 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
   content:''; position:absolute; right:0; top:0; bottom:0; width:3px;
   background:linear-gradient(180deg, var(--gold), var(--gold-dark));
 }
-.msg-header { display:flex; justify-content:between; align-items:center; margin-bottom:8px; font-size:11px; color:var(--text2); }
+.msg-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:11px; color:var(--text2); }
 .msg-author { font-weight:700; color:var(--gold-light); font-size:13px; }
 .msg-body { font-size:13px; color:rgba(255,255,255,0.85); line-height:1.6; }
 
@@ -225,7 +224,6 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 
 html[dir="rtl"] .msg-card::before { right:0; left:auto; }
 html[dir="ltr"] .msg-card::before { left:0; right:auto; }
-html[dir="ltr"] .preview-banner { text-align:left; }
 </style>
 </head>
 <body>
@@ -233,7 +231,7 @@ html[dir="ltr"] .preview-banner { text-align:left; }
 <div id="loading-screen">
   <div class="loader-logo">Grad Book</div>
   <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-  <div class="loader-sub" id="load-txt">جاري تجهيز معاينة الدفتر الفاخر...</div>
+  <div class="loader-sub" id="load-txt">...</div>
 </div>
 
 <div class="watermark-overlay">
@@ -242,18 +240,17 @@ html[dir="ltr"] .preview-banner { text-align:left; }
 
 <div class="preview-banner">
   <div class="banner-inner">
-    <span class="banner-badge" id="lbl-mode">وضع المعاينة</span>
-    <span class="banner-text" id="lbl-banner-desc">هذه معاينة حية لشكل دفتر تخرجك الرقمي قبل الدفع وتفعيله.</span>
+    <span class="banner-badge" id="lbl-mode">...</span>
+    <span class="banner-text" id="lbl-banner-desc">...</span>
   </div>
 </div>
 
-<!-- Cover Section (المعلومات تظهر هنا مدمجة أمام الصورة مباشرة) -->
 <section id="cover-section">
   <div class="cover-bg no-photo" id="main-cover-bg"></div>
   <div class="cover-overlay"></div>
   <div class="cover-content">
     <div class="cover-label" id="lbl-cover-badge">DIGITAL GUESTBOOK</div>
-    <h1 class="cover-name" id="display-cover-name">جاري التحميل...</h1>
+    <h1 class="cover-name" id="display-cover-name">...</h1>
     <div class="cover-divider"></div>
     <div class="cover-details-box">
       <div class="cover-faculty" id="display-cover-faculty">...</div>
@@ -265,47 +262,42 @@ html[dir="ltr"] .preview-banner { text-align:left; }
 
 <div class="page-wrap" style="padding-bottom:120px;">
 
-  <!-- Section 2: Mock Messages -->
   <div class="section-block">
     <div class="sec-label">GUESTBOOK</div>
-    <h2 class="sec-title" id="lbl-sec-messages">تهاني الأصدقاء (مثال)</h2>
+    <h2 class="sec-title" id="lbl-sec-messages">...</h2>
     
     <div class="messages-grid">
       <div class="msg-card">
         <div class="blur-overlay">
-          <div class="msg-header"><span class="msg-author">أحمد خالد</span><span>منذ دقيقة</span></div>
-          <div class="msg-body">ألف مبروك التخرج يا غالي! ومنها للأعلى إن شاء الله، أيام الجامعة ما بتنتسى وكانت أحلى أيام بوجودك. تمنياتي لك بالتوفيق في حياتك المهنية.</div>
+          <div class="msg-header"><span class="msg-author" id="msg-author-1">...</span><span id="msg-time-1">...</span></div>
+          <div class="msg-body" id="msg-body-1">...</div>
         </div>
-        <div class="lock-badge"><span class="lock-icon">🔒</span><span class="lbl-locked-msg">الرسائل تظهر بعد التفعيل</span></div>
+        <div class="lock-badge"><span class="lock-icon">🔒</span><span class="lbl-locked-msg">...</span></div>
       </div>
       
       <div class="msg-card">
         <div class="blur-overlay">
-          <div class="msg-header"><span class="msg-author">Sarah Jenkins</span><span>منذ ساعة</span></div>
-          <div class="msg-body">Happy Graduation! So proud of all your hard work and achievements. Can't wait to see what amazing things you do next! Keep shining! ✨</div>
+          <div class="msg-header"><span class="msg-author" id="msg-author-2">...</span><span id="msg-time-2">...</span></div>
+          <div class="msg-body" id="msg-body-2">...</div>
         </div>
-        <div class="lock-badge"><span class="lock-icon">🔒</span><span class="lbl-locked-msg">الرسائل تظهر بعد التفعيل</span></div>
+        <div class="lock-badge"><span class="lock-icon">🔒</span><span class="lbl-locked-msg">...</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Section 3: Album Gallery Preview -->
   <div class="section-block" style="border:none;">
     <div class="sec-label">ALBUM</div>
-    <h2 class="sec-title" id="lbl-sec-gallery">ألبوم الصور المرفوعة</h2>
-    <div class="gallery-grid" id="preview-gallery-container">
-      <!-- ستتولد الصور المرفوعة هنا بريفيو مموه ومحمي تلقائياً -->
-    </div>
+    <h2 class="sec-title" id="lbl-sec-gallery">...</h2>
+    <div class="gallery-grid" id="preview-gallery-container"></div>
   </div>
 
 </div>
 
-<!-- Floating Button Bar -->
 <div class="bottom-actions-bar">
   <div class="actions-bar-inner">
     <button class="pay-btn" onclick="goToPayment()">
       <span class="pay-icon">💳</span>
-      <span id="btn-pay-text">تفعيل الدفتر والانتقال للدفع</span>
+      <span id="btn-pay-text">...</span>
     </button>
   </div>
 </div>
@@ -317,7 +309,15 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const urlParams = new URLSearchParams(window.location.search);
 const orderCode = urlParams.get('order') || '';
-const currentLang = urlParams.get('lang') || 'ar';
+
+// كود ذكي: فحص لغة المتصفح أو الهاتف تلقائياً
+let currentLang = urlParams.get('lang');
+if (!currentLang) {
+  const browserLang = navigator.language || navigator.userLanguage || 'ar';
+  if (browserLang.startsWith('ru')) currentLang = 'ru';
+  else if (browserLang.startsWith('en')) currentLang = 'en';
+  else currentLang = 'ar'; // الافتراضي
+}
 
 const T = {
   ar: {
@@ -328,7 +328,9 @@ const T = {
     secGallery: "ألبوم الصور المرفوعة",
     lockedMsg: "الرسائل تظهر بعد التفعيل",
     payText: "تفعيل الدفتر والانتقال للدفع",
-    errNotFound: "❌ لم نتمكن من العثور على بيانات هذا الطلب."
+    errNotFound: "❌ لم نتمكن من العثور على بيانات هذا الطلب.",
+    author1: "أحمد خالد", time1: "منذ دقيقة", body1: "ألف مبروك التخرج يا غالي! ومنها للأعلى إن شاء الله، أيام الجامعة ما بتنتسى وكانت أحلى أيام بوجودك. تمنياتي لك بالتوفيق في حياتك المهنية.",
+    author2: "سارة عبدالله", time2: "منذ ساعة", body2: "مبارك التخرج يا رب! فخورة جداً بكل جهدك وتعبك الشغل الحقيقي يبدأ الآن، أتمنى لك مسيرة مليئة بالنجاحات المستمرة! ✨"
   },
   en: {
     loading: "Preparing your luxury book preview...",
@@ -338,7 +340,9 @@ const T = {
     secGallery: "Uploaded Photo Album",
     lockedMsg: "Messages unlock after payment",
     payText: "Activate Book & Proceed to Pay",
-    errNotFound: "❌ Order details could not be found."
+    errNotFound: "❌ Order details could not be found.",
+    author1: "Alex Rivera", time1: "1m ago", body1: "Huge congratulations! So incredibly proud of you. University wouldn't have been the same without you. Best of luck in the professional world!",
+    author2: "Sarah Jenkins", time2: "1h ago", body2: "Happy Graduation! So proud of all your hard work and achievements. Can't wait to see what amazing things you do next! Keep shining! ✨"
   },
   ru: {
     loading: "Подготовка премиум-превью книги...",
@@ -348,7 +352,9 @@ const T = {
     secGallery: "Загруженный фотоальбом",
     lockedMsg: "Сообщения откроются после активации",
     payText: "Активировать книгу и перейти к оплате",
-    errNotFound: "❌ Данные заказа не найдены."
+    errNotFound: "❌ Данные заказа не найдены.",
+    author1: "Александр Иванов", time1: "1 мин. назад", body1: "От всей души поздравляю с выпуском! Университетские годы были крутыми благодаря тебе. Удачи в карьере, только вперед!",
+    author2: "Елена Смирнова", time2: "1 ч. назад", body2: "С окончанием университета! Столько труда было вложено, и вот результат. Горжусь тобой и желаю грандиозных успехов! ✨"
   }
 };
 
@@ -370,6 +376,13 @@ function applyLanguage() {
   document.getElementById('lbl-sec-messages').textContent = t.secMessages;
   document.getElementById('lbl-sec-gallery').textContent = t.secGallery;
   document.getElementById('btn-pay-text').textContent = t.payText;
+  
+  document.getElementById('msg-author-1').textContent = t.author1;
+  document.getElementById('msg-time-1').textContent = t.time1;
+  document.getElementById('msg-body-1').textContent = t.body1;
+  document.getElementById('msg-author-2').textContent = t.author2;
+  document.getElementById('msg-time-2').textContent = t.time2;
+  document.getElementById('msg-body-2').textContent = t.body2;
   
   document.querySelectorAll('.lbl-locked-msg').forEach(el => el.textContent = t.lockedMsg);
 }
@@ -393,11 +406,11 @@ async function loadOrderPreview() {
       return;
     }
 
-    const fullName = order.full_name || order.fullName || order.name || "خريج جديد";
+    // إصلاح جلب الاسم: قراءة الحقل name من قاعدة البيانات بشكل مباشر وصحيح
+    const fullName = order.name || order.full_name || order.fullName || "Graduate";
     const facultyStr = order.faculty || order.university || order.uni || "";
     const gradYear = order.grad_year || order.year || "";
 
-    // حقن البيانات مباشرة فوق الغلاف الرئيسي والصورة
     document.getElementById('display-cover-name').textContent = fullName;
     document.getElementById('display-cover-faculty').textContent = facultyStr;
     document.getElementById('display-cover-year').textContent = gradYear;
