@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>الدفع — Grad Book</title>
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="Grad Book">
+  <meta property="og:title"       content="Grad Book — دفتر التخرج">
+  <meta property="og:description" content="دفتر التخرج الرقمي الفاخر">
+  <meta property="og:image"       content="https://lhixtovnrpkhzntbcmin.supabase.co/storage/v1/object/public/covers/default-og.jpg">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:image"       content="https://lhixtovnrpkhzntbcmin.supabase.co/storage/v1/object/public/covers/default-og.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --gold: #c9a84c; --gold-light: #f0d080;
+      --bg: #0a0810; --card-bg: #130f1e;
+      --border: rgba(201,168,76,0.15);
+      --text: #f5f0e8; --text-muted: rgba(245,240,232,0.5);
+      --success: #27ae60;
+    }
+    body { background:var(--bg); color:var(--text); font-family:'Tajawal',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px; overflow-x:hidden; }
+    .container { width:100%; max-width:480px; margin:auto; }
+    header { text-align:center; margin-bottom:32px; }
+    .logo { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--gold); letter-spacing:4px; text-transform:uppercase; margin-bottom:4px; }
+    .subtitle { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; }
+
+    .invoice-card { background:var(--card-bg); border:1px solid var(--border); border-radius:24px; padding:24px; margin-bottom:24px; box-shadow:0 20px 40px rgba(0,0,0,0.5); }
+    .invoice-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .invoice-row:last-child { border:none; padding-bottom:0; }
+    .invoice-lbl { font-size:13px; color:var(--text-muted); }
+    .invoice-val { font-size:14px; font-weight:500; color:#fff; }
+    .total-row { border-top:1px dashed var(--border); border-bottom:none; margin-top:12px; padding-top:16px; }
+    .total-lbl { font-size:16px; font-weight:700; color:var(--gold-light); }
+    .total-val { font-size:24px; font-weight:900; color:var(--gold-light); font-family:monospace; }
+    .status-badge { background:rgba(201,168,76,0.1); color:var(--gold); padding:4px 12px; border-radius:50px; font-size:11px; font-weight:700; border:1px solid rgba(201,168,76,0.2); }
+
+    .section-title { font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+    .gateways-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:24px; }
+    .gate-btn { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:0.3s; width:100%; }
+    .gate-btn:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.1); }
+    .gate-btn.active { border-color:var(--gold); background:rgba(201,168,76,0.05); }
+    .gate-info { display:flex; align-items:center; gap:14px; }
+    .gate-icon { width:40px; height:40px; background:rgba(255,255,255,0.03); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; border:1px solid rgba(255,255,255,0.05); }
+    .gate-name { font-size:14px; font-weight:700; color:#fff; margin-bottom:2px; }
+    .gate-desc { font-size:11px; color:var(--text-muted); }
+    .radio-dot { width:18px; height:18px; border:2px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:0.3s; flex-shrink:0; }
+    .gate-btn.active .radio-dot { border-color:var(--gold); }
+    .gate-btn.active .radio-dot::after { content:''; width:8px; height:8px; background:var(--gold); border-radius:50%; display:block; }
+
+    /* ══ SCREENSHOT UPLOAD ══ */
+    .upload-section { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:24px; }
+    .upload-label { font-size:13px; font-weight:700; color:var(--gold-light); margin-bottom:12px; display:block; }
+    .upload-hint  { font-size:11px; color:var(--text-muted); margin-bottom:14px; }
+    .upload-area {
+      border:2px dashed rgba(201,168,76,0.3); border-radius:12px; padding:24px;
+      text-align:center; cursor:pointer; transition:0.3s; position:relative;
+    }
+    .upload-area:hover { border-color:var(--gold); background:rgba(201,168,76,0.03); }
+    .upload-area input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .upload-icon { font-size:32px; margin-bottom:8px; }
+    .upload-text { font-size:13px; color:var(--text-muted); }
+    #screenshot-preview { display:none; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+    #screenshot-preview img { width:100%; max-height:200px; object-fit:cover; display:block; }
+
+    .btn-submit { background:var(--gold); color:#0a0810; border:none; width:100%; padding:16px; border-radius:16px; font-family:'Tajawal',sans-serif; font-size:15px; font-weight:900; cursor:pointer; transition:0.3s; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(201,168,76,0.25); }
+    .btn-submit:hover { background:var(--gold-light); transform:translateY(-1px); }
+    .btn-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+    #success-section { display:none; text-align:center; animation:fadeInUp 0.6s ease forwards; }
+    .success-card { background:var(--card-bg); border:1px solid var(--success); border-radius:24px; padding:32px 24px; box-shadow:0 20px 40px rgba(0,0,0,0.6); }
+    .success-icon { width:64px; height:64px; background:rgba(39,174,96,0.1); border:1px solid var(--success); color:var(--success); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 20px; }
+    .success-title { font-size:18px; font-weight:900; color:#fff; margin-bottom:8px; }
+    .success-desc  { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:24px; }
+    .btn-telegram  { background:#0088cc; color:#fff; border:none; padding:14px 28px; border-radius:12px; text-decoration:none; font-size:14px; font-weight:700; display:inline-flex; align-items:center; gap:8px; transition:0.3s; box-shadow:0 8px 20px rgba(0,136,204,0.3); cursor:pointer; }
+    .btn-telegram:hover { background:#229ed9; transform:translateY(-2px); }
+
+    .loader-overlay { position:fixed; inset:0; background:rgba(10,8,16,0.9); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:0.3s; }
+    .loader-overlay.active { opacity:1; pointer-events:auto; }
+    .spinner { width:40px; height:40px; border:3px solid rgba(201,168,76,0.1); border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px; }
+    .loader-text { font-size:13px; color:var(--gold-light); font-weight:500; letter-spacing:1px; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    #toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-100px); background:rgba(201,168,76,0.95); color:#000; padding:10px 24px; border-radius:50px; font-size:12px; font-weight:700; transition:0.4s; z-index:10000; pointer-events:none; }
+    #toast.show { transform:translateX(-50%) translateY(0); }
+    .ltr { direction:ltr; text-align:left; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo">Grad Book</div>
+    <div class="subtitle" id="view-subtitle">Secure Gateway</div>
+  </header>
+
+  <div class="invoice-card">
+    <div class="invoice-row">
+      <span class="invoice-lbl" id="lbl-student">الخريج</span>
+      <span class="invoice-val" id="view-name">——</span>
+    </div>
+    <div class="invoice-row">
+      <span class="invoice-lbl" id="lbl-faculty">الكلية</span>
+      <span class="invoice-val" id="view-faculty">——</span>
+    </div>
+    <div class="invoice-row">
+      <span class="invoice-lbl" id="lbl-order-id">رقم الفاتورة</span>
+      <span class="invoice-val ltr" id="view-code">#——</span>
+    </div>
+    <div class="invoice-row">
+      <span class="invoice-lbl" id="lbl-status">الحالة</span>
+      <span class="status-badge" id="view-status-lbl">⏳ قيد الانتظار</span>
+    </div>
+    <div class="invoice-row total-row">
+      <span class="total-lbl" id="lbl-total">المبلغ الإجمالي</span>
+      <span class="total-val">99.00 SAR</span>
+    </div>
+  </div>
+
+  <div id="payment-methods-section">
+    <div class="section-title" id="lbl-select-method">اختر طريقة السداد</div>
+    <div class="gateways-grid">
+      <div class="gate-btn active" onclick="selectMethod('applepay', this)">
+        <div class="gate-info">
+          <div class="gate-icon">🍎</div>
+          <div>
+            <div class="gate-name">Apple Pay</div>
+            <div class="gate-desc" id="desc-applepay">الدفع السريع والآمن</div>
+          </div>
+        </div>
+        <div class="radio-dot"></div>
+      </div>
+      <div class="gate-btn" onclick="selectMethod('mada', this)">
+        <div class="gate-info">
+          <div class="gate-icon">💳</div>
+          <div>
+            <div class="gate-name" id="lbl-card-name">بطاقة مدى / فيزا</div>
+            <div class="gate-desc" id="desc-mada">البطاقات البنكية المحلية والعالمية</div>
+          </div>
+        </div>
+        <div class="radio-dot"></div>
+      </div>
+      <div class="gate-btn" onclick="selectMethod('transfer', this)">
+        <div class="gate-info">
+          <div class="gate-icon">🏦</div>
+          <div>
+            <div class="gate-name" id="lbl-transfer-name">تحويل بنكي</div>
+            <div class="gate-desc" id="desc-transfer">أرسل إيصال الدفع بعد التحويل</div>
+          </div>
+        </div>
+        <div class="radio-dot"></div>
+      </div>
+    </div>
+
+    <!-- رفع إيصال الدفع -->
+    <div class="upload-section">
+      <span class="upload-label" id="lbl-upload">📸 إيصال / لقطة الدفع</span>
+      <div class="upload-hint" id="hint-upload">ارفع صورة إيصال التحويل أو screenshot للدفع — ضروري لتأكيد طلبك</div>
+      <div class="upload-area" onclick="document.getElementById('ss-input').click()">
+        <input type="file" id="ss-input" accept="image/*" onchange="handleScreenshot(event)">
+        <div class="upload-icon">📤</div>
+        <div class="upload-text" id="upload-placeholder">اضغط لرفع الصورة</div>
+      </div>
+      <div id="screenshot-preview"><img id="ss-img" src="" alt=""></div>
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="processPayment()">
+      <span id="btn-pay-text">إرسال الطلب وتأكيد الدفع</span>
+    </button>
+  </div>
+
+  <div id="success-section"></div>
+</div>
+
+<div class="loader-overlay" id="payment-loader">
+  <div class="spinner"></div>
+  <div class="loader-text" id="loader-msg">جاري المعالجة...</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
+// ضع Bot Token وAdmin Chat ID هنا
+const ADMIN_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+const ADMIN_CHAT_ID   = 'YOUR_ADMIN_CHAT_ID_HERE';
+
+const SUPPORTED_LANGS = ['ar','en','ru','fr','zh','es','pt'];
+
+function detectBrowserLang() {
+  const nav = navigator.language || navigator.userLanguage || 'en';
+  const code = nav.toLowerCase().split('-')[0];
+  if (code === 'cn') return 'zh';
+  return SUPPORTED_LANGS.includes(code) ? code : 'en';
+}
+
+let supabaseClient = null;
+let orderCode      = '';
+let currentLang    = 'en';
+let selectedGateway = 'applepay';
+let screenshotFile  = null;
+let screenshotUrl   = '';
+
+// ══════════════ TRANSLATIONS (7 LANGUAGES — ar/en/ru/fr/zh/es/pt) ══════════════
+const T = {
+  ar: {
+    subtitle:'بوابة الدفع الآمنة', student:'الخريج', faculty:'الكلية',
+    order_id:'رقم الفاتورة', status:'الحالة', status_pending:'⏳ قيد الانتظار',
+    total:'المبلغ الإجمالي', select_method:'اختر طريقة السداد الآمنة',
+    desc_apple:'الدفع السريع والآمن بضغطة زر',
+    desc_card:'البطاقات البنكية المحلية والعالمية',
+    card_name:'بطاقة مدى / فيزا', transfer_name:'تحويل بنكي',
+    desc_transfer:'أرسل إيصال الدفع بعد التحويل',
+    lbl_upload:'📸 إيصال / لقطة الدفع',
+    hint_upload:'ارفع صورة إيصال التحويل أو screenshot للدفع — ضروري لتأكيد طلبك',
+    upload_placeholder:'اضغط لرفع صورة الإيصال',
+    btn_pay:'إرسال الطلب وتأكيد الدفع',
+    loader_init:'جاري التحقق من الفاتورة...', loader_proc:'جاري إرسال الطلب...',
+    err_not_found:'⚠️ لم يتم العثور على الفاتورة',
+    err_no_screenshot:'⚠️ يرجى رفع صورة إيصال الدفع أولاً',
+    paid_success_title:'🎉 تم استلام طلب الدفع!',
+    paid_success_desc:'شكراً! تم استلام طلبك وإيصال الدفع. سيقوم فريقنا بمراجعته وتأكيده خلال ساعة. افتح بوت التليجرام ليصلك إشعار التأكيد.',
+    btn_tg:'📱 فتح البوت واستلام التأكيد',
+  },
+  en: {
+    subtitle:'Secure Payment Gateway', student:'Graduate Name', faculty:'Faculty',
+    order_id:'Invoice ID', status:'Status', status_pending:'⏳ Pending Payment',
+    total:'Total Amount', select_method:'Select Payment Method',
+    desc_apple:'Fast & secure one-click payment',
+    desc_card:'Local and international bank cards',
+    card_name:'Card / Visa', transfer_name:'Bank Transfer',
+    desc_transfer:'Send payment receipt after transfer',
+    lbl_upload:'📸 Payment Receipt / Screenshot',
+    hint_upload:'Upload a photo of the transfer receipt or payment screenshot — required to confirm your order',
+    upload_placeholder:'Tap to upload receipt photo',
+    btn_pay:'Submit Order & Confirm Payment',
+    loader_init:'Verifying invoice...', loader_proc:'Sending your request...',
+    err_not_found:'⚠️ Invoice not found',
+    err_no_screenshot:'⚠️ Please upload a payment screenshot first',
+    paid_success_title:'🎉 Payment Request Received!',
+    paid_success_desc:'Thank you! We received your order and payment receipt. Our team will review and confirm it within 1 hour. Open the Telegram bot to receive your confirmation.',
+    btn_tg:'📱 Open Bot & Get Confirmation',
+  },
+  ru: {
+    subtitle:'Защищённый платёжный шлюз', student:'Выпускник', faculty:'Факультет',
+    order_id:'Номер счёта', status:'Статус', status_pending:'⏳ Ожидание оплаты',
+    total:'Итоговая сумма', select_method:'Выберите способ оплаты',
+    desc_apple:'Быстрая и безопасная оплата в один клик',
+    desc_card:'Местными и международными картами',
+    card_name:'Карта / Visa', transfer_name:'Банковский перевод',
+    desc_transfer:'Отправьте квитанцию после перевода',
+    lbl_upload:'📸 Квитанция / скриншот оплаты',
+    hint_upload:'Загрузите фото квитанции или скриншот оплаты — обязательно для подтверждения заказа',
+    upload_placeholder:'Нажмите для загрузки фото',
+    btn_pay:'Отправить заказ и подтвердить оплату',
+    loader_init:'Проверка счёта...', loader_proc:'Отправка запроса...',
+    err_not_found:'⚠️ Счёт не найден',
+    err_no_screenshot:'⚠️ Пожалуйста, загрузите скриншот оплаты',
+    paid_success_title:'🎉 Запрос на оплату получен!',
+    paid_success_desc:'Спасибо! Мы получили ваш заказ и квитанцию. Наша команда рассмотрит и подтвердит его в течение часа. Откройте Telegram-бот для получения подтверждения.',
+    btn_tg:'📱 Открыть бота и получить подтверждение',
+  },
+  fr: {
+    subtitle:'Passerelle de paiement sécurisée', student:"Nom de l'étudiant", faculty:'Faculté',
+    order_id:'ID de facture', status:'Statut', status_pending:'⏳ En attente',
+    total:'Montant total', select_method:'Choisir la méthode de paiement',
+    desc_apple:'Paiement rapide et sécurisé',
+    desc_card:'Cartes bancaires nationales ou internationales',
+    card_name:'Carte / Visa', transfer_name:'Virement bancaire',
+    desc_transfer:'Envoyez le reçu après le virement',
+    lbl_upload:'📸 Reçu / capture d\'écran du paiement',
+    hint_upload:'Téléchargez une photo du reçu de virement ou une capture d\'écran — requis pour confirmer votre commande',
+    upload_placeholder:'Appuyez pour télécharger le reçu',
+    btn_pay:'Envoyer la commande et confirmer le paiement',
+    loader_init:'Vérification de la facture...', loader_proc:'Envoi de votre demande...',
+    err_not_found:'⚠️ Facture introuvable',
+    err_no_screenshot:'⚠️ Veuillez d\'abord télécharger une capture d\'écran du paiement',
+    paid_success_title:'🎉 Demande de paiement reçue !',
+    paid_success_desc:'Merci ! Nous avons reçu votre commande et votre reçu. Notre équipe le vérifiera dans l\'heure. Ouvrez le bot Telegram pour recevoir la confirmation.',
+    btn_tg:'📱 Ouvrir le bot et recevoir la confirmation',
+  },
+  zh: {
+    subtitle:'安全支付网关', student:'毕业生姓名', faculty:'学院',
+    order_id:'发票编号', status:'状态', status_pending:'⏳ 等待付款',
+    total:'总金额', select_method:'选择支付方式',
+    desc_apple:'快速安全的一键支付',
+    desc_card:'本地和国际银行卡',
+    card_name:'银行卡 / Visa', transfer_name:'银行转账',
+    desc_transfer:'转账后发送付款收据',
+    lbl_upload:'📸 付款收据 / 截图',
+    hint_upload:'上传转账收据照片或付款截图 — 确认订单必需',
+    upload_placeholder:'点击上传收据照片',
+    btn_pay:'提交订单并确认付款',
+    loader_init:'正在验证发票...', loader_proc:'正在发送请求...',
+    err_not_found:'⚠️ 未找到发票',
+    err_no_screenshot:'⚠️ 请先上传付款截图',
+    paid_success_title:'🎉 已收到付款请求！',
+    paid_success_desc:'谢谢！我们已收到您的订单和付款收据。我们的团队将在一小时内审核并确认。请打开 Telegram 机器人接收确认通知。',
+    btn_tg:'📱 打开机器人并接收确认',
+  },
+  es: {
+    subtitle:'Pasarela de pago segura', student:'Nombre del graduado', faculty:'Facultad',
+    order_id:'ID de factura', status:'Estado', status_pending:'⏳ Pago pendiente',
+    total:'Monto total', select_method:'Seleccionar método de pago',
+    desc_apple:'Pago rápido y seguro en un clic',
+    desc_card:'Tarjetas bancarias locales o internacionales',
+    card_name:'Tarjeta / Visa', transfer_name:'Transferencia bancaria',
+    desc_transfer:'Envíe el recibo después de la transferencia',
+    lbl_upload:'📸 Recibo / captura de pantalla del pago',
+    hint_upload:'Suba una foto del recibo de transferencia o captura — requerido para confirmar su pedido',
+    upload_placeholder:'Toque para subir foto del recibo',
+    btn_pay:'Enviar pedido y confirmar pago',
+    loader_init:'Verificando factura...', loader_proc:'Enviando solicitud...',
+    err_not_found:'⚠️ Factura no encontrada',
+    err_no_screenshot:'⚠️ Por favor suba una captura del pago primero',
+    paid_success_title:'🎉 ¡Solicitud de pago recibida!',
+    paid_success_desc:'¡Gracias! Hemos recibido su pedido y recibo de pago. Nuestro equipo lo revisará y confirmará en una hora. Abra el bot de Telegram para recibir la confirmación.',
+    btn_tg:'📱 Abrir bot y recibir confirmación',
+  },
+  pt: {
+    subtitle:'Gateway de pagamento seguro', student:'Nome do graduado', faculty:'Faculdade',
+    order_id:'ID da fatura', status:'Status', status_pending:'⏳ Aguardando pagamento',
+    total:'Valor total', select_method:'Selecionar método de pagamento',
+    desc_apple:'Pagamento rápido e seguro em um clique',
+    desc_card:'Cartões bancários locais e internacionais',
+    card_name:'Cartão / Visa', transfer_name:'Transferência bancária',
+    desc_transfer:'Envie o comprovante após a transferência',
+    lbl_upload:'📸 Comprovante / captura de tela do pagamento',
+    hint_upload:'Envie uma foto do comprovante de transferência ou captura — necessário para confirmar seu pedido',
+    upload_placeholder:'Toque para enviar foto do comprovante',
+    btn_pay:'Enviar pedido e confirmar pagamento',
+    loader_init:'Verificando fatura...', loader_proc:'Enviando solicitação...',
+    err_not_found:'⚠️ Fatura não encontrada',
+    err_no_screenshot:'⚠️ Por favor envie uma captura do pagamento primeiro',
+    paid_success_title:'🎉 Solicitação de pagamento recebida!',
+    paid_success_desc:'Obrigado! Recebemos seu pedido e comprovante. Nossa equipe irá revisá-lo e confirmar em uma hora. Abra o bot do Telegram para receber a confirmação.',
+    btn_tg:'📱 Abrir bot e receber confirmação',
+  },
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  orderCode = params.get('order') || '';
+  const urlLang = params.get('lang');
+  currentLang = (urlLang && T[urlLang]) ? urlLang : detectBrowserLang();
+
+  applyLocalization();
+
+  if (typeof supabase !== 'undefined') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  fetchInvoiceDetails();
+});
+
+function applyLocalization() {
+  const t = T[currentLang];
+  document.documentElement.dir  = (currentLang === 'ar') ? 'rtl' : 'ltr';
+  document.documentElement.lang = currentLang;
+
+  document.getElementById('view-subtitle').textContent      = t.subtitle;
+  document.getElementById('lbl-student').textContent        = t.student;
+  document.getElementById('lbl-faculty').textContent        = t.faculty;
+  document.getElementById('lbl-order-id').textContent       = t.order_id;
+  document.getElementById('lbl-status').textContent         = t.status;
+  document.getElementById('view-status-lbl').textContent    = t.status_pending;
+  document.getElementById('lbl-total').textContent          = t.total;
+  document.getElementById('lbl-select-method').textContent  = t.select_method;
+  document.getElementById('desc-applepay').textContent      = t.desc_apple;
+  document.getElementById('desc-mada').textContent          = t.desc_card;
+  document.getElementById('lbl-card-name').textContent      = t.card_name;
+  document.getElementById('lbl-transfer-name').textContent  = t.transfer_name;
+  document.getElementById('desc-transfer').textContent      = t.desc_transfer;
+  document.getElementById('lbl-upload').textContent         = t.lbl_upload;
+  document.getElementById('hint-upload').textContent        = t.hint_upload;
+  document.getElementById('upload-placeholder').textContent = t.upload_placeholder;
+  document.getElementById('btn-pay-text').textContent       = t.btn_pay;
+}
+
+async function fetchInvoiceDetails() {
+  if (!orderCode) { showErrorState(); return; }
+  toggleLoader(true, T[currentLang].loader_init);
+  try {
+    const { data: order, error } = await supabaseClient
+      .from('orders').select('*').eq('order_code', orderCode).single();
+    toggleLoader(false);
+    if (error || !order) { showErrorState(); return; }
+
+    document.getElementById('view-name').textContent    = order.customer_name || order.name || '——';
+    document.getElementById('view-faculty').textContent = order.faculty || '——';
+    document.getElementById('view-code').textContent    = `#${order.order_code}`;
+    if (order.status === 'paid' || order.status === 'in_progress' || order.status === 'delivered') {
+      showPaidState();
+    }
+  } catch(e) {
+    console.error(e);
+    toggleLoader(false);
+    showErrorState();
+  }
+}
+
+function selectMethod(method, el) {
+  selectedGateway = method;
+  document.querySelectorAll('.gate-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function handleScreenshot(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  screenshotFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('ss-img').src = e.target.result;
+    document.getElementById('screenshot-preview').style.display = 'block';
+    document.getElementById('upload-placeholder').textContent = '✅ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function processPayment() {
+  const t = T[currentLang];
+
+  // رفع screenshot إلزامي
+  if (!screenshotFile) {
+    toast(t.err_no_screenshot);
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  toggleLoader(true, t.loader_proc);
+
+  try {
+    // 1. رفع الصورة لـ Supabase Storage
+    const ext = screenshotFile.name.split('.').pop();
+    const path = `payment-screenshots/${orderCode}-${Date.now()}.${ext}`;
+    const { data: uploadData, error: uploadErr } = await supabaseClient
+      .storage.from('covers').upload(path, screenshotFile, { upsert: true });
+
+    if (!uploadErr) {
+      const { data: urlData } = supabaseClient.storage.from('covers').getPublicUrl(path);
+      screenshotUrl = urlData?.publicUrl || '';
+    }
+
+    // 2. تحديث الطلب في DB — status = pending_verification (ينتظر تأكيد الأدمن)
+    if (supabaseClient && orderCode) {
+      await supabaseClient.from('orders').update({
+        status: 'pending_verification',
+        payment_screenshot: screenshotUrl,
+        payment_method: selectedGateway,
+      }).eq('order_code', orderCode);
+    }
+
+    // 3. إشعار الأدمن على Telegram
+    await notifyAdmin(screenshotUrl);
+
+    toggleLoader(false);
+    showPaidState();
+
+  } catch(err) {
+    console.error(err);
+    toggleLoader(false);
+    btn.disabled = false;
+    // حتى لو فشل upload — نكمل ونخبر الأدمن
+    await supabaseClient?.from('orders').update({ status:'pending_verification', payment_method: selectedGateway }).eq('order_code', orderCode);
+    await notifyAdmin('');
+    showPaidState();
+  }
+}
+
+async function notifyAdmin(ssUrl) {
+  if (!ADMIN_BOT_TOKEN || ADMIN_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
+  try {
+    // جيب بيانات الزبون
+    const { data: order } = await supabaseClient
+      .from('orders').select('customer_name,faculty,customer_telegram').eq('order_code', orderCode).single();
+
+    const name    = order?.customer_name || '—';
+    const faculty = order?.faculty || '—';
+    const tg      = order?.customer_telegram || '—';
+
+    const msg = `🔔 *طلب دفع جديد يحتاج تأكيد!*\n\n👤 الاسم: ${name}\n🏫 الكلية: ${faculty}\n📱 تليجرام: ${tg}\n📋 كود الطلب: \`${orderCode}\`\n💳 طريقة الدفع: ${selectedGateway}\n\n${ssUrl ? '📸 إيصال الدفع:\n' + ssUrl : '⚠️ لم يتم رفع إيصال'}`;
+
+    const body = { chat_id: ADMIN_CHAT_ID, text: msg, parse_mode: 'Markdown' };
+
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    // لو في صورة — أرسلها كـ photo أيضاً
+    if (ssUrl) {
+      await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: ssUrl, caption: `إيصال دفع — ${orderCode}` }),
+      });
+    }
+  } catch(e) {
+    console.warn('Admin notify failed:', e);
+  }
+}
+
+function showPaidState() {
+  const t = T[currentLang];
+  document.getElementById('payment-methods-section').style.display = 'none';
+
+  const statusLbl = document.getElementById('view-status-lbl');
+  statusLbl.textContent    = currentLang === 'ar' ? '⏳ بانتظار تأكيد الفريق' : '⏳ Awaiting team confirmation';
+  statusLbl.style.color    = '#f0a500';
+  statusLbl.style.background = 'rgba(240,165,0,0.1)';
+  statusLbl.style.borderColor = 'rgba(240,165,0,0.3)';
+
+  const botUsername  = 'gradbook_notifications_bot';
+  const telegramUrl  = `https://t.me/${botUsername}?start=${orderCode}`;
+
+  const successContainer = document.getElementById('success-section');
+  successContainer.style.display = 'block';
+  successContainer.innerHTML = `
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h3 class="success-title">${t.paid_success_title}</h3>
+      <p class="success-desc">${t.paid_success_desc}</p>
+      <a href="${telegramUrl}" target="_blank" class="btn-telegram">${t.btn_tg}</a>
+    </div>
+  `;
+}
+
+function showErrorState() {
+  toast(T[currentLang].err_not_found);
+  document.getElementById('payment-methods-section').style.display = 'none';
+}
+
+function toggleLoader(show, text = '') {
+  const el  = document.getElementById('payment-loader');
+  const txt = document.getElementById('loader-msg');
+  if (text) txt.textContent = text;
+  show ? el.classList.add('active') : el.classList.remove('active');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
