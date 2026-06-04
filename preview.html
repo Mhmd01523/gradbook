@@ -262,6 +262,7 @@ html[dir="ltr"] .preview-banner { text-align:left; }
   </div>
 </div>
 
+<!-- Cover Section -->
 <section id="cover-section">
   <div class="cover-bg no-photo" id="main-cover-bg"></div>
   <div class="cover-overlay"></div>
@@ -276,6 +277,7 @@ html[dir="ltr"] .preview-banner { text-align:left; }
 
 <div class="page-wrap" style="padding-bottom:120px;">
 
+  <!-- Section 1: Profile -->
   <div class="section-block">
     <div class="sec-label">INFORMATION</div>
     <h2 class="sec-title" id="lbl-sec-info">صاحب الدفتر</h2>
@@ -291,6 +293,7 @@ html[dir="ltr"] .preview-banner { text-align:left; }
     </div>
   </div>
 
+  <!-- Section 2: Mock Messages -->
   <div class="section-block">
     <div class="sec-label">GUESTBOOK</div>
     <h2 class="sec-title" id="lbl-sec-messages">تهاني الأصدقاء (مثال)</h2>
@@ -314,15 +317,18 @@ html[dir="ltr"] .preview-banner { text-align:left; }
     </div>
   </div>
 
+  <!-- Section 3: Album Gallery Preview -->
   <div class="section-block" style="border:none;">
     <div class="sec-label">ALBUM</div>
     <h2 class="sec-title" id="lbl-sec-gallery">ألبوم الصور المرفوعة</h2>
     <div class="gallery-grid" id="preview-gallery-container">
-      </div>
+      <!-- ستتولد الصور المرفوعة هنا بريفيو مموه ومحمي تلقائياً -->
+    </div>
   </div>
 
 </div>
 
+<!-- Floating Button Bar -->
 <div class="bottom-actions-bar">
   <div class="actions-bar-inner">
     <button class="pay-btn" onclick="goToPayment()">
@@ -431,19 +437,25 @@ async function loadOrderPreview() {
       return;
     }
 
+    // حماية برمجية مرنة لقراءة الحقول بذكاء حتى لو اختلف حالة الأحرف الكبيرة أو الصغيرة
+    const fullName = order.full_name || order.fullName || order.name || "خريج جديد";
+    const facultyStr = order.faculty || order.university || order.uni || "-";
+    const gradYear = order.grad_year || order.year || "-";
+    const bookLang = order.book_lang || order.lang || currentLang;
+
     // تعبئة البيانات في واجهة العميل الفاخرة
-    document.getElementById('display-cover-name').textContent = order.full_name;
-    document.getElementById('display-profile-name').textContent = order.full_name;
+    document.getElementById('display-cover-name').textContent = fullName;
+    document.getElementById('display-profile-name').textContent = fullName;
     
     const lang = T[currentLang] ? currentLang : 'en';
     const t = T[lang];
     
-    document.getElementById('display-profile-faculty').innerHTML = `${t.faculty}: <span>${order.faculty || '-'}</span>`;
-    document.getElementById('display-profile-year').innerHTML = `${t.year}: <span>${order.grad_year || '-'}</span>`;
-    document.getElementById('display-profile-lang').innerHTML = `${t.lang}: <span>${order.book_lang || '-'}</span>`;
+    document.getElementById('display-profile-faculty').innerHTML = `${t.faculty}: <span>${facultyStr}</span>`;
+    document.getElementById('display-profile-year').innerHTML = `${t.year}: <span>${gradYear}</span>`;
+    document.getElementById('display-profile-lang').innerHTML = `${t.lang}: <span>${bookLang}</span>`;
     
     // رسم ألبوم الصور
-    drawPhotos(order.cover_photos || []);
+    drawPhotos(order.cover_photos || order.photos || []);
 
     // إخفاء شاشة التحميل بعد الانتهاء
     setTimeout(() => {
@@ -463,7 +475,6 @@ function drawPhotos(photos) {
   
   try {
     if (photos && photos.length > 0) {
-      // تعيين الصورة الأولى كخلفية للغلاف الرئيسي
       bgContainer.className = 'cover-bg';
       bgContainer.style.backgroundImage = `url('${photos[0]}')`;
       
@@ -471,13 +482,11 @@ function drawPhotos(photos) {
       dotsContainer.innerHTML = '';
       
       photos.forEach((url, index) => {
-        // إضافة الصورة للألبوم كبريفيو مموه ومحمي
         const item = document.createElement('div');
         item.className = 'gallery-item';
         item.innerHTML = `<img src="${url}"><div class="gallery-lock-overlay"><span>🔒</span></div>`;
         galleryContainer.appendChild(item);
 
-        // إضافة نقاط التنقل للغلاف الرئيسي
         const dot = document.createElement('div');
         dot.className = `cover-dot ${index === 0 ? 'active' : ''}`;
         dot.onclick = () => {
@@ -514,7 +523,6 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-// بدء التشغيل
 window.addEventListener('DOMContentLoaded', loadOrderPreview);
 </script>
 </body>
