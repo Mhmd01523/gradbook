@@ -27,12 +27,10 @@
 }
 html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
 
-/* ضبط الاتجاهات تلقائياً حسب اللغة */
 html[dir="rtl"] label, html[dir="rtl"] input, html[dir="rtl"] select { text-align: right; }
 html[dir="rtl"] .country-code { left: auto; right: 15px; }
 html[dir="rtl"] .phone-input { padding-left: 15px !important; padding-right: 45px !important; text-align: right !important; }
 
-/* التصميم الكبير والفاخر الأصلي للموقع */
 .container { max-width: 600px; margin: 0 auto; padding: 60px 24px; position: relative; }
 .logo-area { text-align: center; margin-bottom: 50px; }
 .logo { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--gold-light); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 12px; }
@@ -50,7 +48,6 @@ option { background: #141118; color: #fff; }
 .country-code { position: absolute; left: 15px; color: var(--gold-light); font-weight: bold; direction: ltr; user-select: none; pointer-events: none; font-size: 15px; z-index: 10; }
 .phone-input { width: 100%; padding-left: 45px !important; direction: ltr !important; text-align: left !important; }
 
-/* خانة رفع الصور الفاخرة الكبيرة */
 .file-zone { 
   border: 1px dashed rgba(201,168,76,0.3); 
   padding: 40px 24px; 
@@ -71,12 +68,10 @@ option { background: #141118; color: #fff; }
 .file-text-sub { font-size: 11px; color: var(--text2); }
 #file-input { display: none; }
 
-/* شبكة عرض الصور المصغرة المتناسقة */
 .preview-thumbnails { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 14px; width: 100%; }
 .thumb { width: 100%; aspect-ratio: 1 / 1; max-height: 70px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(201,168,76,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: all 0.3s; }
 .thumb:hover { transform: scale(1.05); border-color: var(--gold); }
 
-/* زر التثبيت الكبير الفخم */
 .submit-btn { background: linear-gradient(135deg, var(--gold), #a07830); color: #000; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; transition: all 0.3s; width: 100%; letter-spacing: 0.5px; box-shadow: 0 6px 25px rgba(201,168,76,0.25); }
 .submit-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 10px 30px rgba(201,168,76,0.4); }
 .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -100,7 +95,6 @@ option { background: #141118; color: #fff; }
   </div>
 
   <form id="order-form" onsubmit="handleSubmit(event)">
-    
     <div class="input-group">
       <label id="lbl-name" for="name">Full Name</label>
       <input type="text" id="name" required placeholder="Enter your name">
@@ -108,8 +102,7 @@ option { background: #141118; color: #fff; }
 
     <div class="input-group">
       <label id="lbl-faculty" for="faculty">Faculty / Specialty</label>
-      <select id="faculty" required>
-        </select>
+      <select id="faculty" required></select>
     </div>
 
     <div class="input-group">
@@ -154,7 +147,6 @@ option { background: #141118; color: #fff; }
 </div>
 
 <script>
-// 🌍 نظام اللغات الذكي متوافق 100% مع قاعدة البيانات لمنع حدوث أي Error
 const translations = {
   ru: {
     dir: "ltr",
@@ -246,7 +238,6 @@ const translations = {
   }
 };
 
-// كاشف اللغة الذكي والآمن
 let currentLang = 'en';
 const userLang = navigator.language || navigator.userLanguage;
 const langCode = userLang.substring(0, 2).toLowerCase();
@@ -259,7 +250,6 @@ if (translations[langCode]) {
 
 const lang = translations[currentLang];
 
-// تطبيق النصوص والاتجاهات لتبدو بالشكل الأصلي الفخم
 document.documentElement.lang = currentLang;
 document.documentElement.dir = lang.dir;
 document.getElementById('sub-title').textContent = lang.subtitle;
@@ -356,14 +346,13 @@ async function handleSubmit(event) {
       }
     }
 
-    // 💡 حل الأخطاء النهائي: نرسل قيم الكليات الثابتة بالعربية المبرمجة مسبقاً بقاعدة بياناتك لمنع أي خطأ أو تعارض
+    // 🛠️ تم إزالة عمود full_name نهائياً هنا لإصلاح الإيرور تماماً
     const { error: insertError } = await sb
       .from('orders')
       .insert([{
         order_code: orderCode,
         name: name,
-        full_name: name, 
-        faculty: faculty, // تُرسل القيمة الأصلية المتوافقة تماماً
+        faculty: faculty,
         grad_year: grad_year,
         telegram: fullPhone, 
         cover_photos: uploadedUrls,
