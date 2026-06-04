@@ -178,7 +178,7 @@ html, body { min-height:100%; background:var(--bg); color:var(--text); font-fami
 }
 .msg-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:11px; color:var(--text2); }
 .msg-author { font-weight:700; color:var(--gold-light); font-size:13px; }
-.msg-body { font-size:13px; color:rgba(255,255,255,0.85); line-height:1.6; }
+.msg-body { font-size:13px; color:rgba(255,255,255,0.855); line-height:1.6; }
 
 .blur-overlay {
   filter:blur(3.5px); opacity:0.4; user-select:none; pointer-events:none;
@@ -310,7 +310,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const urlParams = new URLSearchParams(window.location.search);
 const orderCode = urlParams.get('order') || '';
 
-// فحص لغة المتصفح أو الهاتف تلقائياً
+// فحص لغة المتصفح تلقائياً
 let currentLang = urlParams.get('lang');
 if (!currentLang) {
   const browserLang = navigator.language || navigator.userLanguage || 'ar';
@@ -411,8 +411,25 @@ async function loadOrderPreview() {
 
     const lang = T[currentLang] ? currentLang : 'en';
 
-    // 🛡️ ذكاء اصطناعي مكثف لقراءة حقل الاسم بكل السيناريوهات الممكنة في جدولك
-    const fullName = order.name || order.full_name || order.fullName || order.student_name || order.customer_name || order.username || T[lang].fallbackName;
+    // 🚀 آلية استخراج ذكية جداً للاسم:
+    // إذا لم تعثر الدالة على الحقول المشهورة، ستبحث ديناميكياً داخل الكائن عن أي نص طويل يمثل اسم العميل الحقيقي وتظهره.
+    let fullName = order.name || order.full_name || order.fullName || order.student_name || order.customer_name || order.username || "";
+    
+    if (!fullName) {
+      for (const key in order) {
+        if (order.hasOwnProperty(key) && typeof order[key] === 'string') {
+          const val = order[key].trim();
+          // شروط منطقية لاستخراج الاسم الحقيقي (ليس كود أو تاريخ أو رابط)
+          if (val.length > 2 && val.length < 45 && !val.includes('http') && !val.includes('_') && isNaN(Date.parse(val))) {
+            fullName = val;
+            break;
+          }
+        }
+      }
+    }
+    
+    if(!fullName) fullName = T[lang].fallbackName;
+
     const facultyStr = order.faculty || order.university || order.uni || "";
     const gradYear = order.grad_year || order.year || "";
 
