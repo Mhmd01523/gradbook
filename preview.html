@@ -310,13 +310,13 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const urlParams = new URLSearchParams(window.location.search);
 const orderCode = urlParams.get('order') || '';
 
-// كود ذكي: فحص لغة المتصفح أو الهاتف تلقائياً
+// فحص لغة المتصفح أو الهاتف تلقائياً
 let currentLang = urlParams.get('lang');
 if (!currentLang) {
   const browserLang = navigator.language || navigator.userLanguage || 'ar';
   if (browserLang.startsWith('ru')) currentLang = 'ru';
   else if (browserLang.startsWith('en')) currentLang = 'en';
-  else currentLang = 'ar'; // الافتراضي
+  else currentLang = 'ar';
 }
 
 const T = {
@@ -329,6 +329,7 @@ const T = {
     lockedMsg: "الرسائل تظهر بعد التفعيل",
     payText: "تفعيل الدفتر والانتقال للدفع",
     errNotFound: "❌ لم نتمكن من العثور على بيانات هذا الطلب.",
+    fallbackName: "خريج جديد",
     author1: "أحمد خالد", time1: "منذ دقيقة", body1: "ألف مبروك التخرج يا غالي! ومنها للأعلى إن شاء الله، أيام الجامعة ما بتنتسى وكانت أحلى أيام بوجودك. تمنياتي لك بالتوفيق في حياتك المهنية.",
     author2: "سارة عبدالله", time2: "منذ ساعة", body2: "مبارك التخرج يا رب! فخورة جداً بكل جهدك وتعبك الشغل الحقيقي يبدأ الآن، أتمنى لك مسيرة مليئة بالنجاحات المستمرة! ✨"
   },
@@ -341,6 +342,7 @@ const T = {
     lockedMsg: "Messages unlock after payment",
     payText: "Activate Book & Proceed to Pay",
     errNotFound: "❌ Order details could not be found.",
+    fallbackName: "New Graduate",
     author1: "Alex Rivera", time1: "1m ago", body1: "Huge congratulations! So incredibly proud of you. University wouldn't have been the same without you. Best of luck in the professional world!",
     author2: "Sarah Jenkins", time2: "1h ago", body2: "Happy Graduation! So proud of all your hard work and achievements. Can't wait to see what amazing things you do next! Keep shining! ✨"
   },
@@ -353,6 +355,7 @@ const T = {
     lockedMsg: "Сообщения откроются после активации",
     payText: "Активировать книгу и перейти к оплате",
     errNotFound: "❌ Данные заказа не найдены.",
+    fallbackName: "Выпускник",
     author1: "Александр Иванов", time1: "1 мин. назад", body1: "От всей души поздравляю с выпуском! Университетские годы были крутыми благодаря тебе. Удачи в карьере, только вперед!",
     author2: "Елена Смирнова", time2: "1 ч. назад", body2: "С окончанием университета! Столько труда было вложено, и вот результат. Горжусь тобой и желаю грандиозных успехов! ✨"
   }
@@ -406,8 +409,10 @@ async function loadOrderPreview() {
       return;
     }
 
-    // إصلاح جلب الاسم: قراءة الحقل name من قاعدة البيانات بشكل مباشر وصحيح
-    const fullName = order.name || order.full_name || order.fullName || "Graduate";
+    const lang = T[currentLang] ? currentLang : 'en';
+
+    // 🛡️ ذكاء اصطناعي مكثف لقراءة حقل الاسم بكل السيناريوهات الممكنة في جدولك
+    const fullName = order.name || order.full_name || order.fullName || order.student_name || order.customer_name || order.username || T[lang].fallbackName;
     const facultyStr = order.faculty || order.university || order.uni || "";
     const gradYear = order.grad_year || order.year || "";
 
