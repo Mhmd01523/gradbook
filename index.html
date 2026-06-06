@@ -1,105 +1,1136 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grad Book</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Grad Book · Graduation Book · Книга выпускника</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- ⚙️ إعدادات ⚙️ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // --- Configuration ---
-    const SUPABASE_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
-    
-    // --- Language System ---
-    const T = {
-        ar: { badge: 'ВолгГМУ · GRADUATION · تخرج', title1: 'Grad Book', title2: 'دفتر تخرجك الرقمي', sub: 'دفتر ضيوف رقمي فاخر - أصدقاؤك يكتبون تهانيهم وتصلك إشعارات فورية', cta: '🎓 اطلب دفترك الآن', dir: 'rtl', lblName: 'اسمك الكامل *', lblTg: 'رقم الهاتف *', lblFaculty: 'الكلية *', lblYear: 'سنة التخرج', btnSend: '✨ توليد المعاينة' },
-        en: { badge: 'ВолгГМУ · GRADUATION · Digital Guestbook', title1: 'Grad Book', title2: 'Your Digital Graduation Guestbook', sub: 'A beautiful digital guestbook — friends write their congratulations and you get instant Telegram notifications', cta: '🎓 Order Your Book Now', dir: 'ltr', lblName: 'Full Name *', lblTg: 'Phone Number *', lblFaculty: 'Faculty *', lblYear: 'Graduation Year', btnSend: '✨ Generate Preview' },
-        ru: { badge: 'ВолгГМУ · ВЫПУСК · Книга выпускника', title1: 'Grad Book', title2: 'Цифровая книга выпускника', sub: 'Красивая цифровая книга поздравлений — друзья пишут, а ты получаешь уведомления', cta: '🎓 Заказать книгу', dir: 'ltr', lblName: 'Полное имя *', lblTg: 'Номер телефона *', lblFaculty: 'Факультет *', lblYear: 'Год выпуска', btnSend: '✨ Сгенерировать превью' },
-        fr: { badge: 'ВолгГМУ · GRADUATION · Livre', title1: 'Grad Book', title2: 'Votre livre numérique', sub: 'Un beau livre numérique pour vos souvenirs', cta: '🎓 Commander', dir: 'ltr', lblName: 'Nom complet *', lblTg: 'Numéro de téléphone *', lblFaculty: 'Faculté *', lblYear: 'Année', btnSend: '✨ Aperçu' },
-        zh: { badge: 'ВолгГМУ · 毕业 · 纪念册', title1: 'Grad Book', title2: '您的数字纪念册', sub: '精美的数字纪念册', cta: '🎓 立即订购', dir: 'ltr', lblName: '全名 *', lblTg: '电话号码 *', lblFaculty: '学院 *', lblYear: '毕业年份', btnSend: '✨ 生成预览' },
-        es: { badge: 'ВолгГМУ · GRADUACIÓN · Libro', title1: 'Grad Book', title2: 'Tu libro digital', sub: 'Un hermoso libro digital para recuerdos', cta: '🎓 Pedir ahora', dir: 'ltr', lblName: 'Nombre completo *', lblTg: 'Número de teléfono *', lblFaculty: 'Facultad *', lblYear: 'Año', btnSend: '✨ Vista previa' },
-        pt: { badge: 'ВолгГМУ · GRADUAÇÃO · Livro', title1: 'Grad Book', title2: 'Seu Livro Digital', sub: 'Um belo livro digital para memórias', cta: '🎓 Pedir agora', dir: 'ltr', lblName: 'Nome completo *', lblTg: 'Número de telefone *', lblFaculty: 'Faculdade *', lblYear: 'Ano', btnSend: '✨ Prévia' }
-    };
-
-    function detectLang() {
-        const lang = navigator.language.split('-')[0];
-        return T[lang] ? lang : 'en';
-    }
-
-    function applyLocalization() {
-        const lang = detectLang();
-        const t = T[lang];
-        document.documentElement.dir = t.dir;
-        document.documentElement.lang = lang;
-        document.getElementById('badge-text').innerText = t.badge;
-        document.getElementById('title-line1').innerText = t.title1;
-        document.getElementById('title-line2').innerText = t.title2;
-        document.getElementById('hero-sub-text').innerText = t.sub;
-        document.getElementById('cta-text').innerText = t.cta;
-        document.getElementById('lbl-name').innerText = t.lblName;
-        document.getElementById('lbl-tg').innerText = t.lblTg;
-        document.getElementById('lbl-faculty').innerText = t.lblFaculty;
-        document.getElementById('lbl-year').innerText = t.lblYear;
-        document.getElementById('order-btn-text').innerText = t.btnSend;
-        document.getElementById('o-lang').value = lang;
-    }
-    window.onload = applyLocalization;
+  const ADMIN_BOT_TOKEN = '8971222565:AAGyI9K6Ive2hI_V9F3Qy1GaL4_dlaM4t4Y';
+  const ADMIN_CHAT_ID   = '1343835667';
+  const SUPABASE_URL    = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPABASE_KEY    = 'sb_publishable_k-2_opzcB0o0GouWMxbOxQ_GifGcD_B';
 </script>
 
 <style>
-    body { background: #08060a; color: #f5f0e8; font-family: sans-serif; margin: 0; padding: 20px; }
-    .order-wrap { max-width: 500px; margin: 50px auto; background: #1a1720; padding: 30px; border-radius: 20px; border: 1px solid rgba(201,168,76,0.2); }
-    .o-input { width: 100%; padding: 12px; margin: 10px 0; background: #2a2730; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-    .order-btn { width: 100%; padding: 15px; background: #c9a84c; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --gold-dark: #7a5c10;
+  --bg: #08060a;
+  --bg2: #100e14;
+  --bg3: #1a1720;
+  --border: rgba(201,168,76,0.2);
+  --text: #f5f0e8;
+  --text2: rgba(245,240,232,0.6);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* ═══ HERO ═══ */
+#hero {
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  padding:40px 20px;
+  text-align:center;
+}
+
+/* Animated background */
+.hero-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(100,50,200,0.05) 0%, transparent 50%);
+  animation:bgPulse 8s ease-in-out infinite alternate;
+}
+@keyframes bgPulse {
+  0%   { opacity:0.6; }
+  100% { opacity:1; }
+}
+
+/* Grid lines */
+.hero-grid {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+/* Particles */
+#hero-particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.hp { position:absolute; border-radius:50%; background:var(--gold); animation:hpFloat linear infinite; }
+@keyframes hpFloat {
+  0%   { opacity:0; transform:translateY(100vh) scale(0); }
+  10%  { opacity:0.6; transform:scale(1); }
+  90%  { opacity:0.2; }
+  100% { opacity:0; transform:translateY(-20px) scale(0.5); }
+}
+
+/* Logo */
+.hero-logo {
+  width:200px; height:200px;
+  margin:0 auto 20px;
+  position:relative;
+  z-index:10;
+  cursor:pointer;
+  animation:logoFloat 4s ease-in-out infinite;
+}
+@keyframes logoFloat {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-8px); }
+}
+.hero-logo img {
+  width:100%; height:100%;
+  object-fit:contain;
+  /* الصورة PNG شفافة — نشيل أي خلفية بيضاء متبقية */
+  mix-blend-mode:normal;
+  filter: drop-shadow(0 0 18px rgba(201,168,76,0.45))
+          drop-shadow(0 6px 24px rgba(0,0,0,0.5));
+}
+
+/* Badge */
+.hero-badge {
+  display:inline-block;
+  background:rgba(201,168,76,0.1);
+  border:1px solid rgba(201,168,76,0.3);
+  color:var(--gold-light);
+  padding:6px 18px;
+  border-radius:30px;
+  font-size:12px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s ease both;
+}
+
+/* Main title */
+.hero-title {
+  font-family:'Playfair Display', serif;
+  font-size:clamp(36px, 9vw, 72px);
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:16px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.1s ease both;
+}
+.hero-title .gold { color:var(--gold); }
+.hero-title .white { color:#fff; }
+
+/* Subtitle */
+.hero-sub {
+  font-size:clamp(14px, 3.5vw, 18px);
+  color:var(--text2);
+  max-width:560px;
+  line-height:1.8;
+  margin:0 auto 36px;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.2s ease both;
+}
+
+/* CTA Button */
+.cta-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg, var(--gold), #a07830);
+  color:#000;
+  border:none;
+  padding:16px 36px;
+  border-radius:50px;
+  font-family:'Tajawal',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative; z-index:10;
+  animation:fadeUp 0.8s 0.3s ease both;
+  text-decoration:none;
+  box-shadow:0 4px 30px rgba(201,168,76,0.3);
+}
+.cta-btn:hover { transform:translateY(-3px); box-shadow:0 8px 40px rgba(201,168,76,0.5); filter:brightness(1.1); }
+
+/* Scroll hint */
+.scroll-hint {
+  position:absolute; bottom:28px; left:50%;
+  transform:translateX(-50%);
+  color:var(--text2); font-size:22px;
+  animation:bounce2 2s ease-in-out infinite;
+  z-index:10;
+}
+@keyframes bounce2 { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ═══ FEATURES ═══ */
+#features {
+  padding:80px 20px;
+  background:var(--bg2);
+  position:relative;
+}
+#features::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.section-label-wrap { text-align:center; margin-bottom:50px; }
+.section-lbl { font-size:12px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:10px; }
+.section-ttl { font-family:'Playfair Display',serif; font-size:clamp(24px,5vw,36px); color:#fff; }
+.section-div { width:60px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:14px auto 0; }
+
+.features-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:20px;
+  max-width:1000px;
+  margin:0 auto;
+}
+.feature-card {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 24px;
+  text-align:center;
+  transition:all 0.3s;
+}
+.feature-card:hover { border-color:rgba(201,168,76,0.5); transform:translateY(-4px); box-shadow:0 8px 30px rgba(201,168,76,0.1); }
+.feature-icon { font-size:36px; margin-bottom:14px; }
+.feature-title { font-size:16px; font-weight:700; color:var(--gold); margin-bottom:8px; }
+.feature-text { font-size:13px; color:var(--text2); line-height:1.8; }
+
+/* ═══ ORDER FORM ═══ */
+#order {
+  padding:80px 20px;
+  background:var(--bg);
+  position:relative;
+}
+#order::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.order-wrap {
+  max-width:580px;
+  margin:0 auto;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.order-header {
+  background:linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  border-bottom:1px solid var(--border);
+  padding:28px 32px;
+  text-align:center;
+}
+.order-header h2 { font-size:22px; font-weight:700; color:var(--gold); margin-bottom:6px; }
+.order-header p { font-size:13px; color:var(--text2); }
+.order-body { padding:32px; }
+
+.o-field { margin-bottom:18px; }
+.o-label { font-size:12px; color:var(--text2); margin-bottom:6px; font-weight:500; letter-spacing:0.5px; }
+.o-input {
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  padding:12px 16px;
+  color:var(--text);
+  font-family:'Tajawal',sans-serif;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+.o-input:focus { border-color:var(--gold); background:rgba(201,168,76,0.05); }
+textarea.o-input { resize:vertical; min-height:90px; }
+select.o-input option { background:#1a1720; }
+
+.order-btn {
+  width:100%;
+  background:linear-gradient(135deg, var(--gold), #a07830);
+  color:#000;
+  border:none;
+  border-radius:14px;
+  padding:15px;
+  font-family:'Tajawal',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s;
+  margin-top:8px;
+  box-shadow:0 4px 20px rgba(201,168,76,0.3);
+}
+.order-btn:hover { filter:brightness(1.1); transform:translateY(-2px); }
+.order-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+/* ═══ PHOTO UPLOAD ═══ */
+.photos-label { font-size:12px; color:var(--text2); margin-bottom:8px; font-weight:500; letter-spacing:0.5px; }
+.photos-hint  { font-size:11px; color:rgba(245,240,232,0.3); margin-bottom:12px; }
+.photos-grid  { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:8px; }
+.photo-slot {
+  aspect-ratio:1; border:2px dashed rgba(201,168,76,0.3); border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.2s; overflow:hidden; position:relative;
+  background:rgba(255,255,255,0.03);
+}
+.photo-slot:hover { border-color:var(--gold); background:rgba(201,168,76,0.07); }
+.photo-slot.filled { border-style:solid; border-color:var(--gold); }
+.photo-slot .slot-icon { font-size:20px; opacity:0.5; }
+.photo-slot .slot-num  { font-size:9px; color:var(--text2); margin-top:3px; }
+.photo-slot img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+.slot-remove {
+  position:absolute; top:3px; left:3px;
+  background:rgba(0,0,0,0.7); color:#fff; border:none;
+  width:18px; height:18px; border-radius:50%; font-size:10px;
+  cursor:pointer; display:none; align-items:center; justify-content:center; z-index:5;
+}
+.photo-slot.filled .slot-remove { display:flex; }
+.photos-counter { text-align:center; font-size:11px; color:rgba(201,168,76,0.6); margin-bottom:4px; }
+.upload-progress {
+  display:none; background:rgba(201,168,76,0.08); border-radius:8px;
+  padding:10px 14px; margin-top:8px; font-size:12px; color:var(--gold); text-align:center;
+}
+.progress-bar-wrap { background:rgba(255,255,255,0.08); border-radius:10px; height:4px; margin-top:6px; overflow:hidden; }
+.progress-bar { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:10px; transition:width 0.3s; width:0%; }
+
+
+/* Success message */
+.order-success {
+  display:none;
+  text-align:center;
+  padding:40px 20px;
+}
+.order-success .icon { font-size:56px; margin-bottom:16px; }
+.order-success h3 { font-size:20px; color:var(--gold); margin-bottom:8px; }
+.order-success p { font-size:14px; color:var(--text2); line-height:1.8; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  padding:30px 20px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  color:var(--text2);
+  font-size:13px;
+  background:var(--bg2);
+}
+
+/* Animations */
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* Toast */
+#toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg3); border:1px solid var(--gold); color:var(--gold); padding:11px 24px; border-radius:30px; font-size:14px; z-index:9999; transition:transform 0.3s; pointer-events:none; white-space:nowrap; }
+#toast.show { transform:translateX(-50%) translateY(0); }
+
+/* Mobile */
+@media(max-width:480px) {
+  .order-body { padding:20px; }
+  .order-header { padding:20px; }
+  .features-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
+<div id="toast"></div>
+
+<!-- ═══ HERO ═══ -->
 <section id="hero">
-    <div class="hero-badge" id="badge-text">...</div>
-    <h1 class="hero-title"><span id="title-line1">Grad Book</span><br><span id="title-line2">...</span></h1>
-    <p id="hero-sub-text">...</p>
-    <button class="cta-btn" id="cta-text">...</button>
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div id="hero-particles"></div>
+
+  <!-- Logo — Grad Book SVG -->
+  <div class="hero-logo" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+    <img src="gradbook-logo.png" alt="Grad Book Logo">
+  </div>
+
+  <div class="hero-badge" id="badge-text">ВолгГМУ · GRADUATION · Graduation Book</div>
+
+  <h1 class="hero-title">
+    <span class="gold" id="title-line1">Grad Book</span><br>
+    <span class="white" id="title-line2">Your Digital Graduation Book</span>
+  </h1>
+
+  <p class="hero-sub" id="hero-sub-text">
+    A beautiful digital guestbook — friends write their congratulations and you get instant Telegram notifications
+  </p>
+
+  <a class="cta-btn" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">
+    <span id="cta-text">🎓 Order Your Book Now</span>
+  </a>
+
+  <div class="scroll-hint">↓</div>
 </section>
 
-<section id="order" class="order-wrap">
-    <div class="o-field">
-        <div id="lbl-name">Full Name</div>
-        <input class="o-input" id="o-name" type="text">
+<!-- ═══ FEATURES ═══ -->
+<section id="features">
+  <div class="section-label-wrap">
+    <div class="section-lbl" id="features-lbl">FEATURES</div>
+    <div class="section-ttl" id="features-ttl">Everything Ready for You</div>
+    <div class="section-div"></div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎓</div>
+      <div class="feature-title" id="f1-title">Your Personal Book</div>
+      <div class="feature-text" id="f1-text">A personalised link with your name, share it with friends in seconds</div>
     </div>
-    <div class="o-field">
-        <div id="lbl-tg">Phone</div>
-        <input class="o-input" id="o-tg" type="tel" value="+7" onfocus="if(this.value=='')this.value='+7'">
+    <div class="feature-card">
+      <div class="feature-icon">📲</div>
+      <div class="feature-title" id="f2-title">Instant Notifications</div>
+      <div class="feature-text" id="f2-text">Every time someone writes, you get an instant Telegram notification</div>
     </div>
-    <div class="o-field">
-        <div id="lbl-faculty">Faculty</div>
-        <select class="o-input" id="o-faculty">
-            <option value="general">Лечебный факультет / General Medicine / كلية الطب البشري</option>
-            <option value="dental">Стоматологический факультет / Dentistry / كلية طب الأسنان</option>
-            <option value="pharmacy">Фармацевтический факультет / Pharmacy / كلية الصيدلة</option>
-        </select>
+    <div class="feature-card">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-title" id="f3-title">7 Languages</div>
+      <div class="feature-text" id="f3-text">The book supports 7 languages simultaneously</div>
     </div>
-    <div class="o-field">
-        <div id="lbl-year">Year</div>
-        <input class="o-input" type="text" value="2026" readonly>
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <div class="feature-title" id="f4-title">Luxury Design</div>
+      <div class="feature-text" id="f4-text">6 color themes and background photos to choose from</div>
     </div>
-    <input type="hidden" id="o-lang" value="en">
-    <button class="order-btn" id="order-btn" onclick="submitOrder()">
-        <span id="order-btn-text">Generate</span>
-    </button>
+    <div class="feature-card">
+      <div class="feature-icon">📸</div>
+      <div class="feature-title" id="f5-title">Photos & Memories</div>
+      <div class="feature-text" id="f5-text">Everyone can upload a photo with their congratulations</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title" id="f6-title">Ready in 1 Hour</div>
+      <div class="feature-text" id="f6-text">After ordering, your book will be ready within one hour</div>
+    </div>
+  </div>
 </section>
+
+<!-- ═══ ORDER FORM ═══ -->
+<section id="order">
+  <div class="section-label-wrap" style="margin-bottom:40px;">
+    <div class="section-lbl" id="order-lbl">ORDER</div>
+    <div class="section-ttl" id="order-ttl">Order Your Book Now</div>
+    <div class="section-div"></div>
+  </div>
+
+  <div class="order-wrap">
+    <div class="order-header">
+      <h2 id="order-h2">🎓 Create Your Book Now</h2>
+      <p id="order-h2-sub">Enter your details and preview your book before payment</p>
+    </div>
+    <div class="order-body" id="order-form-body">
+      <div class="o-field">
+        <div class="o-label" id="lbl-name">Full Name *</div>
+        <input class="o-input" id="o-name" type="text" placeholder="Your full name">
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-tg">Telegram Username or Phone *</div>
+        <input class="o-input" id="o-tg" type="tel" placeholder="+7" inputmode="tel"
+          oninput="if(this.value&&!this.value.startsWith('+'))this.value='+7'+this.value.replace(/^\+7*/,'')"
+          onfocus="if(!this.value)this.value='+7'">
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-faculty">Faculty *</div>
+        <select class="o-input" id="o-faculty">
+          <option value="">— Choose Faculty —</option>
+          <option value="general">Лечебный факультет / General Medicine / كلية الطب البشري</option>
+          <option value="dental">Стоматологический факультет / Dentistry / كلية طب الأسنان</option>
+          <option value="pharmacy">Фармацевтический факультет / Pharmacy / كلية الصيدلة</option>
+        </select>
+      </div>
+      <div class="o-field">
+        <div class="o-label" id="lbl-year">Graduation Year</div>
+        <input class="o-input" id="o-year" type="text" value="2026" readonly
+          style="opacity:0.6;cursor:default;">
+      </div>
+      <input type="hidden" id="o-lang" value="en">
+      <div class="o-field">
+      <!-- PHOTOS -->
+      <div class="o-field">
+        <div class="photos-label" id="lbl-photos">📸 Cover Photos (optional)</div>
+        <div class="photos-hint" id="hint-photos">Add 1 to 5 photos — they will appear as background in your book</div>
+        <div class="photos-grid" id="photos-grid"></div>
+        <div class="photos-counter" id="photos-counter">0 / 5</div>
+        <div class="upload-progress" id="upload-progress">
+          <span id="progress-text">Uploading photos...</span>
+          <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+      </div>
+
+        <div class="o-label" id="lbl-notes">Additional Notes</div>
+        <textarea class="o-input" id="o-notes" placeholder="Any special requests..."></textarea>
+      </div>
+      <button class="order-btn" id="order-btn" onclick="submitOrder()">
+        <span id="order-btn-text">✨ Generate Preview</span>
+      </button>
+    </div>
+
+    <!-- Success -->
+    <div class="order-success" id="order-success">
+      <div class="icon">🎉</div>
+      <h3 id="success-title">Order Received! 🎉</h3>
+      <!-- Order code badge -->
+      <div id="order-code-box" style="margin:14px auto;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);border-radius:12px;padding:12px 20px;display:inline-block;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px;" id="order-code-label">Order Code</div>
+        <div id="order-code-val" style="font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;font-family:monospace;">GB-......</div>
+      </div>
+      <p id="success-text" style="margin-top:10px;">Last step — open the bot and press Start 👇</p>
+      <a id="tg-open-btn" href="https://t.me/gradbook_notifications_bot" target="_blank"
+        style="display:inline-flex;align-items:center;gap:10px;margin-top:20px;background:linear-gradient(135deg,#0088cc,#005f8e);color:#fff;padding:14px 28px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;font-family:'Tajawal',sans-serif;box-shadow:0 4px 20px rgba(0,136,204,0.4);transition:all 0.3s;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.607c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.48 14.697l-2.95-.924c-.64-.203-.654-.64.136-.948l11.532-4.448c.537-.194 1.006.131.364.871z"/></svg>
+        <span id="tg-btn-text">Open Bot &amp; Press Start</span>
+      </a>
+      <p id="success-sub" style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.7;">
+        Press Start — your order code will be sent automatically. We will contact you within 1 hour 🎓
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p id="footer-text">Grad Book · ВолгГМУ · Digital Graduation Books</p>
+</footer>
 
 <script>
-    function submitOrder() {
-        const data = {
-            name: document.getElementById('o-name').value,
-            tg: document.getElementById('o-tg').value,
-            faculty: document.getElementById('o-faculty').value,
-            year: '2026',
-            lang: document.getElementById('o-lang').value
-        };
-        sessionStorage.setItem('grad_data', JSON.stringify(data));
-        window.location.href = 'preview.html';
+// ═══ TRANSLATIONS ═══
+const T = {
+  ar: {
+    badge:       'ВолгГМУ · GRADUATION · تخرج',
+    title1:      'Grad Book',
+    title2:      'دفتر تخرجك الرقمي',
+    sub:         'A beautiful digital guestbook — friends write their congratulations and you get instant Telegram notifications',
+    cta:         '🎓 اطلب دفترك الآن',
+    featLbl:     'المميزات',
+    featTtl:     'كل شي جاهز لك',
+    f1t:'دفتر خاص بك',       f1d:'رابط مخصص باسمك، تشاركه مع أصحابك في ثانية',
+    f2t:'إشعار فوري',         f2d:'كل ما كتب لك أحد تهنئة يصلك إشعار على تيليغرام فوراً',
+    f3t:'3 لغات',             f3d:'الدفتر يدعم العربية والإنجليزية والروسية',
+    f4t:'تصميم فاخر',         f4d:'6 ثيمات ألوان وصور خلفية تختارها أنت',
+    f5t:'صور وذكريات',        f5d:'كل شخص يقدر يرفع صورة مع تهنئته',
+    f6t:'جاهز خلال ساعة',    f6d:'بعد الطلب دفترك يكون جاهز خلال ساعة واحدة',
+    orderLbl:    'الطلب',
+    orderTtl:    'اطلب دفترك الآن',
+    orderH2:     '🎓 أنشئ دفترك الآن',
+    orderSub:    'أدخل بياناتك وشاهد معاينة دفترك قبل الدفع',
+    lblName:     'اسمك الكامل *',
+    lblTg:       'رقم الهاتف (واتساب/تيليغرام) *',
+    lblFaculty:  'الكلية *',
+    lblYear:     'سنة التخرج',
+    lblLang:     'لغة الدفتر الرئيسية',
+    lblNotes:    'ملاحظات إضافية',
+    btnSend:     '✨ توليد المعاينة',
+    btnSending:  '⏳ جارٍ التحضير...',
+    successT:    'تم استلام طلبك! 🎉',
+    successD:    'افتح البوت وأرسل صورك',
+    tgBtn:       'افتح البوت وأرسل الصور',
+    successSub:  'Press Start — your order code will be sent automatically. We will contact you within 1 hour 🎓',
+    footer:      'Grad Book · ВолгГМУ · Digital Graduation Books',
+    errName:     'أدخل اسمك الكامل',
+    errTg:       'أدخل يوزرنيم تيليغرام',
+    errFaculty:  'اختر الكلية',
+    dir:         'rtl',
+    lblPhotos:   '📸 صورك للغلاف (اختياري)',
+    hintPhotos:  'أضف من 1 إلى 5 صور — ستظهر كخلفية في دفترك',
+    successStep: 'الخطوة الأخيرة — افتح البوت واضغط Start 👇',
+    tgBtn:       'افتح البوت واضغط Start',
+    successSub:  'اضغط Start — سيُرسل رقم طلبك تلقائياً. سنتواصل معك خلال ساعة 🎓',
+    orderCodeLabel: 'رقم الطلب',
+  },
+  en: {
+    badge:       'ВолгГМУ · GRADUATION · Digital Guestbook',
+    title1:      'Grad Book',
+    title2:      'Your Digital Graduation Guestbook',
+    sub:         'A beautiful digital guestbook — friends write their congratulations and you get instant Telegram notifications',
+    cta:         '🎓 Order Your Book Now',
+    featLbl:     'FEATURES',
+    featTtl:     'Everything Ready For You',
+    f1t:'Your Own Book',       f1d:'A custom link with your name, share it with friends in seconds',
+    f2t:'Instant Notifications',f2d:'Every time someone writes, you get an instant Telegram notification',
+    f3t:'3 Languages',          f3d:'The book supports Arabic, English, and Russian simultaneously',
+    f4t:'Luxury Design',        f4d:'6 color themes and background photos you choose',
+    f5t:'Photos & Memories',    f5d:'Everyone can upload a photo with their message',
+    f6t:'Ready in 1 Hour',      f6d:'After ordering, your book will be ready within one hour',
+    orderLbl:    'ORDER',
+    orderTtl:    'Order Your Book Now',
+    orderH2:     '🎓 Create Your Book',
+    orderSub:    'Enter your details and preview your book before paying',
+    lblName:     'Your Full Name *',
+    lblTg:       'Номер телефона (WhatsApp/Telegram) *',
+    lblFaculty:  'Faculty *',
+    lblYear:     'Graduation Year',
+    lblLang:     'Main Book Language',
+    lblNotes:    'Additional Notes',
+    btnSend:     '✨ Generate My Preview',
+    btnSending:  '⏳ Preparing Preview...',
+    successT:    'Request Received! 🎉',
+    successD:    'Open the bot and send your photos',
+    tgBtn:       'Open Bot & Send Photos',
+    successSub:  'Press Start — your order code will be sent automatically. We\'ll contact you within 1 hour 🎓',
+    footer:      'Grad Book · ВолгГМУ · Digital Graduation Guestbooks',
+    errName:     'Enter your full name',
+    errTg:       'Enter your Telegram username',
+    errFaculty:  'Choose your faculty',
+    dir:         'ltr',
+    lblPhotos:   '📸 Cover Photos (optional)',
+    hintPhotos:  'Add 1–5 photos — they will appear as background in your book',
+    successStep: 'Last step — open the bot and press Start 👇',
+    tgBtn:       'Open Bot & Press Start',
+    successSub:  'Press Start — your order code will be sent automatically. We\'ll contact you within 1 hour 🎓',
+    orderCodeLabel: 'Order Code',
+  },
+  ru: {
+    badge:       'ВолгГМУ · ВЫПУСК · Книга выпускника',
+    title1:      'Grad Book',
+    title2:      'Цифровая книга выпускника',
+    sub:         'Красивая цифровая книга поздравлений — друзья пишут поздравления, а ты получаешь мгновенные уведомления в Telegram',
+    cta:         '🎓 Заказать книгу',
+    featLbl:     'ВОЗМОЖНОСТИ',
+    featTtl:     'Всё готово для тебя',
+    f1t:'Твоя личная книга',    f1d:'Персональная ссылка с твоим именем, поделись с друзьями за секунду',
+    f2t:'Мгновенные уведомления',f2d:'Каждый раз, когда кто-то пишет, ты получаешь уведомление в Telegram',
+    f3t:'3 языка',              f3d:'Книга поддерживает арабский, английский и русский языки одновременно',
+    f4t:'Роскошный дизайн',     f4d:'6 цветовых тем и фоновые фотографии на твой выбор',
+    f5t:'Фото и воспоминания',  f5d:'Каждый может загрузить фото вместе с поздравлением',
+    f6t:'Готово за 1 час',      f6d:'После заказа твоя книга будет готова в течение одного часа',
+    orderLbl:    'ЗАКАЗ',
+    orderTtl:    'Заказать книгу сейчас',
+    orderH2:     '🎓 Создай свою книгу',
+    orderSub:    'Введи данные и посмотри превью до оплаты',
+    lblName:     'Твоё полное имя *',
+    lblTg:       'Номер телефона (WhatsApp/Telegram) *',
+    lblFaculty:  'Факультет *',
+    lblYear:     'Год выпуска',
+    lblLang:     'Основной язык книги',
+    lblNotes:    'Дополнительные пожелания',
+    btnSend:     '✨ Сгенерировать превью',
+    btnSending:  '⏳ Подготовка...',
+    successT:    'Заявка получена! 🎉',
+    successD:    'Открой бота и отправь фото',
+    tgBtn:       'Открыть бота и отправить фото',
+    successSub:  'Нажми Start — твой номер заказа отправится автоматически. Свяжемся в течение часа 🎓',
+    footer:      'Grad Book · ВолгГМУ · Цифровые книги выпускников',
+    errName:     'Введи своё полное имя',
+    errTg:       'Введи юзернейм Telegram',
+    errFaculty:  'Выбери факультет',
+    dir:         'ltr',
+    lblPhotos:   '📸 Фото для обложки (необязательно)',
+    hintPhotos:  'Добавь 1–5 фото — они будут фоном в книге',
+    successStep: 'Последний шаг — открой бота и нажми Start 👇',
+    tgBtn:       'Открыть бота и нажать Start',
+    successSub:  'Нажми Start — номер заказа отправится автоматически. Свяжемся в течение часа 🎓',
+    orderCodeLabel: 'Номер заказа',
+  }
+};
+
+// ═══ NEW LANGUAGES ═══
+T.fr = {
+  badge:       'ВолгГМУ · GRADUATION · Livre de remise des diplômes',
+  title1:      'Grad Book',
+  title2:      'Votre livre de remise des diplômes numérique',
+  sub:         'Un beau livre numérique — vos amis écrivent leurs félicitations et vous recevez des notifications Telegram instantanées',
+  cta:         '🎓 Commander votre livre',
+  featLbl:     'FONCTIONNALITÉS',
+  featTtl:     'Tout est prêt pour vous',
+  f1t:'Votre livre personnel',   f1d:'Un lien personnalisé avec votre nom, partagez-le en quelques secondes',
+  f2t:'Notifications instantanées',f2d:'Chaque fois que quelqu\'un écrit, vous recevez une notification Telegram',
+  f3t:'7 langues',               f3d:'Le livre supporte 7 langues simultanément',
+  f4t:'Design luxueux',          f4d:'6 thèmes de couleurs et photos de fond au choix',
+  f5t:'Photos et souvenirs',     f5d:'Chacun peut uploader une photo avec son message',
+  f6t:'Prêt en 1 heure',         f6d:'Après commande, votre livre sera prêt en une heure',
+  orderLbl:    'COMMANDE',
+  orderTtl:    'Commander votre livre',
+  orderH2:     '🎓 Créez votre livre',
+  orderSub:    'Entrez vos informations et prévisualisez votre livre avant de payer',
+  lblName:     'Votre nom complet *',
+  lblTg:       'Numéro de téléphone (WhatsApp/Telegram) *',
+  lblFaculty:  'Faculté *',
+  lblYear:     'Année de diplôme',
+  lblLang:     'Langue principale',
+  lblNotes:    'Notes supplémentaires',
+  btnSend:     '✨ Générer mon aperçu',
+  btnSending:  '⏳ Préparation...',
+  successT:    'Demande reçue ! 🎉',
+  successD:    'Ouvrez le bot et envoyez vos photos',
+  tgBtn:       'Ouvrir le bot et envoyer des photos',
+  successSub:  'Appuyez sur Start — votre code de commande sera envoyé automatiquement. Nous vous contacterons dans l\'heure 🎓',
+  footer:      'Grad Book · ВолгГМУ · Livres de remise des diplômes numériques',
+  errName:     'Entrez votre nom complet',
+  errTg:       'Entrez votre nom d\'utilisateur Telegram',
+  errFaculty:  'Choisissez votre faculté',
+  dir:         'ltr',
+  lblPhotos:   '📸 Photos de couverture (facultatif)',
+  hintPhotos:  'Ajoutez 1 à 5 photos — elles apparaîtront en fond dans votre livre',
+  successStep: 'Dernière étape — ouvrez le bot et appuyez sur Start 👇',
+  tgBtn:       'Ouvrir le bot et appuyer sur Start',
+  successSub:  'Appuyez sur Start — votre code de commande sera envoyé automatiquement. Nous vous contacterons dans l\'heure 🎓',
+  orderCodeLabel: 'Code de commande',
+};
+T.zh = {
+  badge:       'ВолгГМУ · 毕业 · 毕业纪念册',
+  title1:      'Grad Book',
+  title2:      '您的数字毕业纪念册',
+  sub:         '精美的数字留言册 — 朋友们写下祝福，您立即收到Telegram通知',
+  cta:         '🎓 立即订购',
+  featLbl:     '功能特点',
+  featTtl:     '一切为您准备好',
+  f1t:'专属纪念册',    f1d:'带有您姓名的专属链接，秒速与朋友分享',
+  f2t:'即时通知',      f2d:'每当有人写祝福，您立即收到Telegram通知',
+  f3t:'7种语言',       f3d:'纪念册同时支持7种语言',
+  f4t:'豪华设计',      f4d:'6种颜色主题和背景图片供您选择',
+  f5t:'照片与回忆',    f5d:'每个人都可以上传照片附带祝福',
+  f6t:'1小时内完成',   f6d:'下单后，您的纪念册将在一小时内准备好',
+  orderLbl:    '订单',
+  orderTtl:    '立即订购',
+  orderH2:     '🎓 创建您的纪念册',
+  orderSub:    '输入您的信息，付款前预览您的纪念册',
+  lblName:     '您的全名 *',
+  lblTg:       '电话号码 (WhatsApp/Telegram) *',
+  lblFaculty:  '学院 *',
+  lblYear:     '毕业年份',
+  lblLang:     '主要语言',
+  lblNotes:    '附加备注',
+  btnSend:     '✨ 生成预览',
+  btnSending:  '⏳ 准备中...',
+  successT:    '申请已收到！🎉',
+  successD:    '打开机器人并发送您的照片',
+  tgBtn:       '打开机器人并发送照片',
+  successSub:  '按下Start — 您的订单号将自动发送。我们将在一小时内与您联系 🎓',
+  footer:      'Grad Book · ВолгГМУ · 数字毕业纪念册',
+  errName:     '请输入您的全名',
+  errTg:       '请输入您的 Telegram 用户名',
+  errFaculty:  '请选择您的学院',
+  dir:         'ltr',
+  lblPhotos:   '📸 封面照片（可选）',
+  hintPhotos:  '添加1到5张照片 — 它们将作为背景显示在您的留言册中',
+  successStep: '最后一步 — 打开机器人并按 Start 👇',
+  tgBtn:       '打开机器人并按 Start',
+  successSub:  '按下 Start — 您的订单号将自动发送。我们将在一小时内与您联系 🎓',
+  orderCodeLabel: '订单号',
+};
+T.es = {
+  badge:       'ВолгГМУ · GRADUACIÓN · Libro de graduación',
+  title1:      'Grad Book',
+  title2:      'Tu libro de graduación digital',
+  sub:         'Un hermoso libro digital — tus amigos escriben sus felicitaciones y recibes notificaciones instantáneas de Telegram',
+  cta:         '🎓 Pedir mi libro ahora',
+  featLbl:     'CARACTERÍSTICAS',
+  featTtl:     'Todo listo para ti',
+  f1t:'Tu libro personal',      f1d:'Un enlace personalizado con tu nombre, compártelo en segundos',
+  f2t:'Notificaciones instantáneas',f2d:'Cada vez que alguien escribe, recibes una notificación de Telegram',
+  f3t:'7 idiomas',               f3d:'El libro soporta 7 idiomas simultáneamente',
+  f4t:'Diseño de lujo',          f4d:'6 temas de colores y fotos de fondo a elegir',
+  f5t:'Fotos y recuerdos',       f5d:'Cada persona puede subir una foto con su mensaje',
+  f6t:'Listo en 1 hora',         f6d:'Después del pedido, tu libro estará listo en una hora',
+  orderLbl:    'PEDIDO',
+  orderTtl:    'Pedir tu libro ahora',
+  orderH2:     '🎓 Crea tu libro',
+  orderSub:    'Ingresa tus datos y previsualiza tu libro antes de pagar',
+  lblName:     'Tu nombre completo *',
+  lblTg:       'Número de teléfono (WhatsApp/Telegram) *',
+  lblFaculty:  'Facultad *',
+  lblYear:     'Año de graduación',
+  lblLang:     'Idioma principal',
+  lblNotes:    'Notas adicionales',
+  btnSend:     '✨ Generar mi vista previa',
+  btnSending:  '⏳ Preparando...',
+  successT:    '¡Solicitud recibida! 🎉',
+  successD:    'Abre el bot y envía tus fotos',
+  tgBtn:       'Abrir bot y enviar fotos',
+  successSub:  'Presiona Start — tu código de pedido se enviará automáticamente. Te contactaremos en una hora 🎓',
+  footer:      'Grad Book · ВолгГМУ · Libros de graduación digitales',
+  errName:     'Ingresa tu nombre completo',
+  errTg:       'Ingresa tu usuario de Telegram',
+  errFaculty:  'Elige tu facultad',
+  dir:         'ltr',
+  lblPhotos:   '📸 Fotos de portada (opcional)',
+  hintPhotos:  'Agrega 1 a 5 fotos — aparecerán como fondo en tu libro',
+  successStep: 'Último paso — abre el bot y presiona Start 👇',
+  tgBtn:       'Abrir bot y presionar Start',
+  successSub:  'Presiona Start — tu código de pedido se enviará automáticamente. Te contactaremos en una hora 🎓',
+  orderCodeLabel: 'Código de pedido',
+};
+T.pt = {
+  badge:       'ВолгГМУ · FORMATURA · Livro de formatura',
+  title1:      'Grad Book',
+  title2:      'Seu livro de formatura digital',
+  sub:         'Um belo livro digital — seus amigos escrevem parabéns e você recebe notificações instantâneas do Telegram',
+  cta:         '🎓 Pedir meu livro agora',
+  featLbl:     'RECURSOS',
+  featTtl:     'Tudo pronto para você',
+  f1t:'Seu livro pessoal',       f1d:'Um link personalizado com seu nome, compartilhe em segundos',
+  f2t:'Notificações instantâneas',f2d:'Toda vez que alguém escreve, você recebe uma notificação do Telegram',
+  f3t:'7 idiomas',               f3d:'O livro suporta 7 idiomas simultaneamente',
+  f4t:'Design luxuoso',          f4d:'6 temas de cores e fotos de fundo à sua escolha',
+  f5t:'Fotos e memórias',        f5d:'Cada pessoa pode enviar uma foto com sua mensagem',
+  f6t:'Pronto em 1 hora',        f6d:'Após o pedido, seu livro estará pronto em uma hora',
+  orderLbl:    'PEDIDO',
+  orderTtl:    'Pedir seu livro agora',
+  orderH2:     '🎓 Crie seu livro',
+  orderSub:    'Digite seus dados e visualize seu livro antes de pagar',
+  lblName:     'Seu nome completo *',
+  lblTg:       'Número de telefone (WhatsApp/Telegram) *',
+  lblFaculty:  'Faculdade *',
+  lblYear:     'Ano de formatura',
+  lblLang:     'Idioma principal',
+  lblNotes:    'Notas adicionais',
+  btnSend:     '✨ Gerar minha prévia',
+  btnSending:  '⏳ Preparando...',
+  successT:    'Solicitação recebida! 🎉',
+  successD:    'Abra o bot e envie suas fotos',
+  tgBtn:       'Abrir bot e enviar fotos',
+  successSub:  'Pressione Start — seu código de pedido será enviado automaticamente. Entraremos em contato em uma hora 🎓',
+  footer:      'Grad Book · ВолгГМУ · Livros de formatura digitais',
+  errName:     'Digite seu nome completo',
+  errTg:       'Digite seu usuário do Telegram',
+  errFaculty:  'Escolha sua faculdade',
+  dir:         'ltr',
+  lblPhotos:   '📸 Fotos da capa (opcional)',
+  hintPhotos:  'Adicione 1 a 5 fotos — aparecerão como fundo no seu livro',
+  successStep: 'Último passo — abra o bot e pressione Start 👇',
+  tgBtn:       'Abrir bot e pressionar Start',
+  successSub:  'Pressione Start — seu código de pedido será enviado automaticamente. Entraremos em contato em uma hora 🎓',
+  orderCodeLabel: 'Código do pedido',
+};
+
+// ═══ DETECT LANGUAGE ═══
+function detectLang() {
+  const lang = navigator.language || navigator.userLanguage || 'en';
+  if (lang.startsWith('ar')) return 'ar';
+  if (lang.startsWith('ru')) return 'ru';
+  if (lang.startsWith('fr')) return 'fr';
+  if (lang.startsWith('zh')) return 'zh';
+  if (lang.startsWith('es')) return 'es';
+  if (lang.startsWith('pt')) return 'pt';
+  return 'en';
+}
+
+function applyLang(l) {
+  if (!T[l]) l = 'en';
+  const t = T[l];
+  document.documentElement.lang = l;
+  document.documentElement.dir  = t.dir;
+  document.body.style.direction  = t.dir;
+  document.getElementById('o-lang').value = l;
+
+  document.getElementById('badge-text').textContent    = t.badge;
+  document.getElementById('title-line1').textContent   = t.title1;
+  document.getElementById('title-line2').textContent   = t.title2;
+  document.getElementById('hero-sub-text').textContent = t.sub;
+  document.getElementById('cta-text').textContent      = t.cta;
+  document.getElementById('features-lbl').textContent  = t.featLbl;
+  document.getElementById('features-ttl').textContent  = t.featTtl;
+  document.getElementById('f1-title').textContent = t.f1t; document.getElementById('f1-text').textContent = t.f1d;
+  document.getElementById('f2-title').textContent = t.f2t; document.getElementById('f2-text').textContent = t.f2d;
+  document.getElementById('f3-title').textContent = t.f3t; document.getElementById('f3-text').textContent = t.f3d;
+  document.getElementById('f4-title').textContent = t.f4t; document.getElementById('f4-text').textContent = t.f4d;
+  document.getElementById('f5-title').textContent = t.f5t; document.getElementById('f5-text').textContent = t.f5d;
+  document.getElementById('f6-title').textContent = t.f6t; document.getElementById('f6-text').textContent = t.f6d;
+  document.getElementById('order-lbl').textContent     = t.orderLbl;
+  document.getElementById('order-ttl').textContent     = t.orderTtl;
+  document.getElementById('order-h2').textContent      = t.orderH2;
+  document.getElementById('order-h2-sub').textContent  = t.orderSub;
+  document.getElementById('lbl-name').textContent  = t.lblName;
+  document.getElementById('lbl-tg').textContent    = t.lblTg;
+  document.getElementById('lbl-faculty').textContent = t.lblFaculty || 'Faculty *';
+  document.getElementById('lbl-year').textContent  = t.lblYear;
+  // lang field removed — auto-detected
+  document.getElementById('lbl-notes').textContent = t.lblNotes;
+  document.getElementById('order-btn-text').textContent = t.btnSend;
+  document.getElementById('footer-text').textContent = t.footer;
+
+  // Photos section labels
+  const lblPhotos = document.getElementById('lbl-photos');
+  if (lblPhotos) lblPhotos.textContent = t.lblPhotos || '📸 Cover Photos (optional)';
+  const hintPhotos = document.getElementById('hint-photos');
+  if (hintPhotos) hintPhotos.textContent = t.hintPhotos || 'Add 1–5 photos — they will appear as background in your book';
+
+  // Success section
+  const successText = document.getElementById('success-text');
+  if (successText) successText.textContent = t.successStep || 'Last step — open the bot and press Start 👇';
+  const tgBtnText = document.getElementById('tg-btn-text');
+  if (tgBtnText) tgBtnText.textContent = t.tgBtn || 'Open Bot & Press Start';
+  const successSub = document.getElementById('success-sub');
+  if (successSub) successSub.textContent = t.successSub || '';
+  const orderCodeLabel = document.getElementById('order-code-label');
+  if (orderCodeLabel) orderCodeLabel.textContent = t.orderCodeLabel || 'Order Code';
+
+  // Update input placeholders
+  const nameIn = document.getElementById('o-name');
+  if (nameIn) nameIn.placeholder = (l==='ar'?'أدخل اسمك الكامل':l==='ru'?'Введи своё полное имя':l==='fr'?'Entrez votre nom complet':l==='zh'?'输入您的全名':l==='es'?'Ingresa tu nombre completo':l==='pt'?'Digite seu nome completo':'Enter your full name');
+  const tgIn = document.getElementById('o-tg');
+  if (tgIn) tgIn.placeholder = '+7 (___) ___-__-__';
+  const notesIn = document.getElementById('o-notes');
+  if (notesIn) notesIn.placeholder = (l==='ar'?'أي ملاحظات إضافية...':l==='ru'?'Любые дополнительные пожелания...':l==='fr'?'Notes supplémentaires...':l==='zh'?'其他备注...':l==='es'?'Notas adicionales...':l==='pt'?'Notas adicionais...':'Any additional notes...');
+
+  // Translate faculty dropdown options
+  const facultyMap = {
+    general:  {
+      ar:'كلية الطب البشري',
+      en:'Лечебный факультет / General Medicine',
+      ru:'Лечебный факультет',
+      fr:'Médecine générale',
+      zh:'普通医学',
+      es:'Medicina general',
+      pt:'Medicina geral'
+    },
+    dental:   {
+      ar:'كلية طب الأسنان',
+      en:'Стоматологический факультет / Dentistry',
+      ru:'Стоматологический факультет',
+      fr:'Dentisterie',
+      zh:'牙科',
+      es:'Odontología',
+      pt:'Odontologia'
+    },
+    pharmacy: {
+      ar:'كلية الصيدلة',
+      en:'Фармацевтический факультет / Pharmacy',
+      ru:'Фармацевтический факультет',
+      fr:'Pharmacie',
+      zh:'药学',
+      es:'Farmacia',
+      pt:'Farmácia'
+    },
+  };
+  const placeholderOpt = {ar:'— اختر / Choose / Выбери —', en:'— Choose Faculty —', ru:'— Выбери факультет —', fr:'— Choisir la faculté —', zh:'— 选择学院 —', es:'— Elegir facultad —', pt:'— Escolher faculdade —'};
+  const fSel = document.getElementById('o-faculty');
+  if (fSel) {
+    const curVal = fSel.value;
+    fSel.innerHTML = `<option value="">${placeholderOpt[l] || placeholderOpt.en}</option>` +
+      Object.entries(facultyMap).map(([k,names]) =>
+        `<option value="${k}">${names[l] || names.en}</option>`
+      ).join('');
+    fSel.value = curVal; // restore selection
+  }
+}
+
+// ═══ PARTICLES ═══
+function buildParticles() {
+  const c = document.getElementById('hero-particles');
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'hp';
+    p.style.left   = Math.random() * 100 + '%';
+    p.style.bottom = '-5px';
+    p.style.width  = p.style.height = (Math.random() * 3 + 1) + 'px';
+    p.style.animationDuration = (Math.random() * 12 + 8) + 's';
+    p.style.animationDelay   = (Math.random() * 12) + 's';
+    p.style.opacity = '0';
+    c.appendChild(p);
+  }
+}
+
+// ═══ SUBMIT ORDER ═══
+
+// ═══ PHOTO UPLOAD ═══
+const MAX_PHOTOS = 5;
+let selectedPhotos = [];
+
+function buildPhotoSlots() {
+  const grid = document.getElementById('photos-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let i = 0; i < MAX_PHOTOS; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'photo-slot' + (selectedPhotos[i] ? ' filled' : '');
+    if (selectedPhotos[i]) {
+      const img = document.createElement('img');
+      img.src = selectedPhotos[i].previewUrl;
+      slot.appendChild(img);
+      const rm = document.createElement('button');
+      rm.className = 'slot-remove';
+      rm.innerHTML = '✕';
+      rm.onclick = (e) => { e.stopPropagation(); selectedPhotos.splice(i,1); buildPhotoSlots(); };
+      slot.appendChild(rm);
+    } else {
+      slot.innerHTML = `<div class="slot-icon">${i===0?'📷':'+'}</div><div class="slot-num">${i+1}</div>`;
+      slot.onclick = () => triggerPhotoInput(i);
     }
+    grid.appendChild(slot);
+  }
+  const c = document.getElementById('photos-counter');
+  if (c) c.textContent = selectedPhotos.filter(Boolean).length + ' / 5';
+}
+
+function triggerPhotoInput(idx) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/jpeg,image/png,image/webp';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 8*1024*1024) { toast('⚠️ الصورة أكبر من 8MB'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      selectedPhotos[idx] = { file, previewUrl: ev.target.result };
+      buildPhotoSlots();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+async function uploadPhotos(sb, orderCode) {
+  const photos = selectedPhotos.filter(Boolean);
+  if (!photos.length) return [];
+  const urls = [];
+  const bar  = document.getElementById('progress-bar');
+  const wrap = document.getElementById('upload-progress');
+  const txt  = document.getElementById('progress-text');
+  if (wrap) wrap.style.display = 'block';
+  for (let i = 0; i < photos.length; i++) {
+    const { file } = photos[i];
+    const ext  = file.name.split('.').pop() || 'jpg';
+    const path = `orders/${orderCode}/photo_${i+1}.${ext}`;
+    if (txt) txt.textContent = `${i+1}/${photos.length}...`;
+    if (bar) bar.style.width = `${(i/photos.length)*100}%`;
+    const { error } = await sb.storage.from('gradbook-photos').upload(path, file, { contentType:file.type, upsert:true });
+    if (!error) {
+      const { data: urlData } = sb.storage.from('gradbook-photos').getPublicUrl(path);
+      urls.push(urlData.publicUrl);
+    }
+  }
+  if (bar) bar.style.width = '100%';
+  if (txt) txt.textContent = `✅ ${urls.length} photo(s) uploaded`;
+  return urls;
+}
+
+function generateOrderCode() {
+  const num = Math.floor(100000 + Math.random() * 900000);
+  return 'GB-' + num;
+}
+
+async function submitOrder() {
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const selectedLang = document.getElementById('o-lang').value || detectLang();
+  const t       = T[selectedLang];
+  const name    = document.getElementById('o-name').value.trim();
+  const tg      = document.getElementById('o-tg').value.trim();
+  const faculty = document.getElementById('o-faculty').value;
+  const year    = document.getElementById('o-year').value.trim();
+  const notes   = document.getElementById('o-notes').value.trim();
+
+  if (!name)    return toast('⚠️ ' + (t.errName || (selectedLang==='ru'?'Введи имя':selectedLang==='en'?'Enter your name':'أدخل اسمك')));
+  if (!tg)      return toast('⚠️ ' + (t.errTg   || (selectedLang==='ru'?'Введи Telegram':selectedLang==='en'?'Enter Telegram':'أدخل تيليغرام')));
+  if (!faculty) return toast('⚠️ ' + (t.errFaculty || (selectedLang==='ru'?'Выбери факультет':selectedLang==='en'?'Choose faculty':'اختر الكلية')));
+
+  const facultyNames = {
+    general:  'General Medicine / كلية الطب العام / Лечебный факультет',
+    dental:   'Dentistry / كلية طب الأسنان / Стоматологический факультет',
+    pharmacy: 'Pharmacy / كلية الصيدلة / Фармацевтический факультет',
+  };
+  const langNames = { ar: '🇸🇦 العربية', en: '🇬🇧 English', ru: '🇷🇺 Русский', fr: '🇫🇷 Français', zh: '🇨🇳 中文', es: '🇪🇸 Español', pt: '🇧🇷 Português' };
+
+  const btn = document.getElementById('order-btn');
+  btn.disabled = true;
+  document.getElementById('order-btn-text').textContent = t.btnSending;
+
+  // Generate unique order code
+  const orderCode = generateOrderCode();
+
+  try {
+    // احفظ بيانات المعاينة في sessionStorage — preview.html يقرأ هذه المفاتيح
+    // نضغط الصور أولاً عشان ما تتجاوز حد 5MB
+    async function compressForSession(dataUrl) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX = 800;
+          let w = img.width, h = img.height;
+          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      });
+    }
+
+    const rawUrls = selectedPhotos.filter(Boolean).map(p => p.previewUrl);
+    const compressedUrls = await Promise.all(rawUrls.map(u => compressForSession(u)));
+
+    try {
+      sessionStorage.setItem('grad_name',    name);
+      sessionStorage.setItem('grad_faculty', faculty);
+      sessionStorage.setItem('grad_year',    year || '2026');
+      sessionStorage.setItem('grad_photos',  JSON.stringify(compressedUrls));
+    } catch(e) {
+      // لو فشل الحفظ (حجم كبير) — احفظ بدون صور
+      try {
+        sessionStorage.setItem('grad_name',    name);
+        sessionStorage.setItem('grad_faculty', faculty);
+        sessionStorage.setItem('grad_year',    year || '2026');
+        sessionStorage.setItem('grad_photos',  '[]');
+      } catch(e2) {}
+    }
+
+    // 1. رفع الصور
+    document.getElementById('order-btn-text').textContent = t.btnSending || '⏳ Uploading...';
+    const photoUrls = await uploadPhotos(sb, orderCode);
+
+    // 2. Save to Supabase
+    document.getElementById('order-btn-text').textContent = t.btnSending;
+    await sb.from('orders').insert({
+      order_code:        orderCode,
+      guestbook_id:      null,
+      customer_name:     name,
+      customer_telegram: tg,
+      faculty:           faculty,
+      grad_year:         year,
+      lang:              selectedLang,
+      notes:             notes,
+      cover_photos:      photoUrls,
+      status:            'pending'
+    });
+
+    // 3. Send Telegram notification to admin
+    const photosLine = photoUrls.length ? `\n📸 صور الغلاف (${photoUrls.length}):\n` + photoUrls.map((u,i)=>`${i+1}. ${u}`).join('\n') : '';
+    const text = `🎓 طلب دفتر تخرج جديد!\n\n🔖 رقم الطلب: ${orderCode}\n👤 الاسم: ${name}\n📱 تيليغرام: ${tg}\n🏫 الكلية: ${facultyNames[faculty]}\n📅 سنة التخرج: ${year || '-'}\n🌍 لغة الدفتر: ${langNames[selectedLang]}\n💬 ملاحظات: ${notes || '-'}${photosLine}`;
+
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text })
+    });
+
+    // الانتقال لصفحة المعاينة
+    window.location.href = `preview.html?order=${orderCode}&lang=${selectedLang}`;
+
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false;
+    document.getElementById('order-btn-text').textContent = t.btnSend;
+    toast('❌ Error, try again');
+  }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══ INIT ═══
+window.addEventListener('load', () => {
+  const lang = detectLang();
+  applyLang(lang); // sets the selector + whole page to browser lang
+  buildParticles();
+  buildPhotoSlots();
+});
 </script>
 </body>
 </html>
