@@ -462,7 +462,6 @@ function handleScreenshot(event) {
 async function processPayment() {
   const t = T[currentLang];
 
-  // رفع screenshot إلزامي
   if (!screenshotFile) {
     toast(t.err_no_screenshot);
     return;
@@ -472,77 +471,149 @@ async function processPayment() {
   btn.disabled = true;
   toggleLoader(true, t.loader_proc);
 
+  const SUPA_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoaXh0b3ZucnBraHpudGJjbWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDE2MjA5NCwiZXhwIjoyMDk1NzM4MDk0fQ.6KKEFoDKQEiBfZFOyXksI8Yr5FJoAP2iP2E-JdEuvq0';
+
   try {
-    // 1. رفع الصورة — جرب أولاً bucket 'screenshots' ثم 'covers'
-    let uploadedOk = false;
-    const ext  = screenshotFile.name.split('.').pop() || 'jpg';
-    const path = `payment-screenshots/${orderCode}-${Date.now()}.${ext}`;
+    // 1. ضغط الصورة أولاً (max 800px) عشان تكون صغيرة وسريعة
+    const compressed = await compressImage(screenshotFile, 800, 0.7);
 
-    for (const bucket of ['screenshots', 'covers', 'public']) {
-      try {
-        const { error: uploadErr } = await supabaseClient
-          .storage.from(bucket).upload(path, screenshotFile, { upsert: true });
-        if (!uploadErr) {
-          const { data: urlData } = supabaseClient.storage.from(bucket).getPublicUrl(path);
-          screenshotUrl = urlData?.publicUrl || '';
-          uploadedOk = true;
-          break;
+    // 2. رفع لـ Supabase Storage مباشرة بـ fetch
+    let screenshotUrl = '';
+    try {
+      const ext  = screenshotFile.name.split('.').pop() || 'jpg';
+      const path = `payment-screenshots/${orderCode}-${Date.now()}.${ext}`;
+      const uploadRes = await fetch(
+        `${SUPA_URL}/storage/v1/object/covers/${path}`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': SUPA_KEY,
+            'Authorization': `Bearer ${SUPA_KEY}`,
+            'Content-Type': screenshotFile.type || 'image/jpeg',
+            'x-upsert': 'true',
+          },
+          body: compressed,
         }
-      } catch(e) { /* جرب الـ bucket التالي */ }
+      );
+      if (uploadRes.ok) {
+        screenshotUrl = `${SUPA_URL}/storage/v1/object/public/covers/${path}`;
+      }
+    } catch(e) {
+      console.warn('Storage upload failed:', e);
     }
 
-    // لو فشل كل الـ buckets — حوّل لـ base64 مباشرة
-    if (!uploadedOk && screenshotFile) {
-      screenshotUrl = await new Promise(resolve => {
-        const r = new FileReader();
-        r.onload = e => resolve(e.target.result);
-        r.onerror = () => resolve('');
-        r.readAsDataURL(screenshotFile);
-      });
+    // لو فشل الرفع — احفظ base64
+    if (!screenshotUrl) {
+      screenshotUrl = await toBase64(compressed);
     }
 
-    // 2. تحديث الطلب في DB
-    if (supabaseClient && orderCode) {
-      await supabaseClient.from('orders').update({
-        status:             'pending_verification',
-        payment_screenshot: screenshotUrl,
-        payment_method:     selectedGateway,
-      }).eq('order_code', orderCode);
-    }
+    // 3. تحديث الطلب في DB مباشرة بـ fetch
+    await fetch(
+      `${SUPA_URL}/rest/v1/orders?order_code=eq.${orderCode}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
+          status: 'pending_verification',
+          payment_screenshot: screenshotUrl,
+          payment_method: selectedGateway,
+        }),
+      }
+    );
 
-    // 3. إشعار الأدمن على Telegram
-    await notifyAdmin(screenshotUrl);
+    // 4. إشعار الأدمن
+    await notifyAdmin(screenshotUrl, SUPA_URL, SUPA_KEY);
 
     toggleLoader(false);
     showPaidState();
 
   } catch(err) {
     console.error(err);
+    // حتى لو في خطأ — انتقل للصفحة التالية
+    try {
+      const SUPA_KEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoaXh0b3ZucnBraHpudGJjbWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDE2MjA5NCwiZXhwIjoyMDk1NzM4MDk0fQ.6KKEFoDKQEiBfZFOyXksI8Yr5FJoAP2iP2E-JdEuvq0';
+      await fetch(`https://lhixtovnrpkhzntbcmin.supabase.co/rest/v1/orders?order_code=eq.${orderCode}`, {
+        method: 'PATCH',
+        headers: { 'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'pending_verification', payment_method: selectedGateway }),
+      });
+    } catch(e2) {}
     toggleLoader(false);
-    btn.disabled = false;
-    await supabaseClient?.from('orders').update({
-      status: 'pending_verification',
-      payment_method: selectedGateway
-    }).eq('order_code', orderCode);
-    await notifyAdmin('');
     showPaidState();
   }
 }
 
-async function notifyAdmin(ssUrl) {
+// ضغط الصورة
+function compressImage(file, maxSize, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; }
+      if (h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+
+function toBase64(blob) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = e => resolve(e.target.result);
+    r.onerror = () => resolve('');
+    r.readAsDataURL(blob);
+  });
+}
+
+async function notifyAdmin(ssUrl, supaUrl, supaKey) {
   if (!ADMIN_BOT_TOKEN || ADMIN_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
   try {
     // جيب بيانات الزبون
-    const { data: order } = await supabaseClient
-      .from('orders').select('customer_name,faculty,customer_telegram').eq('order_code', orderCode).single();
+    const orderRes = await fetch(
+      `${supaUrl}/rest/v1/orders?select=customer_name,faculty,customer_telegram&order_code=eq.${orderCode}&limit=1`,
+      { headers: { 'apikey': supaKey, 'Authorization': `Bearer ${supaKey}` } }
+    );
+    const orderData = await orderRes.json();
+    const order = orderData?.[0] || {};
 
-    const name    = order?.customer_name || '—';
-    const faculty = order?.faculty || '—';
-    const tg      = order?.customer_telegram || '—';
+    const name    = order.customer_name || '—';
+    const faculty = order.faculty || '—';
+    const tg      = order.customer_telegram || '—';
 
-    const msg = `🔔 *طلب دفع جديد يحتاج تأكيد!*\n\n👤 الاسم: ${name}\n🏫 الكلية: ${faculty}\n📱 تليجرام: ${tg}\n📋 كود الطلب: \`${orderCode}\`\n💳 طريقة الدفع: ${selectedGateway}\n\n${ssUrl ? '📸 إيصال الدفع:\n' + ssUrl : '⚠️ لم يتم رفع إيصال'}`;
+    const msg = `🔔 *طلب دفع جديد يحتاج تأكيد!*\n\n👤 الاسم: ${name}\n🏫 الكلية: ${faculty}\n📱 تليجرام: ${tg}\n📋 كود الطلب: \`${orderCode}\`\n💳 طريقة الدفع: ${selectedGateway}\n\n${ssUrl && !ssUrl.startsWith('data:') ? '📸 إيصال الدفع:\n' + ssUrl : ssUrl ? '📸 إيصال مرفوع (base64)' : '⚠️ لم يتم رفع إيصال'}`;
 
-    const body = { chat_id: ADMIN_CHAT_ID, text: msg, parse_mode: 'Markdown' };
+    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: msg, parse_mode: 'Markdown' }),
+    });
+
+    // لو في URL حقيقي — أرسل الصورة
+    if (ssUrl && !ssUrl.startsWith('data:')) {
+      await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: ssUrl, caption: `إيصال دفع — ${orderCode}` }),
+      });
+    }
+  } catch(e) {
+    console.warn('Admin notify failed:', e);
+  }
+}
+
 
     await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
