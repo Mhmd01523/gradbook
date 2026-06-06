@@ -418,14 +418,30 @@ function applyLocalization() {
   document.getElementById('btn-pay-text').textContent       = t.btn_pay;
 }
 
+const SUPA_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoaXh0b3ZucnBraHpudGJjbWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDE2MjA5NCwiZXhwIjoyMDk1NzM4MDk0fQ.6KKEFoDKQEiBfZFOyXksI8Yr5FJoAP2iP2E-JdEuvq0';
+
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    }
+  });
+  return res.json();
+}
+
 async function fetchInvoiceDetails() {
   if (!orderCode) { showErrorState(); return; }
   toggleLoader(true, T[currentLang].loader_init);
   try {
-    const { data: order, error } = await supabaseClient
-      .from('orders').select('*').eq('order_code', orderCode).single();
+    const data = await supaFetch(`orders?order_code=eq.${orderCode}&limit=1`);
     toggleLoader(false);
-    if (error || !order) { showErrorState(); return; }
+    const order = data?.[0];
+    if (!order) { showErrorState(); return; }
 
     document.getElementById('view-name').textContent    = order.customer_name || order.name || '——';
     document.getElementById('view-faculty').textContent = order.faculty || '——';
@@ -461,86 +477,65 @@ function handleScreenshot(event) {
 
 async function processPayment() {
   const t = T[currentLang];
-
-  if (!screenshotFile) {
-    toast(t.err_no_screenshot);
-    return;
-  }
+  if (!screenshotFile) { toast(t.err_no_screenshot); return; }
 
   const btn = document.getElementById('btn-submit');
   btn.disabled = true;
   toggleLoader(true, t.loader_proc);
 
-  const SUPA_URL = 'https://lhixtovnrpkhzntbcmin.supabase.co';
-  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoaXh0b3ZucnBraHpudGJjbWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDE2MjA5NCwiZXhwIjoyMDk1NzM4MDk0fQ.6KKEFoDKQEiBfZFOyXksI8Yr5FJoAP2iP2E-JdEuvq0';
-
   try {
-    // 1. ضغط الصورة أولاً (max 800px) عشان تكون صغيرة وسريعة
+    // 1. ضغط الصورة
     const compressed = await compressImage(screenshotFile, 800, 0.7);
 
-    // 2. رفع لـ Supabase Storage مباشرة بـ fetch
+    // 2. رفع لـ Storage
     let screenshotUrl = '';
     try {
-      const ext  = screenshotFile.name.split('.').pop() || 'jpg';
+      const ext  = (screenshotFile.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `payment-screenshots/${orderCode}-${Date.now()}.${ext}`;
-      const uploadRes = await fetch(
-        `${SUPA_URL}/storage/v1/object/covers/${path}`,
-        {
-          method: 'POST',
-          headers: {
-            'apikey': SUPA_KEY,
-            'Authorization': `Bearer ${SUPA_KEY}`,
-            'Content-Type': screenshotFile.type || 'image/jpeg',
-            'x-upsert': 'true',
-          },
-          body: compressed,
-        }
-      );
+      const uploadRes = await fetch(`${SUPA_URL}/storage/v1/object/covers/${path}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPA_KEY}`,
+          'Content-Type': 'image/jpeg',
+          'x-upsert': 'true',
+        },
+        body: compressed,
+      });
       if (uploadRes.ok) {
         screenshotUrl = `${SUPA_URL}/storage/v1/object/public/covers/${path}`;
       }
-    } catch(e) {
-      console.warn('Storage upload failed:', e);
-    }
+    } catch(e) { console.warn('Upload failed:', e); }
 
-    // لو فشل الرفع — احفظ base64
+    // لو فشل الرفع — base64
     if (!screenshotUrl) {
       screenshotUrl = await toBase64(compressed);
     }
 
-    // 3. تحديث الطلب في DB مباشرة بـ fetch
-    await fetch(
-      `${SUPA_URL}/rest/v1/orders?order_code=eq.${orderCode}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPA_KEY,
-          'Authorization': `Bearer ${SUPA_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal',
-        },
-        body: JSON.stringify({
-          status: 'pending_verification',
-          payment_screenshot: screenshotUrl,
-          payment_method: selectedGateway,
-        }),
-      }
-    );
+    // 3. تحديث DB
+    await supaFetch(`orders?order_code=eq.${orderCode}`, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        status: 'pending_verification',
+        payment_screenshot: screenshotUrl,
+        payment_method: selectedGateway,
+      }),
+    });
 
     // 4. إشعار الأدمن
-    await notifyAdmin(screenshotUrl, SUPA_URL, SUPA_KEY);
+    await notifyAdmin(screenshotUrl);
 
     toggleLoader(false);
     showPaidState();
 
   } catch(err) {
     console.error(err);
-    // حتى لو في خطأ — انتقل للصفحة التالية
+    // على أي حال انتقل للصفحة التالية
     try {
-      const SUPA_KEY2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoaXh0b3ZucnBraHpudGJjbWluIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDE2MjA5NCwiZXhwIjoyMDk1NzM4MDk0fQ.6KKEFoDKQEiBfZFOyXksI8Yr5FJoAP2iP2E-JdEuvq0';
-      await fetch(`https://lhixtovnrpkhzntbcmin.supabase.co/rest/v1/orders?order_code=eq.${orderCode}`, {
+      await supaFetch(`orders?order_code=eq.${orderCode}`, {
         method: 'PATCH',
-        headers: { 'apikey': SUPA_KEY2, 'Authorization': `Bearer ${SUPA_KEY2}`, 'Content-Type': 'application/json' },
+        headers: { 'Prefer': 'return=minimal' },
         body: JSON.stringify({ status: 'pending_verification', payment_method: selectedGateway }),
       });
     } catch(e2) {}
@@ -578,30 +573,20 @@ function toBase64(blob) {
   });
 }
 
-async function notifyAdmin(ssUrl, supaUrl, supaKey) {
+async function notifyAdmin(ssUrl) {
   if (!ADMIN_BOT_TOKEN || ADMIN_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') return;
   try {
-    // جيب بيانات الزبون
-    const orderRes = await fetch(
-      `${supaUrl}/rest/v1/orders?select=customer_name,faculty,customer_telegram&order_code=eq.${orderCode}&limit=1`,
-      { headers: { 'apikey': supaKey, 'Authorization': `Bearer ${supaKey}` } }
-    );
-    const orderData = await orderRes.json();
-    const order = orderData?.[0] || {};
-
+    const data = await supaFetch(`orders?select=customer_name,faculty,customer_telegram&order_code=eq.${orderCode}&limit=1`);
+    const order = data?.[0] || {};
     const name    = order.customer_name || '—';
     const faculty = order.faculty || '—';
     const tg      = order.customer_telegram || '—';
-
-    const msg = `🔔 *طلب دفع جديد يحتاج تأكيد!*\n\n👤 الاسم: ${name}\n🏫 الكلية: ${faculty}\n📱 تليجرام: ${tg}\n📋 كود الطلب: \`${orderCode}\`\n💳 طريقة الدفع: ${selectedGateway}\n\n${ssUrl && !ssUrl.startsWith('data:') ? '📸 إيصال الدفع:\n' + ssUrl : ssUrl ? '📸 إيصال مرفوع (base64)' : '⚠️ لم يتم رفع إيصال'}`;
-
+    const msg = `🔔 *طلب دفع جديد يحتاج تأكيد!*\n\n👤 الاسم: ${name}\n🏫 الكلية: ${faculty}\n📱 تليجرام: ${tg}\n📋 كود الطلب: \`${orderCode}\`\n💳 طريقة الدفع: ${selectedGateway}\n\n${ssUrl && !ssUrl.startsWith('data:') ? '📸 إيصال الدفع:\n' + ssUrl : '📸 إيصال مرفوع'}`;
     await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: msg, parse_mode: 'Markdown' }),
     });
-
-    // لو في URL حقيقي — أرسل الصورة
     if (ssUrl && !ssUrl.startsWith('data:')) {
       await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`, {
         method: 'POST',
@@ -609,9 +594,7 @@ async function notifyAdmin(ssUrl, supaUrl, supaKey) {
         body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: ssUrl, caption: `إيصال دفع — ${orderCode}` }),
       });
     }
-  } catch(e) {
-    console.warn('Admin notify failed:', e);
-  }
+  } catch(e) { console.warn('Admin notify failed:', e); }
 }
 
 
