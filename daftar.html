@@ -1318,18 +1318,8 @@ function getUniversityName(uni, lang) {
 }
 
 function applyBook(data) {
-  // ترتيب أولوية اللغة:
-  // 1. data.lang — اللغة اللي اختارها الزبون في الفورم (الأهم)
-  // 2. كشف من script الاسم (عربي / سيريلي / إنجليزي)
-  // 3. لغة المتصفح كـ final fallback
-  let lang = data.lang || data.default_lang || null;
-  if (!lang) {
-    const isArabic   = /[\u0600-\u06FF]/.test(data.owner_name || '');
-    const isCyrillic = /[\u0400-\u04FF]/.test(data.owner_name || '');
-    if (isArabic)   lang = 'ar';
-    else if (isCyrillic) lang = 'ru';
-    else lang = detectBrowserLang();
-  }
+  // ✅ لغة الجهاز دائماً هي الأولوية
+  let lang = detectBrowserLang();
 
   document.title = data.owner_name
     ? (lang === 'ru' ? `Книга выпускника — ${data.owner_name}`
