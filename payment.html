@@ -603,24 +603,6 @@ async function notifyAdmin(ssUrl) {
   } catch(e) { console.warn('Admin notify failed:', e); }
 }
 
-
-    await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    // لو في صورة — أرسلها كـ photo أيضاً
-    if (ssUrl) {
-      await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendPhoto`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, photo: ssUrl, caption: `إيصال دفع — ${orderCode}` }),
-      });
-    }
-  } catch(e) {
-    console.warn('Admin notify failed:', e);
-  }
-}
-
 function showPaidState() {
   const t = T[currentLang];
   document.getElementById('payment-methods-section').style.display = 'none';
