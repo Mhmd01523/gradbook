@@ -872,11 +872,6 @@ const botToken = window._BOT_TOKEN || store.get('gb_bot_token') || '';
 if (botToken && botToken !== 'YOUR_BOT_TOKEN_HERE') {
   insertData.telegram_bot_token = botToken;
 }
-// ✅ حفظ bot token تلقائياً مع كل دفتر جديد
-const botToken = window._BOT_TOKEN || store.get('gb_bot_token') || '';
-if (botToken && botToken !== 'YOUR_BOT_TOKEN_HERE') {
-  insertData.telegram_bot_token = botToken;
-}
 
     const { data: book, error } = await sb.from('guestbooks')
       .insert(insertData).select().single();
