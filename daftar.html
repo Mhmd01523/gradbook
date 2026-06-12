@@ -1591,8 +1591,7 @@ async function submitMessage() {
 
 async function sendTelegram(token, chatId, sender, rel, message) {
   const link = window.location.href;
-  const text = `🎓 تهنئة جديدة!\n\n👤 من: ${sender}${rel ? ' (' + rel + ')' : ''}\n\n💬 ${message.substring(0, 200)}\n\n🔗 ${link}`;
-  try {
+async function sendTelegram(token, chatId, sender, rel, message) {  try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
