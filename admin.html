@@ -804,10 +804,8 @@ function openCreateBookModal(orderId) {
   const o = allOrders.find(x => x.id === orderId);
   if (!o) return;
 
-  const suggestedSlug = (o.customer_name || o.name || 'grad')
-    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-    .substring(0, 25) + '-' + (o.grad_year || '2026');
+const orderNum = (o.order_code || '').replace('GB-', '').toLowerCase();
+const suggestedSlug = 'gb-' + orderNum + '-' + (o.grad_year || '2026');
 
   const chatId = o.customer_chat_id || '';
   const photos = Array.isArray(o.cover_photos) ? o.cover_photos.join('\n') : (o.cover_photos || '');
