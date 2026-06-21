@@ -412,30 +412,39 @@ let currentDeliverOrder  = null;
 // ══════ MULTILINGUAL BOOK READY MESSAGE ══════
 function buildBookMsg(lang, name, link, orderCode, note) {
   const code = orderCode || '—';
-  const extra = note ? '\n\n📝 ' + note : '';
+  const extra = note ? '\n\n📝 ' + escHtml(note) : '';
   const approveUrl = `https://t.me/${BOT_USERNAME}?start=approve_${orderCode}`;
   const reviseUrl  = `https://t.me/${BOT_USERNAME}?start=revise_${orderCode}`;
+  const n = escHtml(name);
   const msgs = {
-    ar:`🎓 *دفترك جاهز!*\n\n📔 ${name}\n🔗 ${link}\n📋 رقم الطلب: \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ موافقة: ${approveUrl}\n✏️ طلب تعديل: ${reviseUrl}`,
-    en:`🎓 *Your Book is Ready!*\n\n📔 ${name}\n🔗 ${link}\n📋 Order: \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ Approve: ${approveUrl}\n✏️ Request Changes: ${reviseUrl}`,
-    ru:`🎓 *Твоя книга готова!*\n\n📔 ${name}\n🔗 ${link}\n📋 Заказ: \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ Одобрить: ${approveUrl}\n✏️ Правки: ${reviseUrl}`,
-    fr:`🎓 *Votre livre est prêt !*\n\n📔 ${name}\n🔗 ${link}\n📋 Commande : \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ Approuver: ${approveUrl}\n✏️ Modifications: ${reviseUrl}`,
-    zh:`🎓 *您的毕业册已准备好！*\n\n📔 ${name}\n🔗 ${link}\n📋 订单：\`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ 批准: ${approveUrl}\n✏️ 修改: ${reviseUrl}`,
-    es:`🎓 *¡Tu libro está listo!*\n\n📔 ${name}\n🔗 ${link}\n📋 Pedido: \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ Aprobar: ${approveUrl}\n✏️ Cambios: ${reviseUrl}`,
-    pt:`🎓 *Seu livro está pronto!*\n\n📔 ${name}\n🔗 ${link}\n📋 Pedido: \`${code}\`${extra}\n\n━━━━━━━━━━━━\n✅ Aprovar: ${approveUrl}\n✏️ Revisão: ${reviseUrl}`,
+    ar:`🎓 <b>دفترك جاهز!</b>\n\n📔 ${n}\n🔗 ${link}\n📋 رقم الطلب: <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ موافقة: ${approveUrl}\n✏️ طلب تعديل: ${reviseUrl}`,
+    en:`🎓 <b>Your Book is Ready!</b>\n\n📔 ${n}\n🔗 ${link}\n📋 Order: <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ Approve: ${approveUrl}\n✏️ Request Changes: ${reviseUrl}`,
+    ru:`🎓 <b>Твоя книга готова!</b>\n\n📔 ${n}\n🔗 ${link}\n📋 Заказ: <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ Одобрить: ${approveUrl}\n✏️ Правки: ${reviseUrl}`,
+    fr:`🎓 <b>Votre livre est prêt !</b>\n\n📔 ${n}\n🔗 ${link}\n📋 Commande : <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ Approuver: ${approveUrl}\n✏️ Modifications: ${reviseUrl}`,
+    zh:`🎓 <b>您的毕业册已准备好！</b>\n\n📔 ${n}\n🔗 ${link}\n📋 订单：<code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ 批准: ${approveUrl}\n✏️ 修改: ${reviseUrl}`,
+    es:`🎓 <b>¡Tu libro está listo!</b>\n\n📔 ${n}\n🔗 ${link}\n📋 Pedido: <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ Aprobar: ${approveUrl}\n✏️ Cambios: ${reviseUrl}`,
+    pt:`🎓 <b>Seu livro está pronto!</b>\n\n📔 ${n}\n🔗 ${link}\n📋 Pedido: <code>${code}</code>${extra}\n\n━━━━━━━━━━━━\n✅ Aprovar: ${approveUrl}\n✏️ Revisão: ${reviseUrl}`,
   };
   return msgs[lang] || msgs['en'];
 }
 
+function escHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function buildPaymentConfirmMsg(lang, name, orderCode) {
+  const n = escHtml(name);
   const msgs = {
-    ar:`✅ *تم تأكيد دفعك!*\n\nمرحباً ${name}!\nرقم طلبك: \`${orderCode}\`\n\nفريقنا بدأ العمل على دفترك الآن 🎓\nسنرسل لك رابط الدفتر هنا فور الانتهاء.`,
-    en:`✅ *Payment Confirmed!*\n\nHello ${name}!\nOrder: \`${orderCode}\`\n\nOur team has started working on your book 🎓\nWe'll send you the link here when it's ready.`,
-    ru:`✅ *Оплата подтверждена!*\n\nПривет ${name}!\nЗаказ: \`${orderCode}\`\n\nНаша команда уже работает над книгой 🎓\nКак только будет готова — пришлём ссылку сюда.`,
-    fr:`✅ *Paiement confirmé !*\n\nBonjour ${name}!\nCommande : \`${orderCode}\`\n\nNotre équipe a commencé à travailler sur votre livre 🎓\nNous vous enverrons le lien ici dès qu'il sera prêt.`,
-    zh:`✅ *付款已确认！*\n\n您好 ${name}！\n订单：\`${orderCode}\`\n\n我们的团队已开始制作您的毕业册 🎓\n完成后我们会在这里发送链接给您。`,
-    es:`✅ *¡Pago confirmado!*\n\n¡Hola ${name}!\nPedido: \`${orderCode}\`\n\nNuestro equipo ya está trabajando en tu libro 🎓\nTe enviaremos el enlace aquí cuando esté listo.`,
-    pt:`✅ *Pagamento confirmado!*\n\nOlá ${name}!\nPedido: \`${orderCode}\`\n\nNossa equipe já começou a trabalhar no seu livro 🎓\nEnviaremos o link aqui assim que estiver pronto.`,
+    ar:`✅ <b>تم تأكيد دفعك!</b>\n\nمرحباً ${n}!\nرقم طلبك: <code>${orderCode}</code>\n\nفريقنا بدأ العمل على دفترك الآن 🎓\nسنرسل لك رابط الدفتر هنا فور الانتهاء.`,
+    en:`✅ <b>Payment Confirmed!</b>\n\nHello ${n}!\nOrder: <code>${orderCode}</code>\n\nOur team has started working on your book 🎓\nWe'll send you the link here when it's ready.`,
+    ru:`✅ <b>Оплата подтверждена!</b>\n\nПривет ${n}!\nЗаказ: <code>${orderCode}</code>\n\nНаша команда уже работает над книгой 🎓\nКак только будет готова — пришлём ссылку сюда.`,
+    fr:`✅ <b>Paiement confirmé !</b>\n\nBonjour ${n}!\nCommande : <code>${orderCode}</code>\n\nNotre équipe a commencé à travailler sur votre livre 🎓\nNous vous enverrons le lien ici dès qu'il sera prêt.`,
+    zh:`✅ <b>付款已确认！</b>\n\n您好 ${n}！\n订单：<code>${orderCode}</code>\n\n我们的团队已开始制作您的毕业册 🎓\n完成后我们会在这里发送链接给您。`,
+    es:`✅ <b>¡Pago confirmado!</b>\n\n¡Hola ${n}!\nPedido: <code>${orderCode}</code>\n\nNuestro equipo ya está trabajando en tu libro 🎓\nTe enviaremos el enlace aquí cuando esté listo.`,
+    pt:`✅ <b>Pagamento confirmado!</b>\n\nOlá ${n}!\nPedido: <code>${orderCode}</code>\n\nNossa equipe já começou a trabalhar no seu livro 🎓\nEnviaremos o link aqui assim que estiver pronto.`,
   };
   return msgs[lang] || msgs['en'];
 }
@@ -961,14 +970,39 @@ async function approvePayment(orderId) {
 }
 
 // ══════ DELIVER MODAL ══════
-function openDeliverModal(orderId) {
+async function openDeliverModal(orderId) {
   const o = allOrders.find(x => x.id === orderId);
   if (!o) return;
   currentDeliverOrder = o;
-  document.getElementById('deliver-link').value = '';
+
+  const linkInput = document.getElementById('deliver-link');
+  linkInput.value = '⏳ جاري جلب رابط الدفتر...';
+  linkInput.readOnly = true;
   document.getElementById('deliver-note').value = '';
   document.getElementById('deliver-confirm-btn').onclick = () => deliverBook(orderId);
   document.getElementById('deliver-modal').classList.add('open');
+
+  if (!o.guestbook_id) {
+    linkInput.value = '';
+    linkInput.readOnly = false;
+    toast('⚠️ لا يوجد دفتر منشأ لهذا الطلب — أنشئه أولاً من "إنشاء يدوي"');
+    return;
+  }
+
+  const { data: book, error } = await sb.from('guestbooks')
+    .select('slug').eq('id', o.guestbook_id).single();
+
+  if (error || !book?.slug) {
+    linkInput.value = '';
+    linkInput.readOnly = false;
+    toast('⚠️ تعذّر جلب رابط الدفتر — أدخله يدوياً');
+    return;
+  }
+
+  // الرابط يُبنى تلقائياً من الـ slug (يحمل بالفعل اسم الزبون لأن الـ slug يولَّد من اسمه)
+  const autoLink = `https://mhmd01523.github.io/gradbook/daftar.html?slug=${book.slug}`;
+  linkInput.value = autoLink;
+  linkInput.readOnly = true; // يبقى تلقائياً؛ لإعادة الكتابة اليدوية احذف هذا السطر
 }
 
 async function deliverBook(orderId) {
@@ -1163,7 +1197,7 @@ async function sendTG(chatId, text) {
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' }),
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
     });
     const data = await res.json();
     if (!data.ok) console.warn('TG error:', data.description);
