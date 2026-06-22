@@ -224,6 +224,35 @@ body { font-family:'Tajawal',sans-serif; background:var(--bg-dark); color:var(--
 .tgp-stat-icon { font-size: 13px; opacity: 0.85; }
 .tgp-stat-val { color: var(--primary-light); font-size: 14px; font-weight: 900; line-height:1; }
 .tgp-stat-lbl { color: rgba(255,255,255,0.4); font-size: 10px; font-weight:400; }
+
+.tgp-cta {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px 9px 14px;
+  margin: 4px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  color: #1a1200;
+  font-size: 12px; font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(201,168,76,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: tgpPulse 2.4s ease-in-out infinite;
+}
+.tgp-cta:hover { transform: translateY(-1px) scale(1.03); box-shadow: 0 4px 18px rgba(201,168,76,0.55); }
+.tgp-cta-icon { font-size: 14px; }
+@keyframes tgpPulse {
+  0%, 100% { box-shadow: 0 2px 12px rgba(201,168,76,0.4); }
+  50%      { box-shadow: 0 2px 20px rgba(201,168,76,0.75); }
+}
+@media(max-width:480px){
+  .tgp-cta { padding:8px 12px 8px 10px; font-size:11px; }
+  .tgp-cta-label-full { display:none; }
+}
+@media(min-width:481px){
+  .tgp-cta-label-short { display:none; }
+}
+
 @media(max-width:480px){
   .tgp-brand span { display:none; }
   .tgp-stat-lbl { display:none; }
@@ -793,6 +822,11 @@ textarea.field-input { resize:vertical; min-height:90px; }
         <span class="tgp-stat-val" id="visits-num">0</span>
         <span class="tgp-stat-lbl" id="visits-lbl">Visits</span>
       </div>
+      <a href="index.html" class="tgp-cta" id="tgp-cta-btn">
+        <span class="tgp-cta-icon">✨</span>
+        <span class="tgp-cta-label-full">Get Your Own Book</span>
+        <span class="tgp-cta-label-short">Get Yours</span>
+      </a>
     </div>
   </div>
 
@@ -1188,6 +1222,12 @@ function applyLanguage(lang, ownerName) {
 
   // Subtitle
   document.getElementById('cover-subtitle').textContent = L.subtitle;
+
+  // CTA button — "Get Your Own Book"
+  const ctaFull  = document.querySelector('#tgp-cta-btn .tgp-cta-label-full');
+  const ctaShort = document.querySelector('#tgp-cta-btn .tgp-cta-label-short');
+  if (ctaFull)  ctaFull.textContent  = L.getYourBookFull  || 'Get Your Own Book';
+  if (ctaShort) ctaShort.textContent = L.getYourBookShort || 'Get Yours';
 
   // Badge
   updateBadge(fakeCount);
@@ -1875,6 +1915,14 @@ LANG.fr.noBooksYet = 'Pas encore de livres'; LANG.fr.loadFailed = 'Chargement é
 LANG.zh.noBooksYet = '暂无留言册'; LANG.zh.loadFailed = '加载失败'; LANG.zh.youAreHere = '您在这里'; LANG.zh.revFormTitle = '请求修改留言册'; LANG.zh.revFormSub = '选择修改类型（可以选择多个）';
 LANG.es.noBooksYet = 'Aún no hay libros'; LANG.es.loadFailed = 'Error al cargar'; LANG.es.youAreHere = 'Estás aquí'; LANG.es.revFormTitle = 'Solicitar revisión'; LANG.es.revFormSub = 'Elige el tipo de cambios necesarios (puedes seleccionar más de uno)';
 LANG.pt.noBooksYet = 'Ainda sem livros'; LANG.pt.loadFailed = 'Falha ao carregar'; LANG.pt.youAreHere = 'Você está aqui'; LANG.pt.revFormTitle = 'Solicitar revisão'; LANG.pt.revFormSub = 'Escolha o tipo de alterações necessárias (pode selecionar mais de uma)';
+
+LANG.ar.getYourBookFull = 'اطلب دفترك الآن'; LANG.ar.getYourBookShort = 'اطلب الآن';
+LANG.en.getYourBookFull = 'Get Your Own Book'; LANG.en.getYourBookShort = 'Get Yours';
+LANG.ru.getYourBookFull = 'Создай свою книгу'; LANG.ru.getYourBookShort = 'Создать';
+LANG.fr.getYourBookFull = 'Crée ton propre livre'; LANG.fr.getYourBookShort = 'Créer';
+LANG.zh.getYourBookFull = '制作你自己的留言册'; LANG.zh.getYourBookShort = '立即制作';
+LANG.es.getYourBookFull = 'Crea tu propio libro'; LANG.es.getYourBookShort = 'Crear ahora';
+LANG.pt.getYourBookFull = 'Crie seu próprio livro'; LANG.pt.getYourBookShort = 'Criar agora';
 
 // ═══ REVISION OPTIONS TRANSLATIONS ═══
 LANG.ar.revOptions = ['📸 تغيير صورة الغلاف','➕ إضافة صور','🗑️ حذف صور','✍️ تعديل الاسم','🏥 تعديل الكلية','📅 تعديل سنة التخرج','🎨 تغيير الثيم','💬 أخرى'];
