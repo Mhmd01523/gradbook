@@ -1000,7 +1000,50 @@ async function uploadPhotos(sb, orderCode) {
   }
   if (bar) bar.style.width = '100%';
   if (txt) txt.textContent = `✅ ${urls.length} photo(s) uploaded`;
+
+  // رفع نسخة مصغّرة من أول صورة فقط — مخصصة لمعاينة المشاركة (OG image)
+  // الصور الأصلية كبيرة جداً (قد تصل لعدة ميجابايت) وتتجاوز حدود
+  // معاينة الروابط في واتساب/تليغرام/Max، فننشئ نسخة صغيرة موازية.
+  try {
+    if (photos.length > 0) {
+      const compressedBlob = await compressImageToBlob(photos[0].file, 1200, 630, 0.75);
+      if (compressedBlob) {
+        await sb.storage.from('gradbook-photos').upload(
+          `orders/${orderCode}/og-cover.jpg`,
+          compressedBlob,
+          { contentType: 'image/jpeg', upsert: true }
+        );
+      }
+    }
+  } catch (e) {
+    // فشل إنشاء النسخة المصغّرة لا يجب أن يوقف الطلب — الصورة الأصلية موجودة بأي حال
+    console.warn('OG cover compression failed:', e);
+  }
+
   return urls;
+}
+
+function compressImageToBlob(file, maxW, maxH, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let w = img.width, h = img.height;
+      // تحجيم مع الحفاظ على نسبة الأبعاد، يملأ مساحة 1200x630 قدر الإمكان
+      const scale = Math.max(maxW / w, maxH / h);
+      const canvas = document.createElement('canvas');
+      canvas.width = maxW;
+      canvas.height = maxH;
+      const ctx = canvas.getContext('2d');
+      const drawW = w * scale, drawH = h * scale;
+      const dx = (maxW - drawW) / 2, dy = (maxH - drawH) / 2;
+      ctx.drawImage(img, dx, dy, drawW, drawH);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(null); };
+    img.src = objectUrl;
+  });
 }
 
 function generateOrderCode() {
